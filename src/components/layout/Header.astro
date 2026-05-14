@@ -1,0 +1,57 @@
+---
+import Logo from "./Logo.astro";
+
+interface Props {
+  active?: "accueil" | "services" | "apropos" | "processus" | "ressources" | "contact";
+}
+
+const { active = "accueil" } = Astro.props;
+
+const items = [
+  { href: "/", label: "Accueil", key: "accueil" as const },
+  { href: "/services", label: "Services", key: "services" as const },
+  { href: "/a-propos", label: "À propos", key: "apropos" as const },
+  { href: "/processus", label: "Processus", key: "processus" as const },
+  { href: "/ressources", label: "Ressources", key: "ressources" as const },
+  { href: "/contact", label: "Contact", key: "contact" as const },
+];
+---
+
+<header class="site-header">
+  <div class="container">
+    <nav class="nav" aria-label="Navigation principale">
+      <a class="nav__logo" href="/">
+        <Logo />
+      </a>
+      <ul class="nav__menu">
+        {
+          items.map((item) => (
+            <li>
+              <a class={`nav__link${item.key === active ? " is-active" : ""}`} href={item.href}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a class="btn btn--outline nav__cta" href="#" data-open-rdv>Réserver un échange</a>
+      <button class="nav__toggle" aria-label="Ouvrir le menu" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <line x1="3" y1="7" x2="21" y2="7"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="17" x2="21" y2="17"></line>
+        </svg>
+      </button>
+    </nav>
+  </div>
+  <div class="nav__mobile">
+    {
+      items.map((item) => (
+        <a class={item.key === active ? "is-active" : ""} href={item.href}>
+          {item.label}
+        </a>
+      ))
+    }
+    <a class="btn btn--outline" href="#" data-open-rdv>Réserver un échange</a>
+  </div>
+</header>

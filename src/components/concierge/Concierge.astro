@@ -1,0 +1,10 @@
+---
+/**
+ * Server-rendered shell for the concierge widget.
+ * All behavior lives in `concierge.client.ts`, mounted from BaseLayout.
+ */
+---
+
+<!-- The runtime appends the FAB, toast and panel; this section is reserved
+     so we can hydrate SSR-friendly content here later if needed. -->
+<div id="mf-concierge-mount" data-mount></div>

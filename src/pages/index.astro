@@ -1,0 +1,27 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import Hero from "@components/home/Hero.astro";
+import LogosBand from "@components/home/LogosBand.astro";
+import ServicesGrid from "@components/home/ServicesGrid.astro";
+import AboutBlock from "@components/home/AboutBlock.astro";
+import StatsBand from "@components/home/StatsBand.astro";
+import Testimonials from "@components/home/Testimonials.astro";
+import ProcessSteps from "@components/home/ProcessSteps.astro";
+import CtaCenter from "@components/home/CtaCenter.astro";
+---
+
+<BaseLayout
+  title="Maison Fwurtz — Votre alliée au quotidien"
+  description="Maison Fwurtz : accompagnement sur mesure pour simplifier, structurer et développer vos projets. Web, administratif, juridique, événementiel."
+  active="accueil"
+  screenLabel="01 Accueil"
+>
+  <Hero />
+  <LogosBand />
+  <ServicesGrid />
+  <AboutBlock />
+  <StatsBand />
+  <Testimonials />
+  <ProcessSteps />
+  <CtaCenter />
+</BaseLayout>

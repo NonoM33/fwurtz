@@ -1,0 +1,73 @@
+---
+interface Testimonial {
+  quote: string;
+  initials: string;
+  name: string;
+  role: string;
+  delay: 0 | 1 | 2;
+}
+
+const testimonials: Testimonial[] = [
+  {
+    quote:
+      "« Une rigueur rare et une intelligence des situations. Maison Fwurtz a structuré mon activité en quelques semaines — je dors mieux depuis. »",
+    initials: "CL",
+    name: "Camille Larue",
+    role: "Fondatrice, Atelier Bardin",
+    delay: 0,
+  },
+  {
+    quote:
+      "« Discrétion, élégance, efficacité. Un mariage organisé sans le moindre faux pas. On a juste eu à être heureux. »",
+    initials: "M&P",
+    name: "Marc & Pauline V.",
+    role: "Mariage à Saint-Cloud",
+    delay: 1,
+  },
+  {
+    quote:
+      "« Le site qu'elle nous a livré nous ressemble enfin. Et les recommandations juridiques nous ont évité une mauvaise surprise. »",
+    initials: "JH",
+    name: "Julien Hervé",
+    role: "Galerie Saint-Honoré",
+    delay: 2,
+  },
+];
+
+const star = `<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 14.5 9 22 9 16 14 18 22 12 17 6 22 8 14 2 9 9.5 9"/></svg>`;
+const stars = star.repeat(5);
+---
+
+<section class="testimonials">
+  <div class="container">
+    <div
+      class="section-head reveal"
+      style="text-align: left; margin-bottom: 48px; position: relative; z-index: 2;"
+    >
+      <span class="eyebrow">Témoignages</span>
+      <h2 class="serif" style="margin-top: 18px; max-width: 18ch;">
+        Ce que disent
+        <em class="italic" style="color: var(--gold);">celles et ceux</em>
+        qui me font confiance.
+      </h2>
+      <div class="divider"></div>
+    </div>
+    <div class="testimonial-grid">
+      {
+        testimonials.map((t) => (
+          <div class={`testimonial reveal${t.delay > 0 ? ` reveal-delay-${t.delay}` : ""}`}>
+            <div class="testimonial__rating" aria-label="Note 5 sur 5" set:html={stars} />
+            <p class="testimonial__quote">{t.quote}</p>
+            <div class="testimonial__author">
+              <div class="testimonial__avatar" set:html={t.initials} />
+              <div>
+                <p class="testimonial__name" set:html={t.name} />
+                <p class="testimonial__role">{t.role}</p>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,18 @@
+---
+const logos = [
+  "Atelier Bardin",
+  "Maison Cléry",
+  "Étude Lefèvre & Associés",
+  "Domaine Saint-Loup",
+  "Galerie Saint-Honoré",
+];
+---
+
+<section class="logos-band">
+  <div class="container">
+    <div class="logos-band__label reveal">Une approche éprouvée — ils nous ont fait confiance</div>
+    <div class="logos-band__row reveal reveal-delay-1">
+      {logos.map((label) => <div class="logos-band__item" set:html={label} />)}
+    </div>
+  </div>
+</section>

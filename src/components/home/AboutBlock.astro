@@ -1,0 +1,33 @@
+---
+import ImageSlot from "@components/ui/ImageSlot.astro";
+---
+
+<section class="section" style="background: var(--navy-950); position: relative;">
+  <div class="container">
+    <div class="about-block">
+      <div class="about-block__content reveal">
+        <span class="eyebrow">À propos</span>
+        <h2 class="serif" style="margin-top: 18px;">
+          Maison Fwurtz,<br />
+          <em class="italic" style="color: var(--gold);">l'expertise</em> au service<br />
+          de vos ambitions.
+        </h2>
+        <div class="divider"></div>
+        <p style="font-size:15.5px; color: var(--ink-2); line-height: 1.7;">
+          Polyvalente, organisée et à l'écoute, j'accompagne entrepreneurs, indépendants et
+          particuliers dans la gestion et le développement de leurs projets.
+        </p>
+        <a class="btn btn--outline" href="/a-propos" style="margin-top: 32px;">En savoir plus</a>
+      </div>
+      <div class="about-block__photo reveal reveal-delay-2">
+        <ImageSlot
+          id="about-portrait"
+          placeholder="Glissez une photo d'atelier"
+          caption="Atelier — séance de travail"
+          variant="portrait"
+          styleAttr="height: 100%; min-height: 480px;"
+        />
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,32 @@
+---
+---
+
+<div class="modal" id="rdv-modal" aria-hidden="true" role="dialog" aria-labelledby="rdv-modal-title">
+  <div class="modal__backdrop" data-close-rdv></div>
+  <div class="modal__box">
+    <button class="modal__close" data-close-rdv aria-label="Fermer">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+        <line x1="6" y1="18" x2="18" y2="6"></line>
+      </svg>
+    </button>
+    <div class="modal__eyebrow">Réserver un échange</div>
+    <h3 class="modal__title" id="rdv-modal-title">Parlons de votre projet.</h3>
+    <p class="modal__sub">Laissez-nous vos coordonnées, nous vous recontactons sous 24h ouvrées.</p>
+    <form class="contact-form" data-fake-submit>
+      <div class="form-field">
+        <input type="text" placeholder="Nom complet" required />
+      </div>
+      <div class="form-field">
+        <input type="email" placeholder="Adresse e-mail" required />
+      </div>
+      <div class="form-field">
+        <input type="text" placeholder="Sujet de votre demande" />
+      </div>
+      <div class="form-field">
+        <textarea placeholder="Votre message"></textarea>
+      </div>
+      <button type="submit" class="btn btn--gold btn--lg">Envoyer le message</button>
+    </form>
+  </div>
+</div>

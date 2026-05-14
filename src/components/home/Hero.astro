@@ -1,0 +1,52 @@
+---
+import ImageSlot from "@components/ui/ImageSlot.astro";
+---
+
+<section class="hero hero--with-slot">
+  <div class="hero__bg">
+    <div
+      class="hero__overlay"
+      style="background: radial-gradient(ellipse at 70% 50%, rgba(212,175,122,0.06) 0%, transparent 60%), linear-gradient(180deg, var(--navy-950) 0%, var(--navy-900) 100%);"
+    ></div>
+  </div>
+  <div class="container">
+    <div class="hero__grid hero__grid--with-slot">
+      <div class="hero__content">
+        <div class="reveal">
+          <span class="eyebrow">Votre alliée au quotidien</span>
+        </div>
+        <h1 class="reveal reveal-delay-1 h-display" style="margin-bottom: 0;">
+          Maison Fwurtz,<br />
+          <em class="italic" style="color: var(--gold); font-style: italic;">votre alliée</em><br />
+          au quotidien.
+        </h1>
+        <div class="reveal reveal-delay-2"><div class="divider"></div></div>
+        <p class="lead-lg reveal reveal-delay-2">
+          Des solutions sur mesure pour
+          <em class="italic" style="color: var(--ink);"
+            >simplifier, structurer et développer</em
+          > vos projets.
+        </p>
+        <p
+          class="reveal reveal-delay-3"
+          style="margin-top: 14px; font-size: 14.5px; color: var(--ink-3); max-width: 50ch;"
+        >
+          Web, administratif, juridique, événementiel et accompagnement stratégique.
+        </p>
+        <div class="hero__buttons reveal reveal-delay-4">
+          <a class="btn btn--gold" href="/services">Découvrir nos services</a>
+          <a class="btn btn--outline" href="#" data-open-rdv>Réserver un échange</a>
+        </div>
+      </div>
+      <div class="hero__slot-wrap reveal reveal-delay-2">
+        <ImageSlot
+          id="hero-portrait"
+          placeholder="Glissez le portrait Maison Fwurtz ici"
+          caption="Portrait — fondatrice"
+          variant="tall"
+          styleAttr="height: 100%;"
+        />
+      </div>
+    </div>
+  </div>
+</section>

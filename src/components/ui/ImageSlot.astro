@@ -1,0 +1,32 @@
+---
+interface Props {
+  id: string;
+  placeholder: string;
+  caption?: string;
+  variant?: "tall" | "portrait" | "landscape" | "wide" | "square";
+  /** Inline style overrides for the outer slot frame (kept for fidelity with the design) */
+  styleAttr?: string;
+}
+
+const {
+  id,
+  placeholder,
+  caption,
+  variant = "tall",
+  styleAttr,
+} = Astro.props;
+
+const frameClass = `slot-frame slot-frame--${variant}`;
+---
+
+<div class={frameClass} style={styleAttr}>
+  <image-slot
+    id={id}
+    shape="rounded"
+    radius="12"
+    placeholder={placeholder}
+    style="width:100%; height:100%;"
+  >
+  </image-slot>
+  {caption && <div class="slot-frame__caption">{caption}</div>}
+</div>

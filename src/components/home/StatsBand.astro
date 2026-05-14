@@ -1,0 +1,27 @@
+---
+const stats = [
+  { num: "+", em: "8", label: "Années d'expérience" },
+  { num: "+", em: "60", label: "Projets accompagnés" },
+  { num: "", em: "5", label: "Domaines d'expertise" },
+  { num: "", em: "24", suffix: "h", label: "Délai de réponse moyen" },
+] as const;
+---
+
+<section class="section--tight" style="background: var(--navy-900); padding: 56px 0;">
+  <div class="container">
+    <div class="stats-band reveal">
+      {
+        stats.map((s) => (
+          <div class="stat">
+            <div class="stat__num">
+              {s.num}
+              <em>{s.em}</em>
+              {"suffix" in s ? s.suffix : ""}
+            </div>
+            <div class="stat__label">{s.label}</div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

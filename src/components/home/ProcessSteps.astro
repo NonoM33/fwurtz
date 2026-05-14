@@ -1,0 +1,51 @@
+---
+const steps = [
+  {
+    num: "01",
+    title: "Échange",
+    description: "Nous analysons vos besoins et définissons ensemble vos objectifs.",
+  },
+  {
+    num: "02",
+    title: "Mise en place",
+    description: "Nous mettons en œuvre les solutions adaptées à votre projet.",
+  },
+  {
+    num: "03",
+    title: "Accompagnement",
+    description: "Nous vous accompagnons au quotidien pour assurer votre réussite.",
+  },
+];
+---
+
+<section class="section" style="background: var(--navy-950);">
+  <div class="container">
+    <div class="reveal" style="margin-bottom: 56px; text-align: center;">
+      <span class="eyebrow">Notre processus</span>
+      <h2 class="serif" style="margin-top: 18px;">
+        Une méthode
+        <em class="italic" style="color: var(--gold);">claire</em>, fluide et efficace.
+      </h2>
+      <div class="divider divider--center"></div>
+    </div>
+    <div class="steps reveal reveal-delay-1">
+      {
+        steps.map((step) => (
+          <div class="step">
+            <span class="step__num">{step.num}</span>
+            <h3 class="serif">{step.title}</h3>
+            <p>{step.description}</p>
+          </div>
+        ))
+      }
+    </div>
+    <div class="reveal reveal-delay-2" style="text-align: center; margin-top: 56px;">
+      <a class="text-link" href="/processus">
+        Découvrir le processus en détail
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M5 12h14M13 6l6 6-6 6"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
