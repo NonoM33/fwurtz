@@ -1,0 +1,884 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import "~/styles/design-system.css";
+
+const tocItems = [
+  { num: "01", id: "essence", label: "Essence", hint: "Philosophie & promesse" },
+  { num: "02", id: "logo", label: "Logo", hint: "Monogramme & lockups" },
+  { num: "03", id: "couleurs", label: "Couleurs", hint: "Palette & usage" },
+  { num: "04", id: "typographie", label: "Typographie", hint: "Serif éditorial + sans" },
+  { num: "05", id: "espacement", label: "Espacement", hint: "Échelle 8 pt" },
+  { num: "06", id: "rayons", label: "Rayons", hint: "Bordures & coins" },
+  { num: "07", id: "ombres", label: "Ombres", hint: "Élévation" },
+  { num: "08", id: "iconographie", label: "Icônes", hint: "Trait 1,4 px" },
+  { num: "09", id: "composants", label: "Composants", hint: "Boutons, formulaires, cartes" },
+  { num: "10", id: "photographie", label: "Photographie", hint: "Direction artistique" },
+  { num: "11", id: "mouvement", label: "Mouvement", hint: "Animation & timing" },
+  { num: "12", id: "voix", label: "Voix & ton", hint: "Copywriting" },
+];
+
+const navySwatches = [
+  { name: "Navy 950", token: "--navy-950", hex: "#08111E", role: "Fond de page" },
+  { name: "Navy 900", token: "--navy-900", hex: "#0B1729", role: "Cartes & sections" },
+  { name: "Navy 850", token: "--navy-850", hex: "#0E1B30", role: "Sections alternées" },
+  { name: "Navy 800", token: "--navy-800", hex: "#122340", role: "États survol" },
+  { name: "Navy Line", token: "--navy-line", hex: "#1E2F4D", role: "Bordures, hairlines" },
+];
+
+const goldSwatches = [
+  { name: "Or clair", token: "--gold-bright", hex: "#E8C896", role: "Hover bouton or" },
+  { name: "Or", token: "--gold", hex: "#D4AF7A", role: "CTA primaire, accents" },
+  { name: "Or doux", token: "--gold-soft", hex: "#C9A878", role: "Variante secondaire" },
+  { name: "Or pression", token: "--gold-press", hex: "#B8945F", role: "État pressé" },
+];
+
+const inkSwatches = [
+  { name: "Ink", token: "--ink", hex: "#FFFFFF", role: "Titres, gras", opacity: 1 },
+  { name: "Ink 2", token: "--ink-2", hex: "rgba(255,255,255,.78)", role: "Corps de texte", opacity: 0.78 },
+  { name: "Ink 3", token: "--ink-3", hex: "rgba(255,255,255,.58)", role: "Texte secondaire", opacity: 0.58 },
+  { name: "Ink 4", token: "--ink-4", hex: "rgba(255,255,255,.42)", role: "Méta, légendes", opacity: 0.42 },
+];
+
+const spacingScale = [
+  { token: "--s-1", value: "4 px", width: 4 },
+  { token: "--s-2", value: "8 px", width: 8 },
+  { token: "--s-3", value: "12 px", width: 12 },
+  { token: "--s-4", value: "16 px", width: 16 },
+  { token: "--s-5", value: "20 px", width: 20 },
+  { token: "--s-6", value: "24 px", width: 24 },
+  { token: "--s-7", value: "32 px", width: 32 },
+  { token: "--s-8", value: "40 px", width: 40 },
+  { token: "--s-9", value: "56 px", width: 56 },
+  { token: "--s-10", value: "80 px", width: 80 },
+  { token: "--section", value: "120 px", width: 120 },
+];
+
+const radiusScale = [
+  { token: "--r-none", value: "0 px", radius: 0, note: "" },
+  { token: "--r-sm", value: "4 px · boutons", radius: 4, note: "" },
+  { token: "--r-md", value: "8 px · champs", radius: 8, note: "" },
+  { token: "--r-lg", value: "12 px · cartes", radius: 12, note: "" },
+  { token: "--r-xl", value: "20 px · modals", radius: 20, note: "" },
+  { token: "--r-pill", value: "∞ · puces, badges", radius: 999, note: "" },
+];
+
+const shadowScale = [
+  { label: "Élévation 0", token: "--shadow-flat", style: "0 1px 0 rgba(212, 175, 122, 0.06) inset, 0 1px 2px rgba(0, 0, 0, 0.2)" },
+  { label: "Élévation 1", token: "--shadow-1", style: "0 1px 0 rgba(212, 175, 122, 0.1) inset, 0 4px 12px rgba(0, 0, 0, 0.3)" },
+  { label: "Élévation 2", token: "--shadow-2", style: "0 1px 0 rgba(212, 175, 122, 0.14) inset, 0 12px 28px rgba(0, 0, 0, 0.45)" },
+  { label: "Élévation 3", token: "--shadow-3", style: "0 1px 0 rgba(212, 175, 122, 0.2) inset, 0 24px 56px rgba(0, 0, 0, 0.6)" },
+];
+
+const motionScale = [
+  { num: "120", label: "Micro", use: "Hovers boutons, focus inputs" },
+  { num: "200", label: "Standard", use: "Modals, dropdowns, hover cartes" },
+  { num: "700", label: "Scroll reveal", use: "Fade-in + translateY 20px à l'apparition" },
+];
+
+const voicePrinciples = [
+  { title: "Élégante", body: "Le mot juste plutôt que le mot facile." },
+  { title: "Précise", body: "Jamais vague, toujours concrète et actionnable." },
+  { title: "Chaleureuse", body: "On vouvoie, mais on est proche, attentif, présent." },
+  { title: "Sobre", body: "Pas de superlatifs, pas de promesses creuses." },
+];
+
+const photoDirection = [
+  { tag: "Portrait", title: "Femme au bureau<br>— clair-obscur, regard hors champ" },
+  { tag: "Nature morte", title: "Lampe en laiton<br>& vase de branchages" },
+  { tag: "Objet rituel", title: "Carnet ouvert,<br>stylo, bougie" },
+];
+---
+
+<BaseLayout
+  title="Système de design — Maison Fwurtz"
+  description="Le brand book complet de Maison Fwurtz : philosophie, logo, palette, typographie, composants et voix de marque."
+  screenLabel="DS Système de design"
+>
+  <!-- HERO -->
+  <section class="page-hero" style="min-height: 520px;">
+    <div class="page-hero__bg">
+      <div class="hero__photo"><div class="hero-portrait"><div class="hero-portrait__silhouette"></div></div></div>
+      <div class="hero__overlay"></div>
+    </div>
+    <div class="container">
+      <div class="page-hero__grid">
+        <div class="page-hero__content">
+          <div class="reveal"><span class="eyebrow">Système de design — Édition 2024</span></div>
+          <h1 class="reveal reveal-delay-1 serif" style="font-size: clamp(40px, 5vw, 60px);">
+            Le <em class="italic">brand book</em> de Maison Fwurtz.
+          </h1>
+          <div class="reveal reveal-delay-2"><div class="divider"></div></div>
+          <p class="lead reveal reveal-delay-2">
+            Une charte vivante qui réunit l'identité, la voix, les couleurs et les composants de Maison Fwurtz. Une référence unique pour garantir cohérence et élégance, sur le web comme à l'imprimé.
+          </p>
+        </div>
+        <div class="reveal reveal-delay-2">
+          <div class="slot-frame slot-frame--tall" style="max-height: 460px; height: 100%;">
+            <image-slot id="ds-hero" shape="rounded" radius="12" placeholder="Glissez visuel d'ouverture" style="width:100%; height:100%;"></image-slot>
+            <div class="slot-frame__caption">Visuel d'ouverture</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOC -->
+  <section class="section--tight" style="background: var(--navy-900); padding: 64px 0;">
+    <div class="container">
+      <div class="reveal" style="margin-bottom: 28px;">
+        <span class="eyebrow">Sommaire</span>
+      </div>
+      <div class="ds-toc reveal reveal-delay-1">
+        {tocItems.map((item) => (
+          <a class="ds-toc__item" href={`#${item.id}`}>
+            <span class="ds-toc__num">{item.num}</span>
+            <span class="ds-toc__label">{item.label}</span>
+            <span class="ds-toc__hint">{item.hint}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 — ESSENCE -->
+  <section class="ds-section" id="essence" style="background: var(--navy-950); border-top: none;">
+    <div class="container">
+      <div class="ds-section__head reveal">
+        <span class="ds-section__num">01</span>
+        <div>
+          <h2 class="ds-section__title">Essence de la marque</h2>
+          <p class="ds-section__lede">Maison Fwurtz n'est pas une agence. C'est une <em class="italic" style="color:var(--gold);">alliée</em>. Notre identité visuelle traduit cette posture : élégante sans être hautaine, structurée sans être froide, chaleureuse mais toujours rigoureuse.</p>
+        </div>
+      </div>
+
+      <div class="ds-intro reveal reveal-delay-1">
+        <div>
+          <div class="eyebrow" style="margin-bottom: 16px;">Notre promesse</div>
+          <p style="font-family: var(--font-serif); font-size: 28px; line-height: 1.3; color: var(--ink); font-style: italic; margin-bottom: 24px;">Simplifier le quotidien, valoriser les projets, et construire des relations durables.</p>
+          <p style="font-size: 14.5px; color: var(--ink-2); line-height: 1.7;">Chaque élément du système — du choix d'un serif à l'angle d'un rayon — sert cette promesse. Le navy traduit la confiance ; l'ochre, la chaleur humaine ; la mise en page aérée, l'écoute. Rien n'est gratuit, tout est éditorial.</p>
+        </div>
+        <div>
+          <div class="eyebrow" style="margin-bottom: 16px;">Inspirations</div>
+          <ul class="checklist" style="margin-bottom: 24px;">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Les façades haussmanniennes au crépuscule</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Les papeteries fines, à la presse à chaud sur papier ivoire</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Les bibliothèques de cabinets : cuir, bronze, et silence</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Les magazines éditoriaux (Kinfork, The Gentlewoman)</span></li>
+          </ul>
+          <div class="eyebrow" style="margin-bottom: 16px;">Ce que l'on évite</div>
+          <ul class="checklist">
+            <li style="grid-template-columns: 22px 1fr; color: var(--ink-4);"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(220,130,130,0.8)" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg> <span>Le ton SaaS « startup-bro »</span></li>
+            <li style="grid-template-columns: 22px 1fr; color: var(--ink-4);"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(220,130,130,0.8)" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg> <span>Les dégradés saturés mauve/cyan</span></li>
+            <li style="grid-template-columns: 22px 1fr; color: var(--ink-4);"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(220,130,130,0.8)" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg> <span>Les emojis empilés et le jargon</span></li>
+            <li style="grid-template-columns: 22px 1fr; color: var(--ink-4);"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(220,130,130,0.8)" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg> <span>Le blanc clinique et les angles brutaux</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 — LOGO -->
+  <section class="ds-section" id="logo" style="background: var(--navy-900);">
+    <div class="container">
+      <div class="ds-section__head reveal">
+        <span class="ds-section__num">02</span>
+        <div>
+          <h2 class="ds-section__title">Logo &amp; signature</h2>
+          <p class="ds-section__lede">Le monogramme « M·f » entrelace une majuscule sereine et un f minuscule lettré — symbole d'une rencontre entre rigueur et écoute. Le wordmark, en serif éditorial sur deux lignes, signe la marque dans les contextes formels.</p>
+        </div>
+      </div>
+
+      <div style="background: var(--navy-950); border: 1px solid var(--navy-line); border-radius: var(--r-lg); padding: 80px 48px; margin-bottom: 20px; text-align: center;" class="reveal">
+        <svg width="280" height="200" viewBox="0 0 280 200" fill="none" style="margin: 0 auto;">
+          <g stroke="#D4AF7A" stroke-width="1.4" fill="none">
+            <path d="M40 100 L40 30 L70 75 L100 30 L100 100" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M120 100 L120 40 C120 30 125 24 135 24" stroke-linecap="round"/>
+            <line x1="110" y1="55" x2="135" y2="55"/>
+          </g>
+          <text x="170" y="58" fill="#FFFFFF" font-family="Cormorant Garamond, serif" font-size="22" font-weight="500" letter-spacing="6">MAISON</text>
+          <text x="170" y="92" fill="#FFFFFF" font-family="Cormorant Garamond, serif" font-size="22" font-weight="500" letter-spacing="6">FWURTZ</text>
+          <text x="170" y="118" fill="#D4AF7A" font-family="Cormorant Garamond, serif" font-size="10" font-style="italic" letter-spacing="2">— votre alliée au quotidien</text>
+        </svg>
+      </div>
+
+      <div class="lockup-grid reveal reveal-delay-1">
+        <div class="lockup">
+          <svg width="120" height="60" viewBox="0 0 98 48" fill="none"><g stroke="#D4AF7A" stroke-width="0.9" fill="none"><path d="M5 22 L5 4 L11 16 L17 4 L17 22" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 22 L22 7 C22 4.5 23.5 3 26 3" stroke-linecap="round"/><line x1="19" y1="11" x2="26" y2="11"/></g><text x="0" y="34" fill="#FFFFFF" font-family="Cormorant Garamond, serif" font-size="9" font-weight="500" letter-spacing="2">MAISON</text><text x="0" y="45" fill="#FFFFFF" font-family="Cormorant Garamond, serif" font-size="9" font-weight="500" letter-spacing="2">FWURTZ</text></svg>
+          <span class="lockup__caption">Variante principale — fond navy</span>
+        </div>
+        <div class="lockup lockup--light">
+          <svg width="120" height="60" viewBox="0 0 98 48" fill="none"><g stroke="#08111E" stroke-width="0.9" fill="none"><path d="M5 22 L5 4 L11 16 L17 4 L17 22" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 22 L22 7 C22 4.5 23.5 3 26 3" stroke-linecap="round"/><line x1="19" y1="11" x2="26" y2="11"/></g><text x="0" y="34" fill="#08111E" font-family="Cormorant Garamond, serif" font-size="9" font-weight="500" letter-spacing="2">MAISON</text><text x="0" y="45" fill="#08111E" font-family="Cormorant Garamond, serif" font-size="9" font-weight="500" letter-spacing="2">FWURTZ</text></svg>
+          <span class="lockup__caption">Sur ivoire — papeterie & imprimés</span>
+        </div>
+        <div class="lockup lockup--gold">
+          <svg width="120" height="60" viewBox="0 0 98 48" fill="none"><g stroke="#08111E" stroke-width="0.9" fill="none"><path d="M5 22 L5 4 L11 16 L17 4 L17 22" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 22 L22 7 C22 4.5 23.5 3 26 3" stroke-linecap="round"/><line x1="19" y1="11" x2="26" y2="11"/></g><text x="0" y="34" fill="#08111E" font-family="Cormorant Garamond, serif" font-size="9" font-weight="500" letter-spacing="2">MAISON</text><text x="0" y="45" fill="#08111E" font-family="Cormorant Garamond, serif" font-size="9" font-weight="500" letter-spacing="2">FWURTZ</text></svg>
+          <span class="lockup__caption">Sur ochre — invitations & sceaux</span>
+        </div>
+
+        <div class="lockup">
+          <svg width="80" height="80" viewBox="0 0 50 50" fill="none">
+            <g stroke="#D4AF7A" stroke-width="1.4" fill="none">
+              <path d="M6 36 L6 8 L14 26 L22 8 L22 36" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M30 36 L30 14 C30 10 32 7 36 7" stroke-linecap="round"/>
+              <line x1="27" y1="18" x2="38" y2="18"/>
+            </g>
+          </svg>
+          <span class="lockup__caption">Monogramme seul — avatar, sceau</span>
+        </div>
+        <div class="lockup">
+          <div style="display:flex; align-items:center; gap: 16px;">
+            <svg width="46" height="46" viewBox="0 0 50 50" fill="none">
+              <g stroke="#D4AF7A" stroke-width="1.4" fill="none">
+                <path d="M6 36 L6 8 L14 26 L22 8 L22 36" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M30 36 L30 14 C30 10 32 7 36 7" stroke-linecap="round"/>
+                <line x1="27" y1="18" x2="38" y2="18"/>
+              </g>
+            </svg>
+            <div style="width: 1px; height: 38px; background: var(--gold-line);"></div>
+            <div style="text-align: left;">
+              <div style="font-family: var(--font-serif); font-size: 19px; font-weight: 500; color: var(--ink); letter-spacing: 0.1em;">MAISON</div>
+              <div style="font-family: var(--font-serif); font-size: 19px; font-weight: 500; color: var(--ink); letter-spacing: 0.1em;">FWURTZ</div>
+            </div>
+          </div>
+          <span class="lockup__caption">Lockup horizontal — en-tête email</span>
+        </div>
+        <div class="lockup">
+          <div style="font-family: var(--font-serif); font-size: 36px; font-weight: 500; color: var(--ink); font-style: italic;">MF<span style="color: var(--gold);">.</span></div>
+          <span class="lockup__caption">Wordmark abrégé — favicon, watermark</span>
+        </div>
+      </div>
+
+      <div class="ds-intro reveal reveal-delay-2" style="margin-top: 64px;">
+        <div>
+          <div class="eyebrow" style="margin-bottom: 14px;">Construction</div>
+          <p style="font-size: 14.5px; color: var(--ink-2); line-height: 1.7;">Le monogramme est dessiné sur une grille de 22×22 unités. Le « M » occupe deux fûts parallèles ; le « f » s'inscrit dans la moitié droite, sa barre horizontale traversant légèrement le contre-fort gauche pour signaler la rencontre.</p>
+        </div>
+        <div>
+          <div class="eyebrow" style="margin-bottom: 14px;">Zone de protection</div>
+          <p style="font-size: 14.5px; color: var(--ink-2); line-height: 1.7;">Toujours réserver au minimum la hauteur d'un fût (~22 unités) autour du monogramme. Taille minimale d'utilisation : <strong style="color: var(--gold); font-family: ui-monospace, monospace; font-size: 12px;">24 px</strong> à l'écran, <strong style="color: var(--gold); font-family: ui-monospace, monospace; font-size: 12px;">10 mm</strong> à l'imprimé.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 — COULEURS -->
+  <section class="ds-section" id="couleurs" style="background: var(--navy-950);">
+    <div class="container">
+      <div class="ds-section__head reveal">
+        <span class="ds-section__num">03</span>
+        <div>
+          <h2 class="ds-section__title">Palette de couleurs</h2>
+          <p class="ds-section__lede">Une palette resserrée et intentionnelle : un <em class="italic" style="color:var(--gold);">navy</em> profond pour la solidité, un <em class="italic" style="color:var(--gold);">ochre</em> doré pour la chaleur, et une gradation de blancs transparents pour la hiérarchie textuelle.</p>
+        </div>
+      </div>
+
+      <div class="reveal" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px;">
+        <div style="background: #08111E; border: 1px solid var(--navy-line); border-radius: var(--r-lg); padding: 64px 40px; position: relative; min-height: 280px;">
+          <div style="font-family: var(--font-serif); font-size: 36px; color: var(--ink); font-style: italic; line-height: 1.1; margin-bottom: 8px;">Navy nuit</div>
+          <div style="font-size: 13px; color: var(--ink-3); margin-bottom: 32px; line-height: 1.6; max-width: 36ch;">L'âme du système. La couleur de la confiance, de la nuit parisienne sur les toits de zinc.</div>
+          <div style="position: absolute; bottom: 28px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: flex-end; font-family: ui-monospace, monospace; font-size: 11px;">
+            <div><span style="color: var(--gold);">--navy-950</span><br><span style="color: var(--ink-3);">#08111E</span></div>
+            <div style="text-align: right; color: var(--ink-4);">Fond principal</div>
+          </div>
+        </div>
+        <div style="background: #D4AF7A; border-radius: var(--r-lg); padding: 64px 40px; position: relative; min-height: 280px;">
+          <div style="font-family: var(--font-serif); font-size: 36px; color: var(--navy-950); font-style: italic; line-height: 1.1; margin-bottom: 8px;">Ochre laiton</div>
+          <div style="font-size: 13px; color: rgba(8, 17, 30, 0.7); margin-bottom: 32px; line-height: 1.6; max-width: 36ch;">L'accent unique. Lumière dorée d'une boîte aux lettres en cuivre au soleil rasant.</div>
+          <div style="position: absolute; bottom: 28px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: flex-end; font-family: ui-monospace, monospace; font-size: 11px;">
+            <div><span style="color: rgba(8, 17, 30, 0.8);">--gold</span><br><span style="color: rgba(8, 17, 30, 0.6);">#D4AF7A</span></div>
+            <div style="text-align: right; color: rgba(8, 17, 30, 0.6);">Accent unique</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-1" style="margin-bottom: 48px;">
+        <div class="eyebrow" style="margin-bottom: 20px;">Échelle navy</div>
+        <div class="swatch-grid">
+          {navySwatches.map((s) => (
+            <div class="swatch">
+              <div class="swatch__color" style={`background: ${s.hex};`}></div>
+              <div class="swatch__body">
+                <div class="swatch__name">{s.name}</div>
+                <div class="swatch__token">{s.token}</div>
+                <div class="swatch__hex">{s.hex}</div>
+                <div class="swatch__role">{s.role}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-2" style="margin-bottom: 48px;">
+        <div class="eyebrow" style="margin-bottom: 20px;">Ochre & or</div>
+        <div class="swatch-grid">
+          {goldSwatches.map((s) => (
+            <div class="swatch">
+              <div class="swatch__color" style={`background: ${s.hex};`}></div>
+              <div class="swatch__body">
+                <div class="swatch__name">{s.name}</div>
+                <div class="swatch__token">{s.token}</div>
+                <div class="swatch__hex">{s.hex}</div>
+                <div class="swatch__role">{s.role}</div>
+              </div>
+            </div>
+          ))}
+          <div class="swatch">
+            <div class="swatch__color" style="background: linear-gradient(135deg, rgba(212,175,122,0.35) 0%, rgba(212,175,122,0.05) 100%);"></div>
+            <div class="swatch__body">
+              <div class="swatch__name">Or ligne</div>
+              <div class="swatch__token">--gold-line</div>
+              <div class="swatch__hex">rgba(212,175,122,.35)</div>
+              <div class="swatch__role">Bordures dorées</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-3">
+        <div class="eyebrow" style="margin-bottom: 20px;">Texte & encre</div>
+        <div class="swatch-grid">
+          {inkSwatches.map((s) => (
+            <div class="swatch">
+              <div class="swatch__color" style={s.opacity === 1 ? `background: ${s.hex};` : `background: rgba(255,255,255,${s.opacity}); position: relative;`}>
+                {s.opacity !== 1 && <div style="position:absolute; inset:0; background: var(--navy-900); opacity: 0.3; z-index: -1;"></div>}
+              </div>
+              <div class="swatch__body">
+                <div class="swatch__name">{s.name}</div>
+                <div class="swatch__token">{s.token}</div>
+                <div class="swatch__hex">{s.hex}</div>
+                <div class="swatch__role">{s.role}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-4" style="margin-top: 56px; background: var(--navy-900); border: 1px solid var(--navy-line); border-radius: var(--r-lg); padding: 40px 44px;">
+        <div class="eyebrow" style="margin-bottom: 20px;">Règles d'usage</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px 56px;">
+          <div>
+            <h4 class="serif" style="color: var(--gold); font-size: 16px; margin-bottom: 8px;">L'ochre se mérite</h4>
+            <p style="font-size: 13.5px; color: var(--ink-2); line-height: 1.6;">Jamais en aplat de fond. Toujours en accent, en filet, en lettre majuscule. Sur une page, l'ochre ne doit pas couvrir plus de 5&nbsp;% de la surface — c'est la dorure d'un livre, pas la couleur du livre.</p>
+          </div>
+          <div>
+            <h4 class="serif" style="color: var(--gold); font-size: 16px; margin-bottom: 8px;">Le navy n'est jamais noir</h4>
+            <p style="font-size: 13.5px; color: var(--ink-2); line-height: 1.6;">On ne descend jamais en-dessous de <code style="font-family: ui-monospace, monospace; font-size: 12px; color: var(--gold);">#06101A</code>. Le pur noir <code style="font-family: ui-monospace, monospace; font-size: 12px; color: var(--gold);">#000</code> est interdit : il aplatit, refroidit, désincarne.</p>
+          </div>
+          <div>
+            <h4 class="serif" style="color: var(--gold); font-size: 16px; margin-bottom: 8px;">Les blancs sont transparents</h4>
+            <p style="font-size: 13.5px; color: var(--ink-2); line-height: 1.6;">Le texte secondaire ne se définit jamais en gris ; toujours en blanc à opacité réduite (78&nbsp;%, 58&nbsp;%, 42&nbsp;%). Cela garantit qu'il s'harmonise avec n'importe quel fond navy.</p>
+          </div>
+          <div>
+            <h4 class="serif" style="color: var(--gold); font-size: 16px; margin-bottom: 8px;">Pas de rouge, vert ou bleu vifs</h4>
+            <p style="font-size: 13.5px; color: var(--ink-2); line-height: 1.6;">Pour les statuts (succès, erreur, info), utiliser des teintes désaturées proches de la palette. Une erreur n'est pas <code style="font-family: ui-monospace, monospace; font-size: 12px; color: var(--gold);">#FF0000</code> — c'est un brun chaud.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 — TYPOGRAPHIE -->
+  <section class="ds-section" id="typographie" style="background: var(--navy-900);">
+    <div class="container">
+      <div class="ds-section__head reveal">
+        <span class="ds-section__num">04</span>
+        <div>
+          <h2 class="ds-section__title">Typographie</h2>
+          <p class="ds-section__lede">Deux familles, deux rôles. <em class="italic" style="color:var(--gold);">Cormorant Garamond</em> porte les titres, les italiques éditoriales et l'âme de la marque. <em class="italic" style="color:var(--gold);">Manrope</em> sert l'interface : étiquettes, paragraphes, formulaires.</p>
+        </div>
+      </div>
+
+      <div class="font-card reveal" style="margin-bottom: 16px;">
+        <div style="display:flex; justify-content: space-between; align-items: baseline; margin-bottom: 28px;">
+          <div>
+            <div class="eyebrow">Famille display</div>
+            <h3 style="font-family: var(--font-serif); font-size: 38px; font-weight: 500; color: var(--ink); margin-top: 8px;">Cormorant Garamond</h3>
+          </div>
+          <div style="font-family: ui-monospace, monospace; font-size: 11px; color: var(--ink-3); text-align: right;">
+            OFL · Google Fonts<br>5 poids, italique disponible
+          </div>
+        </div>
+        <div class="font-card__big">Aa<em class="italic" style="font-style:italic; color: var(--gold);">Aa</em></div>
+        <div class="font-card__alphabet font-card__alphabet--serif">ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 « ! ? — &amp; »</div>
+        <div class="font-card__meta">
+          <span><strong>Usage</strong>Titres H1–H3, citations, italiques éditoriales</span>
+          <span><strong>Poids</strong>500 (regular display), 500 italic</span>
+          <span><strong>Tracking</strong>-0.005em à -0.02em sur grandes tailles</span>
+        </div>
+      </div>
+
+      <div class="font-card reveal reveal-delay-1" style="margin-bottom: 32px;">
+        <div style="display:flex; justify-content: space-between; align-items: baseline; margin-bottom: 28px;">
+          <div>
+            <div class="eyebrow">Famille texte</div>
+            <h3 style="font-family: var(--font-sans); font-size: 32px; font-weight: 500; color: var(--ink); margin-top: 8px;">Manrope</h3>
+          </div>
+          <div style="font-family: ui-monospace, monospace; font-size: 11px; color: var(--ink-3); text-align: right;">
+            OFL · Google Fonts<br>7 poids variables
+          </div>
+        </div>
+        <div class="font-card__big font-card__big--sans">Aa<span style="color: var(--gold);">Aa</span></div>
+        <div class="font-card__alphabet font-card__alphabet--sans">ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 « ! ? — &amp; »</div>
+        <div class="font-card__meta">
+          <span><strong>Usage</strong>UI, paragraphes, boutons, formulaires</span>
+          <span><strong>Poids</strong>300, 400, 500, 600</span>
+          <span><strong>Tracking</strong>0.01em à 0.18em (eyebrows)</span>
+        </div>
+      </div>
+
+      <div class="type-specimen reveal reveal-delay-2">
+        <div class="eyebrow" style="margin-bottom: 28px;">Échelle typographique</div>
+
+        <div class="type-specimen__row">
+          <div class="type-specimen__sample" style="font-family: var(--font-serif); font-size: 64px; font-weight: 500; line-height: 1.05; letter-spacing: -0.01em;">Display — l'élégance</div>
+          <div class="type-specimen__meta"><strong>H1 Hero</strong>Cormorant · 64 / 67 px<br>weight 500 · -0.01em</div>
+        </div>
+        <div class="type-specimen__row">
+          <div class="type-specimen__sample" style="font-family: var(--font-serif); font-size: 44px; font-weight: 500; line-height: 1.1;">Heading — la section</div>
+          <div class="type-specimen__meta"><strong>H2 Section</strong>Cormorant · 44 / 48 px<br>weight 500</div>
+        </div>
+        <div class="type-specimen__row">
+          <div class="type-specimen__sample" style="font-family: var(--font-serif); font-size: 22px; font-weight: 500; line-height: 1.25;">Subhead — la carte</div>
+          <div class="type-specimen__meta"><strong>H3 Card</strong>Cormorant · 22 / 28 px<br>weight 500</div>
+        </div>
+        <div class="type-specimen__row">
+          <div class="type-specimen__sample" style="font-family: var(--font-sans); font-size: 17px; font-weight: 400; line-height: 1.7; color: var(--ink-2);">Lead — le paragraphe d'introduction qui pose le ton et invite à la lecture.</div>
+          <div class="type-specimen__meta"><strong>Lead</strong>Manrope · 17 / 29 px<br>weight 400</div>
+        </div>
+        <div class="type-specimen__row">
+          <div class="type-specimen__sample" style="font-family: var(--font-sans); font-size: 15px; font-weight: 400; line-height: 1.6; color: var(--ink-2);">Corps — le texte qui porte le contenu, lisible, posé, sans précipitation.</div>
+          <div class="type-specimen__meta"><strong>Body</strong>Manrope · 15 / 24 px<br>weight 400</div>
+        </div>
+        <div class="type-specimen__row">
+          <div class="type-specimen__sample" style="font-family: var(--font-sans); font-size: 13px; font-weight: 400; line-height: 1.55; color: var(--ink-3);">Meta — la précision discrète, les légendes, les hints de formulaire.</div>
+          <div class="type-specimen__meta"><strong>Meta</strong>Manrope · 13 / 20 px<br>weight 400 · ink-3</div>
+        </div>
+        <div class="type-specimen__row">
+          <div class="type-specimen__sample" style="font-family: var(--font-sans); font-size: 12px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold);">Eyebrow — la signalisation</div>
+          <div class="type-specimen__meta"><strong>Eyebrow</strong>Manrope · 12 px<br>weight 500 · +0.18em · UPPER</div>
+        </div>
+      </div>
+
+      <div class="ds-intro reveal reveal-delay-3" style="margin-top: 48px;">
+        <div>
+          <div class="eyebrow" style="margin-bottom: 14px;">Règle d'or</div>
+          <p style="font-family: var(--font-serif); font-size: 24px; font-style: italic; color: var(--ink); line-height: 1.4;">Un titre ne se met jamais en gras. La hiérarchie se joue sur la <span style="color: var(--gold);">taille</span> et la <span style="color: var(--gold);">graisse 500</span>, jamais sur du bold ou de l'extra-bold.</p>
+        </div>
+        <div>
+          <div class="eyebrow" style="margin-bottom: 14px;">Italique éditorial</div>
+          <p style="font-size: 14.5px; color: var(--ink-2); line-height: 1.7;">L'italique du Cormorant porte la <em class="italic" style="color:var(--gold);">voix de la marque</em>. On l'utilise pour les mots-clés, les promesses, les pull-quotes. Toujours teinté en <strong style="color: var(--gold);">--gold</strong> sur les titres pour faire chanter le contraste serif/sans-serif.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 — ESPACEMENT -->
+  <section class="ds-section" id="espacement" style="background: var(--navy-950);">
+    <div class="container">
+      <div class="ds-section__head reveal">
+        <span class="ds-section__num">05</span>
+        <div>
+          <h2 class="ds-section__title">Espacement &amp; rythme</h2>
+          <p class="ds-section__lede">Une échelle basée sur 8&nbsp;px. Les composants respirent : 24&nbsp;px d'air dans une carte, 56&nbsp;px entre deux blocs, 120&nbsp;px entre deux sections. Le luxe se mesure au vide.</p>
+        </div>
+      </div>
+
+      <div class="reveal" style="background: var(--navy-900); border: 1px solid var(--navy-line); border-radius: var(--r-lg); padding: 36px 44px;">
+        {spacingScale.map((s) => (
+          <div class="spacing-row">
+            <span class="spacing-row__token">{s.token}</span>
+            <div class="spacing-row__bar" style={`width: ${s.width}px; max-width: 100%;`}></div>
+            <span class="spacing-row__value">{s.value}</span>
+          </div>
+        ))}
+      </div>
+
+      <div class="reveal reveal-delay-1" style="margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div style="padding: 28px 32px; background: var(--navy-900); border: 1px solid var(--navy-line); border-radius: var(--r-lg);">
+          <div class="eyebrow" style="margin-bottom: 10px;">Gouttières</div>
+          <p style="font-size: 14px; color: var(--ink-2); line-height: 1.6;">Mobile <strong style="color:var(--gold); font-family: ui-monospace, monospace;">16 px</strong> · Tablette <strong style="color:var(--gold); font-family: ui-monospace, monospace;">24 px</strong> · Desktop <strong style="color:var(--gold); font-family: ui-monospace, monospace;">64 px</strong>. Largeur max du conteneur&nbsp;: <strong style="color:var(--gold); font-family: ui-monospace, monospace;">1240 px</strong>.</p>
+        </div>
+        <div style="padding: 28px 32px; background: var(--navy-900); border: 1px solid var(--navy-line); border-radius: var(--r-lg);">
+          <div class="eyebrow" style="margin-bottom: 10px;">Rythme vertical</div>
+          <p style="font-size: 14px; color: var(--ink-2); line-height: 1.6;">Entre sections <strong style="color:var(--gold); font-family: ui-monospace, monospace;">120 px</strong>, entre blocs <strong style="color:var(--gold); font-family: ui-monospace, monospace;">56 px</strong>, entre éléments d'une liste <strong style="color:var(--gold); font-family: ui-monospace, monospace;">12 px</strong>. Toujours en multiples de 4.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 — RAYONS -->
+  <section class="ds-section" id="rayons" style="background: var(--navy-900);">
+    <div class="container">
+      <div class="ds-section__head reveal">
+        <span class="ds-section__num">06</span>
+        <div>
+          <h2 class="ds-section__title">Bordures &amp; rayons</h2>
+          <p class="ds-section__lede">Les coins sont arrondis avec parcimonie. Une bordure de <em class="italic" style="color:var(--gold);">1&nbsp;px</em> en navy-line ou en or, jamais plus épaisse. Le rayon traduit la fonction : pilule pour les statuts, 12&nbsp;px pour les cartes, 4&nbsp;px pour les puces.</p>
+        </div>
+      </div>
+
+      <div class="radius-grid reveal">
+        {radiusScale.map((r) => (
+          <div class="radius-card">
+            <div class="radius-demo" style={`border-radius: ${r.radius}px;`}></div>
+            <div>
+              <div class="radius-card__token">{r.token}</div>
+              <div class="radius-card__value">{r.value}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 — OMBRES -->
+  <section class="ds-section" id="ombres" style="background: var(--navy-950);">
+    <div class="container">
+      <div class="ds-section__head reveal">
+        <span class="ds-section__num">07</span>
+        <div>
+          <h2 class="ds-section__title">Élévation &amp; ombres</h2>
+          <p class="ds-section__lede">Sur fond sombre, les ombres ne creusent pas — elles éclairent. Plutôt qu'une ombre portée noire, on utilise un <em class="italic" style="color:var(--gold);">halo subtil</em> teinté or, ou une bordure éclairée sur le bord supérieur.</p>
+        </div>
+      </div>
+
+      <div class="shadow-grid reveal">
+        {shadowScale.map((s) => (
+          <div class="shadow-card" style={`box-shadow: ${s.style};`}>
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.4" style="margin: 0 auto;"><circle cx="12" cy="12" r="9"/></svg>
+            <div class="shadow-card__label">{s.label}</div>
+            <div class="shadow-card__token">{s.token}</div>
+          </div>
+        ))}
+      </div>
+
+      <div class="reveal reveal-delay-1" style="margin-top: 32px; background: var(--navy-900); border: 1px solid var(--navy-line); border-radius: var(--r-lg); padding: 32px 40px;">
+        <div class="eyebrow" style="margin-bottom: 14px;">Filets de lumière</div>
+        <p style="font-size: 14px; color: var(--ink-2); line-height: 1.65; max-width: 70ch;">Le détail signature : un inset <code style="font-family: ui-monospace, monospace; font-size: 12px; color: var(--gold);">0 1px 0 rgba(212,175,122,…)</code> sur le bord supérieur de chaque carte. C'est l'équivalent du filet doré gravé sur la tranche d'un livre relié — invisible au premier regard, déterminant pour la sensation de qualité.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 — ICONOGRAPHIE -->
+  <section class="ds-section" id="iconographie" style="background: var(--navy-900);">
+    <div class="container">
+      <div class="ds-section__head reveal">
+        <span class="ds-section__num">08</span>
+        <div>
+          <h2 class="ds-section__title">Iconographie</h2>
+          <p class="ds-section__lede">Icônes au trait fin <em class="italic" style="color:var(--gold);">(1,4 px stroke)</em>, rondes aux extrémités, dessinées dans une boîte de 24 ou 48&nbsp;px. Toujours monochromes — couleur or sur fond navy, jamais bicolores.</p>
+        </div>
+      </div>
+
+      <div class="icon-set reveal">
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="1"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><span class="icon-cell__name">desktop</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="7" y="2" width="10" height="20" rx="2"/></svg><span class="icon-cell__name">phone</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg><span class="icon-cell__name">search</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14a9 9 0 0118 0"/><line x1="12" y1="14" x2="16" y2="9"/></svg><span class="icon-cell__name">gauge</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L20 5 V11 C20 16 16.5 19.5 12 21 C7.5 19.5 4 16 4 11 V5 Z"/><polyline points="9 12 11 14 15 10"/></svg><span class="icon-cell__name">shield</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21 C4 16 8 14 12 14 C16 14 20 16 20 21"/></svg><span class="icon-cell__name">user</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6 L9 6 L11 8 L21 8 L21 19 L3 19 Z"/></svg><span class="icon-cell__name">folder</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg><span class="icon-cell__name">calendar</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span class="icon-cell__name">mail</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M22 16.9v3a2 2 0 01-2.2 2A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.6a2 2 0 01-.5 2.1L8 9.7a16 16 0 006.3 6.3l1.3-1.3a2 2 0 012.1-.5c.8.3 1.7.5 2.6.6a2 2 0 011.7 2z"/></svg><span class="icon-cell__name">phone-call</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="icon-cell__name">map-pin</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="21"/><line x1="7" y1="21" x2="17" y2="21"/><path d="M7 6 L4 13 H10 Z"/><path d="M17 6 L14 13 H20 Z"/><line x1="7" y1="6" x2="17" y2="6"/></svg><span class="icon-cell__name">scale</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3 H15 L19 7 V21 H6 Z"/><polyline points="15 3 15 7 19 7"/></svg><span class="icon-cell__name">document</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><polyline points="9 14 7 21 12 18 17 21 15 14"/></svg><span class="icon-cell__name">award</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg><span class="icon-cell__name">clock</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg><span class="icon-cell__name">target</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L20 9 L12 21 L4 9 Z"/></svg><span class="icon-cell__name">diamond</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11 V7 a4 4 0 018 0 V11"/></svg><span class="icon-cell__name">lock</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21 L7 17 L17 7 L21 11 L11 21 Z"/></svg><span class="icon-cell__name">pen</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4 V20 L12 18 L20 20 V4 L12 6 Z"/><line x1="12" y1="6" x2="12" y2="18"/></svg><span class="icon-cell__name">book</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 3 14.5 9.5 21 10 16 14.5 17.5 21 12 17.5 6.5 21 8 14.5 3 10 9.5 9.5"/></svg><span class="icon-cell__name">star</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M3 17 L9 11 L13 15 L21 7"/><path d="M15 7 L21 7 L21 13"/></svg><span class="icon-cell__name">trend-up</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="9" r="3.5"/><circle cx="16" cy="10" r="3"/><path d="M2 21 C2 16 5 14 8 14 C11 14 14 16 14 21"/><path d="M14 21 C14 17 17 16 19 16 C20.5 16 22 17 22 21"/></svg><span class="icon-cell__name">users</span></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18 a7 7 0 0114 0 Z"/><line x1="3" y1="20" x2="21" y2="20"/><circle cx="12" cy="6" r="1.5"/></svg><span class="icon-cell__name">cloche</span></div>
+      </div>
+
+      <div class="reveal reveal-delay-1" style="margin-top: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div style="background: var(--navy-950); border: 1px solid var(--navy-line); border-radius: var(--r-lg); padding: 28px 32px;">
+          <div class="eyebrow" style="margin-bottom: 10px; color: var(--gold);">À faire</div>
+          <ul class="checklist">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Trait fin (1,4 px), extrémités rondes</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Une seule couleur, héritée de <code style="font-family: ui-monospace, monospace; color: var(--gold);">currentColor</code></span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Toujours accompagnée d'un label texte</span></li>
+          </ul>
+        </div>
+        <div style="background: var(--navy-950); border: 1px solid var(--navy-line); border-radius: var(--r-lg); padding: 28px 32px;">
+          <div class="eyebrow" style="margin-bottom: 10px; color: rgba(220,130,130,0.9);">À éviter</div>
+          <ul class="checklist">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="rgba(220,130,130,0.8)" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg> <span>Icônes pleines, bicolores ou en dégradé</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="rgba(220,130,130,0.8)" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg> <span>Mélange icône + emoji dans un même chip</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="rgba(220,130,130,0.8)" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg> <span>Icônes purement décoratives sans signification</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 — COMPOSANTS -->
+  <section class="ds-section" id="composants" style="background: var(--navy-950);">
+    <div class="container">
+      <div class="ds-section__head reveal">
+        <span class="ds-section__num">09</span>
+        <div>
+          <h2 class="ds-section__title">Composants</h2>
+          <p class="ds-section__lede">Les briques du système — boutons, formulaires, cartes — assemblées avec retenue. Chacun possède trois états : <em class="italic" style="color:var(--gold);">défaut</em>, <em class="italic" style="color:var(--gold);">survol</em>, <em class="italic" style="color:var(--gold);">focus</em>.</p>
+        </div>
+      </div>
+
+      <div class="shelf reveal">
+        <div class="shelf__label">Boutons</div>
+        <div class="shelf__row">
+          <span class="shelf__cap">Primaire</span>
+          <button class="btn btn--gold">Prendre rendez-vous</button>
+          <button class="btn btn--gold btn--lg">Découvrir nos services</button>
+        </div>
+        <div class="shelf__row">
+          <span class="shelf__cap">Outline</span>
+          <button class="btn btn--outline">En savoir plus</button>
+          <button class="btn btn--outline btn--lg">Choisir cette offre</button>
+        </div>
+        <div class="shelf__row">
+          <span class="shelf__cap">Ghost</span>
+          <button class="btn btn--ghost">Annuler</button>
+        </div>
+        <div class="shelf__row">
+          <span class="shelf__cap">Text link</span>
+          <a class="text-link" href="#">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+
+      <div class="shelf reveal reveal-delay-1">
+        <div class="shelf__label">Champs de formulaire</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 640px;">
+          <div class="form-field"><input type="text" placeholder="Nom complet" /></div>
+          <div class="form-field"><input type="email" placeholder="Adresse e-mail" value="contact@maison-fwurtz.fr" style="border-color: var(--gold); background: rgba(212,175,122,.03); color: var(--ink);" /></div>
+          <div class="form-field" style="grid-column: 1 / -1;"><input type="text" placeholder="Sujet" /></div>
+          <div class="form-field" style="grid-column: 1 / -1;"><textarea placeholder="Votre message" style="min-height: 80px;"></textarea></div>
+        </div>
+        <div class="shelf__row" style="margin-top: 24px;">
+          <span class="shelf__cap">États</span>
+          <span style="font-size: 12px; color: var(--ink-3);">Défaut · Focus (or) · Désactivé · Erreur</span>
+        </div>
+      </div>
+
+      <div class="shelf reveal reveal-delay-2">
+        <div class="shelf__label">Étiquettes &amp; eyebrows</div>
+        <div class="shelf__row">
+          <span class="eyebrow">À propos</span>
+          <span class="eyebrow" style="color: var(--ink-3);">Nos services</span>
+          <span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border: 1px solid var(--gold-line); border-radius: 999px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold);">Nouveau</span>
+          <span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(212,175,122,0.1); border-radius: 999px; font-size: 12px; color: var(--gold);">Premium</span>
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-3" style="margin-top: 32px;">
+        <div class="eyebrow" style="margin-bottom: 20px;">Cartes — gamme</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+          <div class="bigcard">
+            <svg class="bigcard__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="9" width="36" height="24" rx="2"/><line x1="6" y1="14" x2="42" y2="14"/></svg>
+            <h3 class="serif">Carte service</h3>
+            <p>Cartes principales — icône or, titre serif, paragraphe court, lien doré en pied.</p>
+            <a class="text-link" href="#">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </div>
+          <div class="value-card">
+            <svg class="value-card__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="18"/><path d="M24 12 V24 L32 28"/></svg>
+            <h3 class="serif">Carte valeur</h3>
+            <p>Centrée, icône grande, titre court, micro-paragraphe. Pour les listes 3 ou 4 valeurs.</p>
+          </div>
+          <div class="pricing-card">
+            <div class="pricing-card__eyebrow">Carte tarif</div>
+            <h3 class="serif">Audit</h3>
+            <div class="pricing-card__price">500€</div>
+            <span class="pricing-card__price-unit">Paiement unique</span>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> Inclusion 1</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> Inclusion 2</li>
+            </ul>
+            <a class="btn btn--outline" href="#">Choisir cette offre</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-4" style="margin-top: 48px;">
+        <div class="eyebrow" style="margin-bottom: 20px;">Anatomie d'une carte</div>
+        <table class="token-table">
+          <thead>
+            <tr><th>Propriété</th><th>Valeur</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>background</td><td>var(--navy-900)</td><td>Toujours plus clair que le fond de section</td></tr>
+            <tr><td>border</td><td>1px solid var(--navy-line)</td><td>Hairline navy chaud, jamais cool grey</td></tr>
+            <tr><td>border-radius</td><td>var(--r-lg) — 12 px</td><td>4 px pour les éléments internes (puces)</td></tr>
+            <tr><td>padding</td><td>32px 36px (desktop)</td><td>24px 28px en mobile</td></tr>
+            <tr><td>icon color</td><td>var(--gold)</td><td>Stroke 1,2 px ; 36 px de côté</td></tr>
+            <tr><td>title</td><td>22px / Cormorant 500</td><td>Italique réservé aux mots-clés</td></tr>
+            <tr><td>hover transform</td><td>translateY(-2px)</td><td>Bordure passe en gold-line</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 — PHOTOGRAPHIE -->
+  <section class="ds-section" id="photographie" style="background: var(--navy-900);">
+    <div class="container">
+      <div class="ds-section__head reveal">
+        <span class="ds-section__num">10</span>
+        <div>
+          <h2 class="ds-section__title">Photographie</h2>
+          <p class="ds-section__lede">Lumière <em class="italic" style="color:var(--gold);">tamisée</em>, dominante navy/ambre, mise en scène posée. La photo est un objet précieux dans un écrin sombre — jamais saturée, jamais souriante de force, toujours composée.</p>
+        </div>
+      </div>
+
+      <div class="photo-direction reveal">
+        {photoDirection.map((p) => (
+          <div class="photo-direction__cell">
+            <div class="photo-direction__caption">
+              <div class="photo-direction__tag">{p.tag}</div>
+              <div class="photo-direction__title" set:html={p.title}></div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="ds-intro reveal reveal-delay-1" style="margin-top: 48px;">
+        <div>
+          <div class="eyebrow" style="margin-bottom: 14px;">Direction</div>
+          <ul class="checklist">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Lumière unique, latérale, golden-hour ou bougie</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Décor sobre — boiseries, mur peint, table en bois sombre</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Palette dominante navy + dorures, vêtements neutres</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Personnes en travail, jamais posées face caméra</span></li>
+          </ul>
+        </div>
+        <div>
+          <div class="eyebrow" style="margin-bottom: 14px;">Traitement</div>
+          <ul class="checklist">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Légèrement désaturé, contraste modéré</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Filet de protection en bas (gradient navy 0 → 40 %)</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Rayon hérité du conteneur (carte 12 px → photo 8 px)</span></li>
+            <li style="grid-template-columns: 22px 1fr; color: var(--ink-4);"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(220,130,130,0.8)" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg> <span>Pas de stock corporate, pas de teal/orange grading</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 — MOUVEMENT -->
+  <section class="ds-section" id="mouvement" style="background: var(--navy-950);">
+    <div class="container">
+      <div class="ds-section__head reveal">
+        <span class="ds-section__num">11</span>
+        <div>
+          <h2 class="ds-section__title">Mouvement</h2>
+          <p class="ds-section__lede">Une animation calme, jamais théâtrale. La courbe est presque toujours <code style="font-family: ui-monospace, monospace; color: var(--gold); font-size: 13px;">cubic-bezier(0.22, 0.61, 0.36, 1)</code> — un ease-out doux, comme une porte qui se referme sans bruit.</p>
+        </div>
+      </div>
+
+      <div class="motion-strip reveal">
+        {motionScale.map((m) => (
+          <div class="motion-card">
+            <span class="motion-card__num">{m.num}<span class="motion-card__unit">ms</span></span>
+            <div class="motion-card__label">{m.label}</div>
+            <div class="motion-card__use">{m.use}</div>
+          </div>
+        ))}
+      </div>
+
+      <div class="reveal reveal-delay-1" style="margin-top: 32px; background: var(--navy-900); border: 1px solid var(--navy-line); border-radius: var(--r-lg); padding: 36px 44px;">
+        <div class="eyebrow" style="margin-bottom: 14px;">Règles</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 28px 56px;">
+          <p style="font-size: 14px; color: var(--ink-2); line-height: 1.7;"><strong style="color: var(--gold);">Pas de bounce, pas de spring.</strong> Nous ne sommes pas un produit jeune-adulte. Un bouton se presse, il ne rebondit pas. Une carte se survole, elle ne saute pas.</p>
+          <p style="font-size: 14px; color: var(--ink-2); line-height: 1.7;"><strong style="color: var(--gold);">Pas de parallaxe agressif.</strong> Le scroll-reveal est subtil : 20 px de glissement vertical et un fade-in. Au-delà, on bascule dans l'effet vitrine — antithèse de la promesse de sérénité.</p>
+          <p style="font-size: 14px; color: var(--ink-2); line-height: 1.7;"><strong style="color: var(--gold);">Le texte ne bouge pas.</strong> Hors transitions de page, le contenu textuel reste stable. Seuls les containers, les boutons et les images peuvent s'animer.</p>
+          <p style="font-size: 14px; color: var(--ink-2); line-height: 1.7;"><strong style="color: var(--gold);">Respecter prefers-reduced-motion.</strong> Toutes les animations doivent être désactivables. La sérénité passe avant le mouvement.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 — VOIX & TON -->
+  <section class="ds-section" id="voix" style="background: var(--navy-900);">
+    <div class="container">
+      <div class="ds-section__head reveal">
+        <span class="ds-section__num">12</span>
+        <div>
+          <h2 class="ds-section__title">Voix &amp; ton</h2>
+          <p class="ds-section__lede">Une voix posée, en français impeccable, qui <em class="italic" style="color:var(--gold);">vouvoie</em> avec chaleur. Le rythme est celui d'une lettre soignée : phrases courtes, mots choisis, ponctuation respectée.</p>
+        </div>
+      </div>
+
+      <div class="reveal" style="background: var(--navy-950); border: 1px solid var(--navy-line); border-radius: var(--r-lg); padding: 48px 56px; margin-bottom: 32px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;">
+          {voicePrinciples.map((v) => (
+            <div>
+              <div style="font-family: var(--font-serif); font-size: 28px; color: var(--gold); font-style: italic; margin-bottom: 8px;">{v.title}</div>
+              <p style="font-size: 13.5px; color: var(--ink-3); line-height: 1.6;">{v.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="voice-grid reveal reveal-delay-1">
+        <div class="voice-card voice-card--do">
+          <div class="voice-card__tag">À écrire</div>
+          <p class="voice-card__quote">« Échangeons sur vos besoins et construisons ensemble la meilleure solution. »</p>
+          <div class="voice-card__note">Invitation au dialogue, posture d'alliée. Le « nous » inclut le client dans la démarche.</div>
+        </div>
+        <div class="voice-card voice-card--dont">
+          <div class="voice-card__tag">À éviter</div>
+          <p class="voice-card__quote">« Boostez votre business avec nos solutions clé en main 🚀 »</p>
+          <div class="voice-card__note">Anglicismes, jargon SaaS, emoji startup. Tout ce que nous ne sommes pas.</div>
+        </div>
+
+        <div class="voice-card voice-card--do">
+          <div class="voice-card__tag">À écrire</div>
+          <p class="voice-card__quote">« Une approche humaine, structurée et sur mesure. »</p>
+          <div class="voice-card__note">Triade nette, trois adjectifs concrets, rythme respiratoire. Lisible sur une carte de visite.</div>
+        </div>
+        <div class="voice-card voice-card--dont">
+          <div class="voice-card__tag">À éviter</div>
+          <p class="voice-card__quote">« L'écosystème innovant qui révolutionne votre quotidien »</p>
+          <div class="voice-card__note">Mots interdits : écosystème, plateforme, révolutionner, disruptif, leverage.</div>
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-2" style="margin-top: 32px; background: var(--navy-950); border: 1px solid var(--navy-line); border-radius: var(--r-lg); padding: 40px 44px;">
+        <div class="eyebrow" style="margin-bottom: 24px;">Typographie française</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px 48px;">
+          <div>
+            <div style="font-family: var(--font-serif); font-size: 17px; color: var(--ink); font-style: italic; margin-bottom: 4px;">Espaces fines insécables</div>
+            <p style="font-size: 13.5px; color: var(--ink-3); line-height: 1.6;">Avant <code style="font-family: ui-monospace, monospace; color: var(--gold);">: ; ? !</code> · « citations »</p>
+          </div>
+          <div>
+            <div style="font-family: var(--font-serif); font-size: 17px; color: var(--ink); font-style: italic; margin-bottom: 4px;">Guillemets français</div>
+            <p style="font-size: 13.5px; color: var(--ink-3); line-height: 1.6;">«&nbsp;les guillemets droits sont interdits&nbsp;»</p>
+          </div>
+          <div>
+            <div style="font-family: var(--font-serif); font-size: 17px; color: var(--ink); font-style: italic; margin-bottom: 4px;">Apostrophes courbes</div>
+            <p style="font-size: 13.5px; color: var(--ink-3); line-height: 1.6;">l'expertise · jamais l'expertise</p>
+          </div>
+          <div>
+            <div style="font-family: var(--font-serif); font-size: 17px; color: var(--ink); font-style: italic; margin-bottom: 4px;">Capitales accentuées</div>
+            <p style="font-size: 13.5px; color: var(--ink-3); line-height: 1.6;">À PROPOS · ÉLÉGANCE · jamais sans accents</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section--tight" style="background: var(--navy-950); padding: 80px 0;">
+    <div class="container">
+      <div class="cta-center reveal">
+        <h2 class="serif">Une charte vivante,<br><em class="italic">en évolution constante.</em></h2>
+        <p class="lead" style="margin: 18px auto 32px; color: var(--ink-3);">Ce système est un dialogue : il s'enrichit, se précise, s'affine au fil des projets.</p>
+        <a class="btn btn--gold btn--lg" href="#" data-open-rdv>Discuter du système</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
