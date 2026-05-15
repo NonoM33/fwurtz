@@ -1167,13 +1167,15 @@ p:last-child { margin-bottom: 0; }
 
   .nav__mobile {
     position: fixed;
-    inset: 64px 0 0;
+    inset: 0;
     background: var(--navy-950);
-    z-index: 49;
-    padding: 32px var(--gutter);
+    z-index: 100;
+    padding: calc(72px + env(safe-area-inset-top)) var(--gutter) calc(24px + env(safe-area-inset-bottom));
     display: none;
     flex-direction: column;
     gap: 4px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .nav__mobile.is-open { display: flex; }
   .nav__mobile a {

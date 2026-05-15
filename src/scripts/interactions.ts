@@ -19,18 +19,28 @@ function initMobileMenu(): void {
   const toggle = document.querySelector<HTMLButtonElement>(".nav__toggle");
   const mobile = document.querySelector<HTMLElement>(".nav__mobile");
   if (!toggle || !mobile) return;
+  const open = (): void => {
+    mobile.classList.add("is-open");
+    mobile.setAttribute("aria-hidden", "false");
+    toggle.setAttribute("aria-expanded", "true");
+    document.body.style.overflow = "hidden";
+  };
+  const close = (): void => {
+    mobile.classList.remove("is-open");
+    mobile.setAttribute("aria-hidden", "true");
+    toggle.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
+  };
   toggle.addEventListener("click", () => {
-    const open = mobile.classList.toggle("is-open");
-    toggle.setAttribute("aria-expanded", String(open));
-    document.body.style.overflow = open ? "hidden" : "";
+    if (mobile.classList.contains("is-open")) close();
+    else open();
   });
   mobile.querySelectorAll("a").forEach((a) =>
-    a.addEventListener("click", () => {
-      mobile.classList.remove("is-open");
-      toggle.setAttribute("aria-expanded", "false");
-      document.body.style.overflow = "";
-    }),
+    a.addEventListener("click", close),
   );
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && mobile.classList.contains("is-open")) close();
+  });
 }
 
 function initScrollReveal(): void {

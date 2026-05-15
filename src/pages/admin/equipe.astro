@@ -1,0 +1,368 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+
+const body = `
+
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Équipe <em>& accès</em></h1>
+      <p class="admin-page-head__sub">4 personnes actives · 1 invitation en attente · gérez finement les permissions par rôle.</p>
+    </div>
+    <div class="admin-page-head__actions">
+      <button class="btn-admin btn-admin--ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12 v6 a2 2 0 002 2 h14 a2 2 0 002-2 v-6"/><polyline points="7 8 12 3 17 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Exporter la liste</button>
+      <button class="btn-admin btn-admin--primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Inviter une personne</button>
+    </div>
+  </div>
+
+  <!-- Stats row -->
+  <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 24px;">
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">Personnes actives</span></div>
+      <div class="kpi__value"><em>4</em></div>
+      <div class="kpi__delta" style="color: var(--ink-3);">3 commerciaux · 1 éditrice</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">En ligne</span></div>
+      <div class="kpi__value" style="color: #6BCB77;"><em>3</em></div>
+      <div class="kpi__delta" style="color: #6BCB77;">●&nbsp;maintenant</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">Invitations en attente</span></div>
+      <div class="kpi__value"><em>1</em></div>
+      <div class="kpi__delta" style="color: var(--gold);">depuis 2 jours</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">Rôles personnalisés</span></div>
+      <div class="kpi__value"><em>5</em></div>
+      <div class="kpi__delta" style="color: var(--ink-3);">3 personnalisables</div>
+    </div>
+  </div>
+
+  <!-- Team members -->
+  <div class="card" style="margin-bottom: 24px;">
+    <div class="card__head">
+      <div>
+        <h3 class="card__title">Membres de l'<em>équipe</em></h3>
+        <div class="card__sub">Personnes ayant accès au back-office</div>
+      </div>
+      <div class="tabs">
+        <button class="tabs__tab is-active">Actifs (4)</button>
+        <button class="tabs__tab">En attente (1)</button>
+        <button class="tabs__tab">Archivés (2)</button>
+      </div>
+    </div>
+    <div class="card__body card__body--flush">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Personne</th>
+            <th>Rôle</th>
+            <th>Spécialité</th>
+            <th>Opportunités attribuées</th>
+            <th>Dernière connexion</th>
+            <th>Statut</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="tbl__primary">
+                <div class="tbl__avatar">SF</div>
+                <div>
+                  <div class="tbl__name">Sophie Fwurtz <span style="color: var(--gold); font-size: 11px; margin-left: 6px; font-weight: 400; font-family: var(--font-sans);">(vous)</span></div>
+                  <div class="tbl__meta">sophie@maison-fwurtz.fr</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="role-badge role-badge--admin">★ Administratrice</span></td>
+            <td><span style="font-size: 12px; color: var(--ink-3);">Direction & stratégie</span></td>
+            <td><strong style="color: var(--gold); font-family: ui-monospace, monospace;">12</strong></td>
+            <td><span style="color: #6BCB77;">● Maintenant</span></td>
+            <td><span class="badge badge--done">Active</span></td>
+            <td>
+              <div class="row-actions">
+                <button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="tbl__primary">
+                <div class="tbl__avatar" style="font-size: 13px;">CB</div>
+                <div>
+                  <div class="tbl__name">Camille Bauer</div>
+                  <div class="tbl__meta">camille@maison-fwurtz.fr</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="role-badge role-badge--manager">⌁ Manager commerciale</span></td>
+            <td><span style="font-size: 12px; color: var(--ink-3);">Juridique & gestion admin</span></td>
+            <td><strong style="color: var(--gold); font-family: ui-monospace, monospace;">7</strong></td>
+            <td><span style="color: #6BCB77;">● Maintenant</span></td>
+            <td><span class="badge badge--done">Active</span></td>
+            <td>
+              <div class="row-actions">
+                <button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button>
+                <button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="3 6 5 6 21 6"/><path d="M19 6 L18 20 a2 2 0 01-2 2 H8 a2 2 0 01-2-2 L5 6"/></svg></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="tbl__primary">
+                <div class="tbl__avatar" style="font-size: 13px;">LM</div>
+                <div>
+                  <div class="tbl__name">Léa Marchetti</div>
+                  <div class="tbl__meta">lea@maison-fwurtz.fr</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="role-badge role-badge--sales">◇ Commerciale</span></td>
+            <td><span style="font-size: 12px; color: var(--ink-3);">Sites web & digital</span></td>
+            <td><strong style="color: var(--gold); font-family: ui-monospace, monospace;">5</strong></td>
+            <td><span style="color: #6BCB77;">● Maintenant</span></td>
+            <td><span class="badge badge--done">Active</span></td>
+            <td>
+              <div class="row-actions">
+                <button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button>
+                <button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="3 6 5 6 21 6"/><path d="M19 6 L18 20 a2 2 0 01-2 2 H8 a2 2 0 01-2-2 L5 6"/></svg></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="tbl__primary">
+                <div class="tbl__avatar" style="font-size: 13px;">EM</div>
+                <div>
+                  <div class="tbl__name">Élise Mauriac</div>
+                  <div class="tbl__meta">elise@maison-fwurtz.fr</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="role-badge role-badge--editor">✎ Éditrice contenu</span></td>
+            <td><span style="font-size: 12px; color: var(--ink-3);">Copywriting & site public</span></td>
+            <td><span style="color: var(--ink-4);">—</span></td>
+            <td>Hier · 17h12</td>
+            <td><span class="badge badge--done">Active</span></td>
+            <td>
+              <div class="row-actions">
+                <button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button>
+                <button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="3 6 5 6 21 6"/><path d="M19 6 L18 20 a2 2 0 01-2 2 H8 a2 2 0 01-2-2 L5 6"/></svg></button>
+              </div>
+            </td>
+          </tr>
+          <tr style="opacity: 0.7;">
+            <td>
+              <div class="tbl__primary">
+                <div class="tbl__avatar" style="font-size: 13px; border-style: dashed; background: transparent;">PG</div>
+                <div>
+                  <div class="tbl__name">Paul Granjean</div>
+                  <div class="tbl__meta">paul.granjean@gmail.com · invité il y a 2 jours</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="role-badge role-badge--sales">◇ Commercial</span></td>
+            <td><span style="font-size: 12px; color: var(--ink-3);">Événementiel</span></td>
+            <td><span style="color: var(--ink-4);">—</span></td>
+            <td><span style="color: var(--ink-4);">Jamais</span></td>
+            <td><span class="badge badge--paused">En attente</span></td>
+            <td>
+              <div class="row-actions">
+                <button class="btn-admin btn-admin--ghost" style="padding: 5px 10px; font-size: 11px;">Renvoyer l'invitation</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Roles & permissions matrix -->
+  <div class="card" style="margin-bottom: 24px;">
+    <div class="card__head">
+      <div>
+        <h3 class="card__title">Permissions par <em>rôle</em></h3>
+        <div class="card__sub">5 rôles disponibles · cliquez sur une cellule pour ajuster</div>
+      </div>
+      <button class="btn-admin btn-admin--ghost" style="padding: 7px 14px; font-size: 12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Créer un rôle</button>
+    </div>
+    <div class="card__body" style="padding: 0;">
+      <div class="permission-matrix">
+        <div class="permission-matrix__head">
+          <div>Fonctionnalité</div>
+          <div style="text-align: center;">Admin</div>
+          <div style="text-align: center;">Manager</div>
+          <div style="text-align: center;">Commercial</div>
+          <div style="text-align: center;">Éditeur</div>
+          <div style="text-align: center;">Lecteur</div>
+        </div>
+
+        <div class="permission-matrix__row">
+          <div class="permission-matrix__feature">Pipeline & opportunités<small>Voir, créer, modifier</small></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell" style="color: var(--ink-3);"><span style="font-family: var(--font-serif); font-style: italic; font-size: 11px;">ses opp.</span></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+          <div class="permission-cell" style="color: var(--ink-3);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M2 12 C5 6 9 4 12 4 C15 4 19 6 22 12 C19 18 15 20 12 20 C9 20 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        </div>
+
+        <div class="permission-matrix__row">
+          <div class="permission-matrix__feature">Conversations conciergerie<small>Lecture et réponse</small></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+          <div class="permission-cell" style="color: var(--ink-3);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M2 12 C5 6 9 4 12 4 C15 4 19 6 22 12 C19 18 15 20 12 20 C9 20 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        </div>
+
+        <div class="permission-matrix__row">
+          <div class="permission-matrix__feature">Relances IA<small>Générer et envoyer</small></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+        </div>
+
+        <div class="permission-matrix__row">
+          <div class="permission-matrix__feature">Devis & factures<small>Création et envoi</small></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell" style="color: var(--ink-3);"><span style="font-family: var(--font-serif); font-style: italic; font-size: 11px;">brouillon</span></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+        </div>
+
+        <div class="permission-matrix__row">
+          <div class="permission-matrix__feature">Contenus du site<small>Pages, services, témoignages</small></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell" style="color: var(--ink-3);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M2 12 C5 6 9 4 12 4 C15 4 19 6 22 12 C19 18 15 20 12 20 C9 20 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        </div>
+
+        <div class="permission-matrix__row">
+          <div class="permission-matrix__feature">Statistiques globales<small>KPIs équipe et CA</small></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell" style="color: var(--ink-3);"><span style="font-family: var(--font-serif); font-style: italic; font-size: 11px;">ses chiffres</span></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+        </div>
+
+        <div class="permission-matrix__row">
+          <div class="permission-matrix__feature">Équipe & permissions<small>Inviter, modifier rôles</small></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+        </div>
+
+        <div class="permission-matrix__row">
+          <div class="permission-matrix__feature">Paramètres & marque<small>Identité, intégrations</small></div>
+          <div class="permission-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="5 12 10 17 19 8"/></svg></div>
+          <div class="permission-cell" style="color: var(--ink-3);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M2 12 C5 6 9 4 12 4 C15 4 19 6 22 12 C19 18 15 20 12 20 C9 20 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+          <div class="permission-cell permission-cell--no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card__foot">
+      <div style="display: flex; gap: 18px; font-size: 11px; color: var(--ink-3); flex-wrap: wrap;">
+        <span style="display: inline-flex; align-items: center; gap: 6px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2" width="14" height="14"><polyline points="5 12 10 17 19 8"/></svg> Autorisé</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M2 12 C5 6 9 4 12 4 C15 4 19 6 22 12 C19 18 15 20 12 20 C9 20 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg> Lecture seule</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="font-family: var(--font-serif); font-style: italic; color: var(--ink-3);">limité</span> Conditionnel</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--admin-line)" stroke-width="2" width="13" height="13"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg> Refusé</span>
+      </div>
+      <button class="btn-admin btn-admin--primary" style="padding: 7px 14px; font-size: 12px;" data-save>Enregistrer les modifications</button>
+    </div>
+  </div>
+
+  <!-- Sales performance leaderboard -->
+  <div class="card">
+    <div class="card__head">
+      <div>
+        <h3 class="card__title">Performance <em>commerciale</em></h3>
+        <div class="card__sub">Comparaison ce mois · pipeline et conversion par personne</div>
+      </div>
+      <div class="tabs">
+        <button class="tabs__tab is-active">Mai</button>
+        <button class="tabs__tab">Q2</button>
+        <button class="tabs__tab">Année</button>
+      </div>
+    </div>
+    <div class="card__body">
+      <table class="tbl" style="width: 100%;">
+        <thead>
+          <tr>
+            <th>Personne</th>
+            <th>Opportunités</th>
+            <th>Valeur pipeline</th>
+            <th>RDV pris</th>
+            <th>Devis envoyés</th>
+            <th>Signés</th>
+            <th>Conversion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="tbl__primary">
+                <div class="tbl__avatar">SF</div>
+                <div><div class="tbl__name">Sophie F.</div></div>
+              </div>
+            </td>
+            <td><strong style="color: var(--ink);">12</strong></td>
+            <td><strong style="color: var(--gold); font-family: var(--font-serif); font-style: italic;">38&nbsp;400&nbsp;€</strong></td>
+            <td>5</td>
+            <td>3</td>
+            <td><strong style="color: #6BCB77;">2</strong></td>
+            <td><strong style="color: var(--gold);">38 %</strong></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="tbl__primary">
+                <div class="tbl__avatar">CB</div>
+                <div><div class="tbl__name">Camille B.</div></div>
+              </div>
+            </td>
+            <td><strong style="color: var(--ink);">7</strong></td>
+            <td><strong style="color: var(--gold); font-family: var(--font-serif); font-style: italic;">18&nbsp;200&nbsp;€</strong></td>
+            <td>3</td>
+            <td>2</td>
+            <td><strong style="color: #6BCB77;">1</strong></td>
+            <td><strong style="color: var(--gold);">29 %</strong></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="tbl__primary">
+                <div class="tbl__avatar">LM</div>
+                <div><div class="tbl__name">Léa M.</div></div>
+              </div>
+            </td>
+            <td><strong style="color: var(--ink);">5</strong></td>
+            <td><strong style="color: var(--gold); font-family: var(--font-serif); font-style: italic;">11&nbsp;800&nbsp;€</strong></td>
+            <td>2</td>
+            <td>1</td>
+            <td><strong style="color: #6BCB77;">—</strong></td>
+            <td><strong style="color: var(--ink-3);">en attente</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+---
+
+<AdminLayout
+  title="Équipe — Maison Fwurtz Admin" active="equipe"
+  breadcrumb="Équipe & rôles"
+  screenLabel="Admin · Équipe"
+>
+  <Fragment set:html={body} />
+</AdminLayout>

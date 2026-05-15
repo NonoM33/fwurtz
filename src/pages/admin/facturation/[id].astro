@@ -1,0 +1,231 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+import { documentsRepo } from "@features/documents/infra/repository.ts";
+import { clientsRepo } from "@features/clients/infra/repository.ts";
+import { STATUS_LABELS, DOCUMENT_STATUSES, formatEur } from "@features/documents/domain/types.ts";
+import type { DocumentStatus } from "@features/documents/domain/types.ts";
+import { initialsOf } from "@features/clients/domain/types.ts";
+
+const id = Astro.params.id;
+const doc = id ? documentsRepo().get(id) : null;
+if (!doc) {
+  return Astro.redirect("/admin/facturation");
+}
+const client = clientsRepo().get(doc.clientId);
+
+function badgeClassFor(status: DocumentStatus): string {
+  switch (status) {
+    case "paye": case "accepte": return "badge badge--done";
+    case "envoye": return "badge badge--ongoing";
+    case "retard": return "badge badge--alert";
+    case "brouillon": return "badge badge--draft";
+    default: return "badge badge--paused";
+  }
+}
+---
+
+<AdminLayout
+  title={`${doc.number} — Maison Fwurtz Admin`}
+  active="facturation"
+  breadcrumb={`Facturation / ${doc.number}`}
+  screenLabel="Admin · Détail"
+>
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">
+        <span style="font-family: ui-monospace, monospace; color: var(--gold); font-size: 28px;">{doc.number}</span>
+      </h1>
+      <p class="admin-page-head__sub">
+        {doc.type === "facture" ? "Facture" : "Devis"} · {client?.name ?? "—"}
+        {client?.org && ` · ${client.org}`}
+      </p>
+    </div>
+    <div class="admin-page-head__actions">
+      <a class="btn-admin btn-admin--ghost" href="/admin/facturation">← Retour</a>
+      <select class="btn-admin btn-admin--ghost" id="status-select" style="padding: 8px 16px;">
+        {DOCUMENT_STATUSES.map((s) => <option value={s} selected={s === doc.status}>{STATUS_LABELS[s]}</option>)}
+      </select>
+      <button class="btn-admin btn-admin--danger" id="del-btn">Supprimer</button>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 320px; gap: 16px;">
+    <div>
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card__head">
+          <div>
+            <h3 class="card__title">Lignes</h3>
+            <div class="card__sub">Modifier les lignes recalcule HT / TTC automatiquement</div>
+          </div>
+        </div>
+        <div class="card__body">
+          <div id="lines-container"></div>
+          <button class="btn-admin btn-admin--ghost" id="add-line" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;">+ Ligne</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card__head">
+          <div><h3 class="card__title">Notes & dates</h3></div>
+        </div>
+        <div class="card__body">
+          <div class="form-grid">
+            <div class="form-row">
+              <div><div class="form-label">TVA (%)</div></div>
+              <div><input class="input-admin" id="f-vat" type="number" min="0" max="100" step="0.5" value={doc.vatRateBps / 100} style="max-width: 100px;" /></div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-label">Émis le / échéance</div></div>
+              <div class="input-group">
+                <input class="input-admin" id="f-emitted" type="date" value={doc.emittedAt?.slice(0, 10) ?? ""} />
+                <input class="input-admin" id="f-due" type="date" value={doc.dueAt?.slice(0, 10) ?? ""} />
+              </div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-label">Notes</div></div>
+              <div><textarea class="input-admin" id="f-notes" rows="3">{doc.notes ?? ""}</textarea></div>
+            </div>
+          </div>
+        </div>
+        <div class="card__foot">
+          <span id="save-error" style="color: #E67878; font-size: 12.5px;"></span>
+          <div style="display: flex; gap: 8px; margin-left: auto;">
+            <button class="btn-admin btn-admin--primary" id="save-btn">Enregistrer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="client-card" style="position: sticky; top: calc(var(--topbar-h) + 32px);">
+      <div class="client-card__cover"></div>
+      <div class="client-card__inner">
+        <div class="client-card__avatar" style="font-size: 22px;">
+          {client ? initialsOf(client.name) : "?"}
+        </div>
+        <h2 class="client-card__name">{client?.name ?? "—"}</h2>
+        <div class="client-card__org">{client?.org ?? ""}</div>
+
+        <div class="client-card__stage">
+          <span class={badgeClassFor(doc.status)} id="status-badge">{STATUS_LABELS[doc.status]}</span>
+        </div>
+
+        <div class="client-card__meta">
+          <div class="client-card__meta-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2v20M2 12h20"/></svg>
+            <div>
+              <div class="client-card__meta-label">Total HT</div>
+              <div style="font-family: var(--font-serif); color: var(--ink); font-size: 18px;" id="display-ht">{formatEur(doc.amountHtCents)}</div>
+            </div>
+          </div>
+          <div class="client-card__meta-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/></svg>
+            <div>
+              <div class="client-card__meta-label">Total TTC</div>
+              <div style="font-family: var(--font-serif); color: var(--gold); font-size: 22px; font-style: italic;" id="display-ttc">{formatEur(doc.amountTtcCents)}</div>
+            </div>
+          </div>
+        </div>
+
+        {client && (
+          <div class="client-card__actions">
+            <a class="btn-admin btn-admin--ghost" href={`/admin/clients/${client.id}`}>Voir le client →</a>
+          </div>
+        )}
+      </div>
+    </aside>
+  </div>
+
+  <script is:inline define:vars={{ docId: doc.id, initialLines: doc.lines, initialVat: doc.vatRateBps }}>
+    const linesContainer = document.getElementById("lines-container");
+
+    function fmtEur(cents) {
+      return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(cents / 100);
+    }
+    function addLine(label = "", qty = 1, price = 0) {
+      const row = document.createElement("div");
+      row.className = "input-group";
+      row.style.gridTemplateColumns = "2.5fr 0.7fr 1fr 32px";
+      row.style.marginBottom = "8px";
+      row.innerHTML = `
+        <input class="input-admin line-label" placeholder="Description"/>
+        <input class="input-admin line-qty" type="number" min="0" step="0.5"/>
+        <input class="input-admin line-price" type="number" min="0" step="0.01" placeholder="€ HT/unité"/>
+        <button type="button" class="btn-admin btn-admin--ghost" style="padding: 0; min-width: 32px;">×</button>
+      `;
+      row.querySelector(".line-label").value = label;
+      row.querySelector(".line-qty").value = String(qty);
+      row.querySelector(".line-price").value = String(price);
+      row.querySelector("button").addEventListener("click", () => { row.remove(); recalc(); });
+      row.addEventListener("input", recalc);
+      linesContainer.appendChild(row);
+    }
+    function readLines() {
+      const lines = [];
+      linesContainer.querySelectorAll(".input-group").forEach((row) => {
+        lines.push({
+          label: row.querySelector(".line-label").value.trim(),
+          qty: Number(row.querySelector(".line-qty").value || 0),
+          unitPriceCents: Math.round(Number(row.querySelector(".line-price").value || 0) * 100),
+        });
+      });
+      return lines;
+    }
+    function recalc() {
+      const lines = readLines();
+      const ht = lines.reduce((s, l) => s + Math.round(l.qty * l.unitPriceCents), 0);
+      const vatBps = Math.round(Number(document.getElementById("f-vat").value || 0) * 100);
+      const ttc = Math.round(ht * (1 + vatBps / 10000));
+      document.getElementById("display-ht").textContent = fmtEur(ht);
+      document.getElementById("display-ttc").textContent = fmtEur(ttc);
+    }
+
+    initialLines.forEach((l) => addLine(l.label, l.qty, l.unitPriceCents / 100));
+    if (initialLines.length === 0) addLine();
+    document.getElementById("add-line").addEventListener("click", () => { addLine(); recalc(); });
+    document.getElementById("f-vat").addEventListener("input", recalc);
+
+    document.getElementById("save-btn").addEventListener("click", async () => {
+      const errorEl = document.getElementById("save-error");
+      errorEl.textContent = "";
+      const payload = {
+        lines: readLines().filter((l) => l.label),
+        vatRateBps: Math.round(Number(document.getElementById("f-vat").value || 0) * 100),
+        emittedAt: document.getElementById("f-emitted").value || null,
+        dueAt: document.getElementById("f-due").value || null,
+        notes: document.getElementById("f-notes").value.trim() || null,
+      };
+      const r = await fetch("/api/admin/documents/" + encodeURIComponent(docId), {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok) { errorEl.textContent = "Échec (" + r.status + ")."; return; }
+      const data = await r.json();
+      document.getElementById("display-ht").textContent = fmtEur(data.document.amountHtCents);
+      document.getElementById("display-ttc").textContent = fmtEur(data.document.amountTtcCents);
+      const btn = document.getElementById("save-btn");
+      const orig = btn.textContent;
+      btn.textContent = "✓ Enregistré";
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    });
+
+    document.getElementById("status-select").addEventListener("change", async (e) => {
+      const newStatus = e.target.value;
+      const r = await fetch("/api/admin/documents/" + encodeURIComponent(docId), {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!r.ok) { alert("Échec."); return; }
+      window.location.reload();
+    });
+
+    document.getElementById("del-btn").addEventListener("click", async () => {
+      if (!confirm("Supprimer définitivement ce document ?")) return;
+      const r = await fetch("/api/admin/documents/" + encodeURIComponent(docId), { method: "DELETE", headers: { "content-type": "application/json" } });
+      if (!r.ok) { alert("Échec."); return; }
+      window.location.href = "/admin/facturation";
+    });
+  </script>
+</AdminLayout>

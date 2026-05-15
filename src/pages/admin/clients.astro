@@ -1,0 +1,259 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+import { clientsRepo } from "@features/clients/infra/repository.ts";
+import { initialsOf, STAGE_LABELS, CLIENT_STAGES, CLIENT_SOURCES } from "@features/clients/domain/types.ts";
+
+const url = Astro.url;
+const q = url.searchParams.get("q") ?? "";
+const stageFilter = url.searchParams.get("stage") ?? "";
+
+type ListFilter = Parameters<ReturnType<typeof clientsRepo>["list"]>[0];
+const listFilter: NonNullable<ListFilter> = {};
+if (q) listFilter.q = q;
+if (stageFilter && (CLIENT_STAGES as readonly string[]).includes(stageFilter)) {
+  listFilter.stage = stageFilter as (typeof CLIENT_STAGES)[number];
+}
+
+const clients = clientsRepo().list(listFilter);
+const counts = clientsRepo().countByStage();
+const total = Object.values(counts).reduce((s, n) => s + n, 0);
+---
+
+<AdminLayout
+  title="Clients — Maison Fwurtz Admin"
+  active="clients"
+  breadcrumb="Clients"
+  screenLabel="Admin · Clients"
+>
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Clients <em>& prospects</em></h1>
+      <p class="admin-page-head__sub">
+        {total} fiches · {counts.client} client{counts.client > 1 ? "s" : ""}
+        · {counts.proposal} proposition{counts.proposal > 1 ? "s" : ""} en cours
+        · {counts.prospect + counts.qualified} prospect{counts.prospect + counts.qualified > 1 ? "s" : ""}
+      </p>
+    </div>
+    <div class="admin-page-head__actions">
+      <a class="btn-admin btn-admin--ghost" href="/admin/crm">Vue Pipeline →</a>
+      <button class="btn-admin btn-admin--primary" id="new-cli-btn">+ Nouveau client</button>
+    </div>
+  </div>
+
+  <div class="card" id="form-card" style="display: none; margin-bottom: 16px;">
+    <div class="card__head">
+      <div>
+        <h3 class="card__title" id="form-title">Nouveau <em>client</em></h3>
+        <div class="card__sub">Renseignez le nom et l'étape, le reste est optionnel</div>
+      </div>
+      <div class="card__actions">
+        <button class="btn-admin btn-admin--ghost" id="form-cancel">Annuler</button>
+      </div>
+    </div>
+    <div class="card__body">
+      <form id="cli-form" class="form-grid" onsubmit="return false;">
+        <input type="hidden" id="f-id" />
+        <div class="form-row">
+          <div><div class="form-label">Nom complet</div><div class="form-help">Personne ou contact principal</div></div>
+          <div><input class="input-admin" id="f-name" placeholder="Camille Larue" required /></div>
+        </div>
+        <div class="form-row">
+          <div><div class="form-label">Organisation</div><div class="form-help">Optionnel</div></div>
+          <div><input class="input-admin" id="f-org" placeholder="Atelier Bardin" /></div>
+        </div>
+        <div class="form-row">
+          <div><div class="form-label">Email & téléphone</div></div>
+          <div class="input-group">
+            <input class="input-admin" id="f-email" type="email" placeholder="contact@…" />
+            <input class="input-admin" id="f-phone" placeholder="+33 6 …" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div><div class="form-label">Étape & source</div><div class="form-help">Étape du pipeline + canal d'acquisition</div></div>
+          <div class="input-group">
+            <select class="input-admin" id="f-stage">
+              {CLIENT_STAGES.map((s) => <option value={s}>{STAGE_LABELS[s]}</option>)}
+            </select>
+            <select class="input-admin" id="f-source">
+              {CLIENT_SOURCES.map((s) => <option value={s}>{s}</option>)}
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div><div class="form-label">Score</div><div class="form-help">0-100 (manuel pour l'instant)</div></div>
+          <div><input class="input-admin" id="f-score" type="number" min="0" max="100" value="50" style="max-width: 100px;" /></div>
+        </div>
+        <div class="form-row">
+          <div><div class="form-label">Notes</div><div class="form-help">Contexte, prochaine action, etc.</div></div>
+          <div><textarea class="input-admin" id="f-notes" rows="3"></textarea></div>
+        </div>
+      </form>
+    </div>
+    <div class="card__foot">
+      <span id="form-error" style="color: #E67878; font-size: 12.5px;"></span>
+      <div style="display: flex; gap: 8px; margin-left: auto;">
+        <button class="btn-admin btn-admin--primary" id="form-save">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="crm-toolbar">
+    <form method="get" style="display: flex; gap: 8px; align-items: center; flex: 1;">
+      <input class="input-admin" name="q" value={q} placeholder="Rechercher par nom, email, organisation…" style="flex: 1; max-width: 360px;" />
+      <select class="input-admin" name="stage" style="width: 180px;" onchange="this.form.submit()">
+        <option value="">Toutes les étapes</option>
+        {CLIENT_STAGES.map((s) => <option value={s} selected={s === stageFilter}>{STAGE_LABELS[s]} ({counts[s]})</option>)}
+      </select>
+      <button class="btn-admin btn-admin--ghost" type="submit" style="padding: 7px 12px; font-size: 12px;">Filtrer</button>
+      {(q || stageFilter) && <a class="btn-admin btn-admin--ghost" href="/admin/clients" style="padding: 7px 12px; font-size: 12px;">Réinitialiser</a>}
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="card__body card__body--flush">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Contact</th>
+            <th>Source</th>
+            <th>Étape</th>
+            <th>Score</th>
+            <th>Mis à jour</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {clients.length === 0 && (
+            <tr>
+              <td colspan="7">
+                <div class="empty">
+                  <div class="empty__title">Aucun client</div>
+                  <div class="empty__sub">Cliquez sur « Nouveau client » pour commencer.</div>
+                </div>
+              </td>
+            </tr>
+          )}
+          {clients.map((c) => (
+            <tr>
+              <td>
+                <div class="tbl__primary">
+                  <div class="tbl__avatar">{initialsOf(c.name)}</div>
+                  <div>
+                    <a class="tbl__name" href={`/admin/clients/${c.id}`} style="color: var(--ink);">{c.name}</a>
+                    <div class="tbl__meta">{c.org ?? "—"}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div style="font-size: 12px;">
+                  {c.email && <div>{c.email}</div>}
+                  {c.phone && <div style="color: var(--ink-3);">{c.phone}</div>}
+                  {!c.email && !c.phone && <span style="color: var(--ink-4);">—</span>}
+                </div>
+              </td>
+              <td><span class="source"><span class={`source__dot source--${c.source}__dot`}></span>{c.source}</span></td>
+              <td>
+                <span class={`badge ${c.stage === "client" ? "badge--done" : c.stage === "lost" ? "badge--alert" : "badge--ongoing"}`}>
+                  {STAGE_LABELS[c.stage]}
+                </span>
+              </td>
+              <td><span style="font-family: ui-monospace, monospace; color: var(--gold);">{c.score}</span></td>
+              <td style="font-size: 11.5px; color: var(--ink-4); font-family: ui-monospace, monospace;">{c.updatedAt.slice(0, 10)}</td>
+              <td>
+                <div class="row-actions">
+                  <a class="btn-admin btn-admin--ghost" href={`/admin/clients/${c.id}`} style="padding: 5px 10px; font-size: 11px;">Ouvrir</a>
+                  <button class="btn-admin btn-admin--ghost" data-edit={c.id} style="padding: 5px 10px; font-size: 11px;">Éditer</button>
+                  <button class="btn-admin btn-admin--danger" data-delete={c.id} style="padding: 5px 10px; font-size: 11px;">×</button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ items: clients }}>
+    const formCard = document.getElementById("form-card");
+    const errorEl = document.getElementById("form-error");
+    const titleEl = document.getElementById("form-title");
+    const f = (id) => document.getElementById(id);
+    const els = {
+      id: f("f-id"), name: f("f-name"), org: f("f-org"), email: f("f-email"),
+      phone: f("f-phone"), stage: f("f-stage"), source: f("f-source"),
+      score: f("f-score"), notes: f("f-notes"),
+    };
+
+    function showForm(c) {
+      errorEl.textContent = "";
+      if (c) {
+        titleEl.innerHTML = "Modifier <em>" + escapeHtml(c.name) + "</em>";
+        els.id.value = c.id;
+        els.name.value = c.name;
+        els.org.value = c.org || "";
+        els.email.value = c.email || "";
+        els.phone.value = c.phone || "";
+        els.stage.value = c.stage;
+        els.source.value = c.source;
+        els.score.value = String(c.score);
+        els.notes.value = c.notes || "";
+      } else {
+        titleEl.innerHTML = "Nouveau <em>client</em>";
+        els.id.value = "";
+        els.name.value = "";
+        els.org.value = "";
+        els.email.value = "";
+        els.phone.value = "";
+        els.stage.value = "prospect";
+        els.source.value = "autre";
+        els.score.value = "50";
+        els.notes.value = "";
+      }
+      formCard.style.display = "";
+      formCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      els.name.focus();
+    }
+    function escapeHtml(s) { return String(s).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+
+    document.getElementById("new-cli-btn").addEventListener("click", () => showForm(null));
+    document.getElementById("form-cancel").addEventListener("click", () => formCard.style.display = "none");
+    document.getElementById("form-save").addEventListener("click", async () => {
+      const payload = {
+        name: els.name.value.trim(),
+        org: els.org.value.trim() || null,
+        email: els.email.value.trim() || null,
+        phone: els.phone.value.trim() || null,
+        stage: els.stage.value,
+        source: els.source.value,
+        score: Number(els.score.value),
+        notes: els.notes.value.trim() || null,
+      };
+      if (!payload.name) { errorEl.textContent = "Le nom est obligatoire."; return; }
+      const id = els.id.value;
+      const r = await fetch(id ? "/api/admin/clients/" + encodeURIComponent(id) : "/api/admin/clients", {
+        method: id ? "PATCH" : "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok) { errorEl.textContent = "Échec (" + r.status + ")."; return; }
+      window.location.reload();
+    });
+
+    document.querySelectorAll("[data-edit]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const c = items.find((x) => x.id === btn.getAttribute("data-edit"));
+        if (c) showForm(c);
+      });
+    });
+    document.querySelectorAll("[data-delete]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        if (!confirm("Supprimer ce client ?")) return;
+        const r = await fetch("/api/admin/clients/" + encodeURIComponent(btn.getAttribute("data-delete")), { method: "DELETE", headers: { "content-type": "application/json" } });
+        if (!r.ok) { alert("Échec."); return; }
+        window.location.reload();
+      });
+    });
+  </script>
+</AdminLayout>

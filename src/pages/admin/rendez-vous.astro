@@ -1,0 +1,292 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+
+const body = `
+
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Rendez-vous <em>à venir</em></h1>
+      <p class="admin-page-head__sub">12 créneaux planifiés ce mois · 2 demandes en attente de validation</p>
+    </div>
+    <div class="admin-page-head__actions">
+      <div class="tabs" id="view-tabs">
+        <button class="tabs__tab is-active" data-view="month">Mois</button>
+        <button class="tabs__tab" data-view="week">Semaine</button>
+        <button class="tabs__tab" data-view="list">Liste</button>
+      </div>
+      <button class="btn-admin btn-admin--ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 11.5a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7"/><circle cx="12" cy="12" r="9"/></svg> Google Cal</button>
+      <button class="btn-admin btn-admin--primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouveau créneau</button>
+    </div>
+  </div>
+
+  <!-- KPI ROW -->
+  <div class="kpi-grid" style="margin-bottom: 24px;">
+    <div class="kpi"><div class="kpi__head"><span class="kpi__label">Cette semaine</span></div><div class="kpi__value"><em>3</em></div><div class="kpi__delta" style="color: var(--ink-3);">Lun 19 · Mar 20 · Ven 23</div></div>
+    <div class="kpi"><div class="kpi__head"><span class="kpi__label">Ce mois</span></div><div class="kpi__value"><em>12</em></div><div class="kpi__delta kpi__delta--up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5V19"/><path d="M5 12L12 5L19 12"/></svg> +4 vs avril</div></div>
+    <div class="kpi"><div class="kpi__head"><span class="kpi__label">À valider</span></div><div class="kpi__value" style="color: var(--gold);"><em>2</em></div><div class="kpi__delta" style="color: var(--gold);">Demandes en attente</div></div>
+    <div class="kpi"><div class="kpi__head"><span class="kpi__label">Conversion appel → client</span></div><div class="kpi__value"><em>72</em>&nbsp;%</div><div class="kpi__delta kpi__delta--up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5V19"/><path d="M5 12L12 5L19 12"/></svg> +6 pt</div></div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="card" style="margin-bottom: 16px;" id="calendar-card">
+    <div class="cal-toolbar">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div class="cal-nav">
+          <button class="cal-nav__btn" aria-label="Mois précédent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button class="cal-nav__today">Aujourd'hui</button>
+          <button class="cal-nav__btn" aria-label="Mois suivant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
+        <div class="cal-title">Mai <em>2026</em></div>
+      </div>
+      <div class="cal-legend">
+        <span class="cal-legend__item"><span class="cal-legend__dot" style="background: var(--gold);"></span>Rendez-vous confirmé</span>
+        <span class="cal-legend__item"><span class="cal-legend__dot" style="background: #C4B5FD;"></span>En attente</span>
+        <span class="cal-legend__item"><span class="cal-legend__dot" style="background: #8AB4E8;"></span>Interne</span>
+        <span class="cal-legend__item"><span class="cal-legend__dot" style="background: #6BCB77;"></span>Passé</span>
+      </div>
+    </div>
+
+    <!-- MONTH GRID -->
+    <div class="cal-month" id="cal-month-view">
+      <div class="cal-month__head">Lun</div>
+      <div class="cal-month__head">Mar</div>
+      <div class="cal-month__head">Mer</div>
+      <div class="cal-month__head">Jeu</div>
+      <div class="cal-month__head">Ven</div>
+      <div class="cal-month__head">Sam</div>
+      <div class="cal-month__head">Dim</div>
+
+      <!-- Week 1 : 27 avr → 3 mai -->
+      <div class="cal-day cal-day--other"><span class="cal-day__num">27</span></div>
+      <div class="cal-day cal-day--other"><span class="cal-day__num">28</span></div>
+      <div class="cal-day cal-day--other"><span class="cal-day__num">29</span></div>
+      <div class="cal-day cal-day--other"><span class="cal-day__num">30</span></div>
+      <div class="cal-day cal-day--other"><span class="cal-day__num">1</span></div>
+      <div class="cal-day cal-day--other"><span class="cal-day__num">2</span></div>
+      <div class="cal-day cal-day--other"><span class="cal-day__num">3</span></div>
+
+      <!-- Week 2 -->
+      <div class="cal-day">
+        <span class="cal-day__num">4</span>
+        <div class="cal-day__events">
+          <div class="cal-event cal-event--done"><span class="cal-event__dot"></span><span class="cal-event__time">10h</span><span class="cal-event__title">M. Devos</span></div>
+        </div>
+      </div>
+      <div class="cal-day"><span class="cal-day__num">5</span></div>
+      <div class="cal-day">
+        <span class="cal-day__num">6</span>
+        <div class="cal-day__events">
+          <div class="cal-event cal-event--done"><span class="cal-event__dot"></span><span class="cal-event__time">14h</span><span class="cal-event__title">A. Marchand</span></div>
+          <div class="cal-event cal-event--done"><span class="cal-event__dot"></span><span class="cal-event__time">16h</span><span class="cal-event__title">L. Vermeil</span></div>
+        </div>
+      </div>
+      <div class="cal-day"><span class="cal-day__num">7</span></div>
+      <div class="cal-day">
+        <span class="cal-day__num">8</span>
+        <div class="cal-day__events">
+          <div class="cal-event cal-event--done"><span class="cal-event__dot"></span><span class="cal-event__time">11h</span><span class="cal-event__title">R. Boyer</span></div>
+        </div>
+      </div>
+      <div class="cal-day"><span class="cal-day__num">9</span></div>
+      <div class="cal-day"><span class="cal-day__num">10</span></div>
+
+      <!-- Week 3 -->
+      <div class="cal-day"><span class="cal-day__num">11</span></div>
+      <div class="cal-day">
+        <span class="cal-day__num">12</span>
+        <div class="cal-day__events">
+          <div class="cal-event cal-event--done"><span class="cal-event__dot"></span><span class="cal-event__time">9h30</span><span class="cal-event__title">F. Robin</span></div>
+          <div class="cal-event cal-event--internal"><span class="cal-event__dot"></span><span class="cal-event__time">15h</span><span class="cal-event__title">Réunion équipe</span></div>
+        </div>
+      </div>
+      <div class="cal-day">
+        <span class="cal-day__num">13</span>
+        <div class="cal-day__events">
+          <div class="cal-event cal-event--done"><span class="cal-event__dot"></span><span class="cal-event__time">10h</span><span class="cal-event__title">G. Rocher</span></div>
+        </div>
+      </div>
+      <div class="cal-day"><span class="cal-day__num">14</span></div>
+      <div class="cal-day cal-day--today">
+        <span class="cal-day__num">15</span>
+        <div class="cal-day__events">
+          <div class="cal-event cal-event--internal"><span class="cal-event__dot"></span><span class="cal-event__time">17h</span><span class="cal-event__title">Point com.</span></div>
+        </div>
+      </div>
+      <div class="cal-day"><span class="cal-day__num">16</span></div>
+      <div class="cal-day"><span class="cal-day__num">17</span></div>
+
+      <!-- Week 4 -->
+      <div class="cal-day"><span class="cal-day__num">18</span></div>
+      <div class="cal-day">
+        <span class="cal-day__num">19</span>
+        <div class="cal-day__events">
+          <div class="cal-event cal-event--rdv"><span class="cal-event__dot"></span><span class="cal-event__time">10h</span><span class="cal-event__title">J. Hervé</span></div>
+          <div class="cal-event cal-event--rdv"><span class="cal-event__dot"></span><span class="cal-event__time">14h30</span><span class="cal-event__title">É. Dautheville</span></div>
+        </div>
+      </div>
+      <div class="cal-day">
+        <span class="cal-day__num">20</span>
+        <div class="cal-day__events">
+          <div class="cal-event cal-event--rdv"><span class="cal-event__dot"></span><span class="cal-event__time">11h</span><span class="cal-event__title">M. Dubois</span></div>
+        </div>
+      </div>
+      <div class="cal-day">
+        <span class="cal-day__num">21</span>
+        <div class="cal-day__events">
+          <div class="cal-event cal-event--pending"><span class="cal-event__dot"></span><span class="cal-event__time">16h</span><span class="cal-event__title">D. Rondeau</span></div>
+        </div>
+      </div>
+      <div class="cal-day">
+        <span class="cal-day__num">22</span>
+        <div class="cal-day__events">
+          <div class="cal-event cal-event--rdv"><span class="cal-event__dot"></span><span class="cal-event__time">14h</span><span class="cal-event__title">F. Robin</span></div>
+        </div>
+      </div>
+      <div class="cal-day">
+        <span class="cal-day__num">23</span>
+        <div class="cal-day__events">
+          <div class="cal-event cal-event--pending"><span class="cal-event__dot"></span><span class="cal-event__time">10h</span><span class="cal-event__title">C. Larue</span></div>
+          <div class="cal-event cal-event--rdv"><span class="cal-event__dot"></span><span class="cal-event__time">15h</span><span class="cal-event__title">C. Brun</span></div>
+        </div>
+      </div>
+      <div class="cal-day"><span class="cal-day__num">24</span>
+        <div class="cal-day__events">
+          <div class="cal-event cal-event--rdv"><span class="cal-event__dot"></span><span class="cal-event__time">11h</span><span class="cal-event__title">C. Léger</span></div>
+        </div>
+      </div>
+
+      <!-- Week 5 -->
+      <div class="cal-day"><span class="cal-day__num">25</span></div>
+      <div class="cal-day">
+        <span class="cal-day__num">26</span>
+        <div class="cal-day__events">
+          <div class="cal-event cal-event--rdv"><span class="cal-event__dot"></span><span class="cal-event__time">10h</span><span class="cal-event__title">S. Meddah</span></div>
+          <div class="cal-event cal-event--internal"><span class="cal-event__dot"></span><span class="cal-event__time">15h</span><span class="cal-event__title">Réunion équipe</span></div>
+        </div>
+      </div>
+      <div class="cal-day">
+        <span class="cal-day__num">27</span>
+        <div class="cal-day__events">
+          <div class="cal-event cal-event--rdv"><span class="cal-event__dot"></span><span class="cal-event__time">9h30</span><span class="cal-event__title">P. Beaumont</span></div>
+        </div>
+      </div>
+      <div class="cal-day"><span class="cal-day__num">28</span></div>
+      <div class="cal-day">
+        <span class="cal-day__num">29</span>
+        <div class="cal-day__events">
+          <div class="cal-event cal-event--rdv"><span class="cal-event__dot"></span><span class="cal-event__time">14h</span><span class="cal-event__title">L. Vermeil · suivi</span></div>
+        </div>
+      </div>
+      <div class="cal-day"><span class="cal-day__num">30</span></div>
+      <div class="cal-day"><span class="cal-day__num">31</span></div>
+
+    </div>
+  </div>
+
+  <!-- Pending validation -->
+  <div class="card" style="margin-bottom: 16px;">
+    <div class="card__head">
+      <div>
+        <h3 class="card__title">À <em>valider</em></h3>
+        <div class="card__sub">2 demandes reçues via la conciergerie</div>
+      </div>
+      <span class="badge badge--new">2 en attente</span>
+    </div>
+    <div class="card__body card__body--flush">
+      <table class="tbl">
+        <thead>
+          <tr><th>Demandeur</th><th>Sujet</th><th>Créneau</th><th>Format</th><th>Source</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="tbl__primary"><div class="tbl__avatar">CL</div><div><div class="tbl__name">Camille Larue</div><div class="tbl__meta">Atelier Bardin · Lyon</div></div></div></td>
+            <td><span class="tbl__excerpt">Refonte site vitrine</span></td>
+            <td><strong style="color: var(--gold); font-family: var(--font-serif); font-style: italic;">Ven 23 mai · 10h</strong></td>
+            <td>Visio</td>
+            <td><span class="source source--conciergerie"><span class="source__dot"></span>Conciergerie</span></td>
+            <td><div class="row-actions"><button class="btn-admin btn-admin--ghost" style="padding: 6px 12px; font-size: 12px;">Décaler</button><button class="btn-admin btn-admin--primary" style="padding: 6px 12px; font-size: 12px;">Confirmer</button></div></td>
+          </tr>
+          <tr>
+            <td><div class="tbl__primary"><div class="tbl__avatar">DR</div><div><div class="tbl__name">Denis Rondeau</div><div class="tbl__meta">Domaine Saint-Loup</div></div></div></td>
+            <td><span class="tbl__excerpt">Audit administratif</span></td>
+            <td><strong style="color: var(--gold); font-family: var(--font-serif); font-style: italic;">Mar 21 mai · 16h</strong></td>
+            <td>Visio</td>
+            <td><span class="source source--conciergerie"><span class="source__dot"></span>Conciergerie</span></td>
+            <td><div class="row-actions"><button class="btn-admin btn-admin--ghost" style="padding: 6px 12px; font-size: 12px;">Décaler</button><button class="btn-admin btn-admin--primary" style="padding: 6px 12px; font-size: 12px;">Confirmer</button></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Upcoming list -->
+  <div class="card">
+    <div class="card__head">
+      <div>
+        <h3 class="card__title">Prochains <em>rendez-vous</em></h3>
+        <div class="card__sub">Cette semaine et la suivante</div>
+      </div>
+    </div>
+    <div class="card__body card__body--flush">
+      <table class="tbl">
+        <thead><tr><th>Date</th><th>Client</th><th>Sujet</th><th>Format</th><th>Commercial</th><th>Statut</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong style="color: var(--ink); font-family: var(--font-serif); font-style: italic; font-size: 15px;">17/05</strong><br><span style="font-size: 11px; color: var(--ink-4);">Vendredi · 10h00</span></td>
+            <td><div class="tbl__primary"><div class="tbl__avatar">JH</div><div><div class="tbl__name">Julien Hervé</div><div class="tbl__meta">Galerie Saint-Honoré</div></div></div></td>
+            <td>Refonte site — point d'étape #2</td>
+            <td>Visio</td>
+            <td><span class="kcard__owner"><span class="kcard__owner-avatar">SF</span> Sophie</span></td>
+            <td><span class="badge badge--done">Confirmé</span></td>
+            <td><div class="row-actions"><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button></div></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--ink); font-family: var(--font-serif); font-style: italic; font-size: 15px;">19/05</strong><br><span style="font-size: 11px; color: var(--ink-4);">Lundi · 14h30</span></td>
+            <td><div class="tbl__primary"><div class="tbl__avatar">ED</div><div><div class="tbl__name">Émilie Dautheville</div><div class="tbl__meta">Conseil RH indépendante</div></div></div></td>
+            <td>CGV & mentions — finalisation</td>
+            <td>Téléphone</td>
+            <td><span class="kcard__owner"><span class="kcard__owner-avatar">CB</span> Camille</span></td>
+            <td><span class="badge badge--done">Confirmé</span></td>
+            <td><div class="row-actions"><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button></div></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--ink); font-family: var(--font-serif); font-style: italic; font-size: 15px;">21/05</strong><br><span style="font-size: 11px; color: var(--ink-4);">Mardi · 16h00</span></td>
+            <td><div class="tbl__primary"><div class="tbl__avatar">DR</div><div><div class="tbl__name">Denis Rondeau</div><div class="tbl__meta">Domaine Saint-Loup</div></div></div></td>
+            <td>Audit organisationnel</td>
+            <td>Visio</td>
+            <td><span class="kcard__owner"><span class="kcard__owner-avatar">SF</span> Sophie</span></td>
+            <td><span class="badge badge--ongoing">En préparation</span></td>
+            <td><div class="row-actions"><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button></div></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--ink); font-family: var(--font-serif); font-style: italic; font-size: 15px;">22/05</strong><br><span style="font-size: 11px; color: var(--ink-4);">Mercredi · 14h00</span></td>
+            <td><div class="tbl__primary"><div class="tbl__avatar">FR</div><div><div class="tbl__name">François Robin</div><div class="tbl__meta">Architecte</div></div></div></td>
+            <td>Stratégie de présence en ligne</td>
+            <td>Téléphone</td>
+            <td><span class="kcard__owner"><span class="kcard__owner-avatar">LM</span> Léa</span></td>
+            <td><span class="badge badge--done">Confirmé</span></td>
+            <td><div class="row-actions"><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button></div></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--ink); font-family: var(--font-serif); font-style: italic; font-size: 15px;">24/05</strong><br><span style="font-size: 11px; color: var(--ink-4);">Vendredi · 11h00</span></td>
+            <td><div class="tbl__primary"><div class="tbl__avatar">CL</div><div><div class="tbl__name">Carole Léger</div><div class="tbl__meta">Bijouterie familiale</div></div></div></td>
+            <td>Transition digitale · Premium</td>
+            <td>Rendez-vous Paris</td>
+            <td><span class="kcard__owner"><span class="kcard__owner-avatar">SF</span> Sophie</span></td>
+            <td><span class="badge badge--ongoing">En préparation</span></td>
+            <td><div class="row-actions"><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+---
+
+<AdminLayout
+  title="Rendez-vous — Maison Fwurtz Admin" active="rdv"
+  breadcrumb="Rendez-vous"
+  screenLabel="Admin · RDV"
+>
+  <Fragment set:html={body} />
+</AdminLayout>

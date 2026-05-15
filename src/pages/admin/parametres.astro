@@ -1,0 +1,350 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+
+const body = `
+
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Paramètres <em>de la Maison</em></h1>
+      <p class="admin-page-head__sub">Vos informations, votre marque, vos préférences.</p>
+    </div>
+    <div class="admin-page-head__actions">
+      <button class="btn-admin btn-admin--ghost">Annuler</button>
+      <button class="btn-admin btn-admin--primary" data-save>Enregistrer</button>
+    </div>
+  </div>
+
+  <div class="content-grid">
+
+    <aside class="content-nav">
+      <a class="content-nav__item is-active" href="#identite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21 C4 16 8 14 12 14 C16 14 20 16 20 21"/></svg> Identité de la Maison</a>
+      <a class="content-nav__item" href="#coordonnees"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Coordonnées publiques</a>
+      <a class="content-nav__item" href="#marie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 21 L12 17 L17 17 a4 4 0 004-4 V8 a4 4 0 00-4-4 H7 a4 4 0 00-4 4 v5 a4 4 0 004 4 H8 V21Z"/></svg> Conciergerie · Marie</a>
+      <a class="content-nav__item" href="#brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="13" r="2.5"/><circle cx="6.5" cy="13" r="2.5"/></svg> Marque & couleurs</a>
+      <a class="content-nav__item" href="#integrations"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><circle cx="17.5" cy="17.5" r="3.5"/></svg> Intégrations</a>
+      <a class="content-nav__item" href="#notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 18 a7 7 0 0114 0 Z"/><line x1="3" y1="20" x2="21" y2="20"/></svg> Notifications</a>
+      <a class="content-nav__item" href="#equipe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="10" r="3"/><path d="M2 21 C2 16 5 14 9 14 C13 14 16 16 16 21"/></svg> Équipe & accès</a>
+      <div style="height: 1px; background: var(--admin-line); margin: 12px 8px;"></div>
+      <a class="content-nav__item" href="#facturation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="13" rx="1"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Facturation</a>
+      <a class="content-nav__item" href="#danger" style="color: rgba(230, 120, 120, 0.9);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.5" fill="currentColor"/></svg> Zone sensible</a>
+    </aside>
+
+    <div>
+
+      <!-- IDENTITÉ -->
+      <div class="editor-section" id="identite">
+        <div class="editor-section__head">
+          <div><span class="editor-section__title">Identité de la <em>Maison</em></span><span class="editor-section__hint">Visible partout sur le site</span></div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <div><div class="form-label">Nom de la Maison</div></div>
+            <div><input class="input-admin" value="Maison Fwurtz"></div>
+          </div>
+          <div class="form-row">
+            <div><div class="form-label">Tagline</div><div class="form-help">Apparaît sous le logo et en signature</div></div>
+            <div><input class="input-admin" value="Votre alliée au quotidien"></div>
+          </div>
+          <div class="form-row">
+            <div><div class="form-label">Date de fondation</div></div>
+            <div><input class="input-admin" value="2024" style="max-width: 160px;"></div>
+          </div>
+          <div class="form-row">
+            <div><div class="form-label">Description courte</div><div class="form-help">Utilisée en pied de page et pour les partages</div></div>
+            <div><textarea class="input-admin" rows="2">Votre alliée au quotidien pour simplifier, structurer et développer vos projets.</textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COORDONNÉES -->
+      <div class="editor-section" id="coordonnees">
+        <div class="editor-section__head">
+          <div><span class="editor-section__title">Coordonnées <em>publiques</em></span><span class="editor-section__hint">Affichées sur le site, dans les pieds de page et les modaux</span></div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <div><div class="form-label">Téléphone</div></div>
+            <div><input class="input-admin" value="06 21 22 23 24" style="max-width: 240px;"></div>
+          </div>
+          <div class="form-row">
+            <div><div class="form-label">E-mail principal</div></div>
+            <div><input class="input-admin" value="contact@maison-fwurtz.fr"></div>
+          </div>
+          <div class="form-row">
+            <div><div class="form-label">Adresse</div></div>
+            <div><div class="input-group"><input class="input-admin" value="Paris" placeholder="Ville"><input class="input-admin" value="France" placeholder="Pays"></div></div>
+          </div>
+          <div class="form-row">
+            <div><div class="form-label">Horaires</div><div class="form-help">Texte libre, court</div></div>
+            <div><input class="input-admin" value="Du lundi au vendredi · 9h00 – 18h00"></div>
+          </div>
+          <div class="form-row">
+            <div><div class="form-label">Réseaux sociaux</div></div>
+            <div style="display: grid; gap: 10px;">
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 10px; align-items: center;">
+                <svg viewBox="0 0 24 24" fill="currentColor" style="color: var(--gold); width: 18px; height: 18px;"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zM8 17H5.5v-7H8v7z"/></svg>
+                <input class="input-admin" value="linkedin.com/in/sophie-fwurtz">
+              </div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 10px; align-items: center;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="color: var(--gold); width: 18px; height: 18px;"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+                <input class="input-admin" value="@maisonfwurtz">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONCIERGERIE -->
+      <div class="editor-section" id="marie">
+        <div class="editor-section__head">
+          <div><span class="editor-section__title">Conciergerie · <em>Marie</em></span><span class="editor-section__hint">Le widget de discussion intelligent</span></div>
+          <label class="switch"><input type="checkbox" checked><span class="switch__slider"></span></label>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <div><div class="form-label">Prénom de la conciergère</div><div class="form-help">Personnalisable selon votre préférence</div></div>
+            <div><input class="input-admin" value="Marie" style="max-width: 240px;"></div>
+          </div>
+          <div class="form-row">
+            <div><div class="form-label">Délai avant l'invitation</div><div class="form-help">Quand le bandeau apparaît après l'arrivée du visiteur</div></div>
+            <div><input class="input-admin" value="16" style="max-width: 120px;"><span style="color: var(--ink-3); font-size: 13px; margin-left: 10px;">secondes</span></div>
+          </div>
+          <div class="form-row">
+            <div><div class="form-label">Message d'accueil personnalisé</div><div class="form-help">Texte par défaut adapté selon la page visitée</div></div>
+            <div><textarea class="input-admin" rows="3">Bonsoir — je suis Marie, votre interlocutrice chez Maison Fwurtz. Que puis-je faire pour vous ce soir ?</textarea></div>
+          </div>
+          <div class="form-row">
+            <div><div class="form-label">Proposer un RDV après</div></div>
+            <div><input class="input-admin" value="3" style="max-width: 120px;"><span style="color: var(--ink-3); font-size: 13px; margin-left: 10px;">échanges utilisateur</span></div>
+          </div>
+          <div class="form-row">
+            <div><div class="form-label">E-mail des transferts</div><div class="form-help">Adresse qui reçoit les coordonnées capturées</div></div>
+            <div><input class="input-admin" value="contact@maison-fwurtz.fr"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MARQUE -->
+      <div class="editor-section" id="brand">
+        <div class="editor-section__head">
+          <div><span class="editor-section__title">Marque <em>& couleurs</em></span><span class="editor-section__hint">L'identité visuelle. À modifier avec parcimonie.</span></div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <div><div class="form-label">Couleur d'accent</div><div class="form-help">L'or signature. Utilisée sur les boutons, accents, italiques.</div></div>
+            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+              <div style="width: 40px; height: 40px; background: #D4AF7A; border-radius: 8px; border: 2px solid var(--ink); cursor: pointer;"></div>
+              <div style="width: 40px; height: 40px; background: #C9A878; border-radius: 8px; border: 2px solid transparent; cursor: pointer;"></div>
+              <div style="width: 40px; height: 40px; background: #B8945F; border-radius: 8px; border: 2px solid transparent; cursor: pointer;"></div>
+              <div style="width: 40px; height: 40px; background: #E8C896; border-radius: 8px; border: 2px solid transparent; cursor: pointer;"></div>
+              <input class="input-admin" value="#D4AF7A" style="max-width: 140px; font-family: ui-monospace, monospace;">
+            </div>
+          </div>
+          <div class="form-row">
+            <div><div class="form-label">Police de titres</div></div>
+            <div>
+              <select class="input-admin" style="max-width: 360px;">
+                <option>Cormorant Garamond</option>
+                <option>Playfair Display</option>
+                <option>EB Garamond</option>
+                <option>Lora</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div><div class="form-label">Police de texte</div></div>
+            <div>
+              <select class="input-admin" style="max-width: 360px;">
+                <option>Manrope</option>
+                <option>Inter</option>
+                <option>Mulish</option>
+                <option>Work Sans</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div><div class="form-label">Logo & favicon</div><div class="form-help">SVG de préférence, transparent sur fond foncé</div></div>
+            <div>
+              <button class="btn-admin btn-admin--ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Téléverser un nouveau logo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTEGRATIONS -->
+      <div class="editor-section" id="integrations">
+        <div class="editor-section__head">
+          <div><span class="editor-section__title">Intégrations</span><span class="editor-section__hint">Outils connectés à votre Maison</span></div>
+        </div>
+        <div style="display: grid; gap: 8px;">
+
+          <div style="display: grid; grid-template-columns: 44px 1fr auto auto; gap: 16px; align-items: center; padding: 16px 18px; background: var(--admin-surface-2); border: 1px solid var(--admin-line); border-radius: 10px;">
+            <div style="width: 36px; height: 36px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); color: #4285F4; font-weight: 700; font-size: 16px;">G</div>
+            <div>
+              <div style="font-family: var(--font-serif); font-size: 15px; color: var(--ink); font-weight: 500;">Google Calendar</div>
+              <div style="font-size: 11.5px; color: var(--ink-4); margin-top: 2px;">Synchroniser vos rendez-vous · sophie@gmail.com</div>
+            </div>
+            <span class="badge badge--done">Connecté</span>
+            <button class="btn-admin btn-admin--ghost" style="padding: 6px 12px; font-size: 12px;">Configurer</button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 44px 1fr auto auto; gap: 16px; align-items: center; padding: 16px 18px; background: var(--admin-surface-2); border: 1px solid var(--admin-line); border-radius: 10px;">
+            <div style="width: 36px; height: 36px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-sans); color: #FF4500; font-weight: 700; font-size: 13px;">S</div>
+            <div>
+              <div style="font-family: var(--font-serif); font-size: 15px; color: var(--ink); font-weight: 500;">Stripe</div>
+              <div style="font-size: 11.5px; color: var(--ink-4); margin-top: 2px;">Paiements e-books · 3 156 € ce mois</div>
+            </div>
+            <span class="badge badge--done">Connecté</span>
+            <button class="btn-admin btn-admin--ghost" style="padding: 6px 12px; font-size: 12px;">Configurer</button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 44px 1fr auto auto; gap: 16px; align-items: center; padding: 16px 18px; background: var(--admin-surface-2); border: 1px solid var(--admin-line); border-radius: 10px;">
+            <div style="width: 36px; height: 36px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-sans); color: #FF6B6B; font-weight: 700; font-size: 13px;">B</div>
+            <div>
+              <div style="font-family: var(--font-serif); font-size: 15px; color: var(--ink); font-weight: 500;">Brevo (Sendinblue)</div>
+              <div style="font-size: 11.5px; color: var(--ink-4); margin-top: 2px;">Newsletter et e-mails transactionnels</div>
+            </div>
+            <span class="badge badge--paused">Non connecté</span>
+            <button class="btn-admin btn-admin--primary" style="padding: 6px 12px; font-size: 12px;">Connecter</button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 44px 1fr auto auto; gap: 16px; align-items: center; padding: 16px 18px; background: var(--admin-surface-2); border: 1px solid var(--admin-line); border-radius: 10px;">
+            <div style="width: 36px; height: 36px; background: var(--admin-surface-3); border: 1px solid var(--gold-line); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--gold);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 21 L12 17 L17 17 a4 4 0 004-4 V8 a4 4 0 00-4-4 H7 a4 4 0 00-4 4 v5 a4 4 0 004 4 H8 V21Z"/></svg>
+            </div>
+            <div>
+              <div style="font-family: var(--font-serif); font-size: 15px; color: var(--ink); font-weight: 500;">Claude AI <span style="color: var(--gold);">(intégrée)</span></div>
+              <div style="font-size: 11.5px; color: var(--ink-4); margin-top: 2px;">Moteur conversationnel de Marie · 347 échanges ce mois</div>
+            </div>
+            <span class="badge badge--done">Active</span>
+            <button class="btn-admin btn-admin--ghost" style="padding: 6px 12px; font-size: 12px;">Personnaliser</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS -->
+      <div class="editor-section" id="notifications">
+        <div class="editor-section__head">
+          <div><span class="editor-section__title">Notifications</span><span class="editor-section__hint">Comment vous être prévenue</span></div>
+        </div>
+        <div style="display: grid; gap: 2px; background: var(--admin-line); border-radius: 8px; overflow: hidden; border: 1px solid var(--admin-line);">
+          <div style="background: var(--admin-surface-2); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="font-family: var(--font-serif); font-size: 14.5px; color: var(--ink);">Nouveau message dans la conciergerie</div>
+              <div style="font-size: 11.5px; color: var(--ink-4); margin-top: 2px;">E-mail + notification dans l'admin</div>
+            </div>
+            <label class="switch"><input type="checkbox" checked><span class="switch__slider"></span></label>
+          </div>
+          <div style="background: var(--admin-surface-2); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="font-family: var(--font-serif); font-size: 14.5px; color: var(--ink);">Nouveau lead capturé</div>
+              <div style="font-size: 11.5px; color: var(--ink-4); margin-top: 2px;">Envoi de l'e-mail récapitulatif immédiat</div>
+            </div>
+            <label class="switch"><input type="checkbox" checked><span class="switch__slider"></span></label>
+          </div>
+          <div style="background: var(--admin-surface-2); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="font-family: var(--font-serif); font-size: 14.5px; color: var(--ink);">Demande de rendez-vous</div>
+              <div style="font-size: 11.5px; color: var(--ink-4); margin-top: 2px;">SMS + e-mail (pour les urgences)</div>
+            </div>
+            <label class="switch"><input type="checkbox" checked><span class="switch__slider"></span></label>
+          </div>
+          <div style="background: var(--admin-surface-2); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="font-family: var(--font-serif); font-size: 14.5px; color: var(--ink);">Rapport hebdomadaire</div>
+              <div style="font-size: 11.5px; color: var(--ink-4); margin-top: 2px;">Synthèse chiffres et activité chaque lundi à 9h</div>
+            </div>
+            <label class="switch"><input type="checkbox" checked><span class="switch__slider"></span></label>
+          </div>
+          <div style="background: var(--admin-surface-2); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="font-family: var(--font-serif); font-size: 14.5px; color: var(--ink);">Nouveau témoignage</div>
+              <div style="font-size: 11.5px; color: var(--ink-4); margin-top: 2px;">Notification dans l'admin uniquement</div>
+            </div>
+            <label class="switch"><input type="checkbox"><span class="switch__slider"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ÉQUIPE -->
+      <div class="editor-section" id="equipe">
+        <div class="editor-section__head">
+          <div><span class="editor-section__title">Équipe <em>& accès</em></span><span class="editor-section__hint">Qui peut accéder à votre administration</span></div>
+          <button class="btn-admin btn-admin--ghost" style="padding: 7px 14px; font-size: 12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Inviter</button>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>Personne</th><th>Rôle</th><th>Dernière activité</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="tbl__primary">
+                  <div class="tbl__avatar">SF</div>
+                  <div>
+                    <div class="tbl__name">Sophie Fwurtz <span style="color: var(--gold); font-size: 11px; margin-left: 6px;">(vous)</span></div>
+                    <div class="tbl__meta">sophie@maison-fwurtz.fr</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge--new">Administratrice</span></td>
+              <td>En ligne · maintenant</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tbl__primary">
+                  <div class="tbl__avatar" style="font-size: 13px;">CB</div>
+                  <div>
+                    <div class="tbl__name">Camille Bauer</div>
+                    <div class="tbl__meta">camille@maison-fwurtz.fr</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge--ongoing">Éditrice</span></td>
+              <td>Hier · 17h12</td>
+              <td>
+                <div class="row-actions">
+                  <button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button>
+                  <button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="3 6 5 6 21 6"/><path d="M19 6 L18 20 a2 2 0 01-2 2 H8 a2 2 0 01-2-2 L5 6"/></svg></button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ZONE SENSIBLE -->
+      <div class="editor-section" id="danger" style="border-color: rgba(230, 120, 120, 0.25);">
+        <div class="editor-section__head">
+          <div><span class="editor-section__title" style="color: rgba(230, 120, 120, 0.9);">Zone <em>sensible</em></span><span class="editor-section__hint">Actions irréversibles</span></div>
+        </div>
+        <div style="display: grid; gap: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 22px; border: 1px solid rgba(230, 120, 120, 0.2); border-radius: 10px;">
+            <div>
+              <div style="font-family: var(--font-serif); font-size: 15px; color: var(--ink); margin-bottom: 4px;">Exporter toutes vos données</div>
+              <div style="font-size: 12px; color: var(--ink-4);">Archive complète au format ZIP · contenus, médias, conversations, statistiques</div>
+            </div>
+            <button class="btn-admin btn-admin--ghost">Exporter</button>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 22px; border: 1px solid rgba(230, 120, 120, 0.2); border-radius: 10px;">
+            <div>
+              <div style="font-family: var(--font-serif); font-size: 15px; color: var(--ink); margin-bottom: 4px;">Supprimer définitivement le compte</div>
+              <div style="font-size: 12px; color: var(--ink-4);">Cette action ne peut pas être annulée. Toutes vos données seront perdues.</div>
+            </div>
+            <button class="btn-admin btn-admin--danger">Supprimer la Maison</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>`;
+---
+
+<AdminLayout
+  title="Paramètres — Maison Fwurtz Admin" active="parametres"
+  breadcrumb="Paramètres"
+  screenLabel="Admin · Paramètres"
+>
+  <Fragment set:html={body} />
+</AdminLayout>

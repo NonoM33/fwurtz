@@ -7,8 +7,27 @@ interface ImportMetaEnv {
   readonly CONCIERGE_RATE_WINDOW_SECONDS?: string;
   readonly PUBLIC_SITE_URL?: string;
   readonly APP_ENV?: string;
+  readonly ADMIN_EMAIL?: string;
+  readonly ADMIN_PASSWORD?: string;
+  readonly ADMIN_SESSION_SECRET?: string;
+  readonly MEDIA_DIR?: string;
+  readonly APP_ROLE?: "site" | "admin" | "api" | "all";
+  readonly PUBLIC_API_URL?: string;
+  readonly CORS_ALLOWED_ORIGINS?: string;
+  readonly DB_PATH?: string;
+}
+
+declare module "*.sql?raw" {
+  const content: string;
+  export default content;
 }
 
 interface ImportMeta {
   readonly env: ImportMetaEnv;
+}
+
+declare namespace App {
+  interface Locals {
+    adminEmail?: string;
+  }
 }

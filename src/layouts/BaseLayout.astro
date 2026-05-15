@@ -23,6 +23,14 @@ const {
 
 const siteUrl = import.meta.env.PUBLIC_SITE_URL ?? "https://maison-fwurtz.fr";
 const canonical = new URL(Astro.url.pathname, siteUrl).toString();
+
+// When site/admin/api are split into separate Coolify apps, PUBLIC_API_URL
+// points the browser at the backend (e.g. https://api.fwurtz.…). When unset
+// (local dev / monolith), the client falls back to same-origin fetches.
+const apiUrl =
+  import.meta.env.PUBLIC_API_URL ??
+  (typeof process !== "undefined" ? process.env.PUBLIC_API_URL : undefined) ??
+  "";
 ---
 
 <!doctype html>
@@ -38,6 +46,7 @@ const canonical = new URL(Astro.url.pathname, siteUrl).toString();
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta name="theme-color" content="#08111E" />
+    <meta name="x-mf-api-url" content={apiUrl} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

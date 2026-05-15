@@ -1,0 +1,318 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+import { testimonialsRepo } from "@features/testimonials/infra/repository.ts";
+import { initialsOf } from "@features/testimonials/domain/types.ts";
+
+const testimonials = testimonialsRepo().list();
+const counts = {
+  total: testimonials.length,
+  published: testimonials.filter((t) => t.published).length,
+  drafts: testimonials.filter((t) => !t.published).length,
+  featured: testimonials.filter((t) => t.featured).length,
+};
+---
+
+<AdminLayout
+  title="Témoignages — Maison Fwurtz Admin"
+  active="temoignages"
+  breadcrumb="Témoignages"
+  screenLabel="Admin · Témoignages"
+>
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Témoignages</h1>
+      <p class="admin-page-head__sub">
+        {counts.total} au total · <strong style="color: #6BCB77;">{counts.published} publié{counts.published > 1 ? "s" : ""}</strong>
+        · {counts.drafts} brouillon{counts.drafts > 1 ? "s" : ""}
+        · {counts.featured} mis en avant
+      </p>
+    </div>
+    <div class="admin-page-head__actions">
+      <button class="btn-admin btn-admin--primary" id="new-tmn-btn">+ Nouveau témoignage</button>
+    </div>
+  </div>
+
+  <div class="card" id="form-card" style="display: none; margin-bottom: 16px;">
+    <div class="card__head">
+      <div>
+        <h3 class="card__title" id="form-title">Nouveau <em>témoignage</em></h3>
+        <div class="card__sub" id="form-sub">Renseignez les champs puis enregistrez</div>
+      </div>
+      <div class="card__actions">
+        <button class="btn-admin btn-admin--ghost" id="form-cancel">Annuler</button>
+      </div>
+    </div>
+    <div class="card__body">
+      <form id="tmn-form" class="form-grid" onsubmit="return false;">
+        <input type="hidden" id="f-id" />
+        <div class="form-row">
+          <div>
+            <div class="form-label">Auteur</div>
+            <div class="form-help">Le nom affiché sur le site</div>
+          </div>
+          <div>
+            <input class="input-admin" id="f-author-name" placeholder="Camille Larue" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <div class="form-label">Rôle / contexte</div>
+            <div class="form-help">Optionnel — ex. « Fondatrice »</div>
+          </div>
+          <div class="input-group">
+            <input class="input-admin" id="f-author-role" placeholder="Fondatrice" />
+            <input class="input-admin" id="f-author-org" placeholder="Atelier Bardin" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <div class="form-label">Citation</div>
+            <div class="form-help">Sans guillemets, ils sont ajoutés automatiquement</div>
+          </div>
+          <div>
+            <textarea class="input-admin" id="f-quote" rows="4" required></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <div class="form-label">Note</div>
+            <div class="form-help">Étoiles affichées (1 à 5)</div>
+          </div>
+          <div>
+            <input class="input-admin" id="f-rating" type="number" min="1" max="5" value="5" style="max-width: 100px;" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <div class="form-label">Position</div>
+            <div class="form-help">Ordre d'affichage (plus petit = plus tôt)</div>
+          </div>
+          <div>
+            <input class="input-admin" id="f-position" type="number" value="999" style="max-width: 100px;" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <div class="form-label">Statut</div>
+            <div class="form-help">Brouillons invisibles côté site</div>
+          </div>
+          <div style="display: flex; gap: 24px; align-items: center;">
+            <label style="display: inline-flex; align-items: center; gap: 10px; cursor: pointer;">
+              <span class="switch">
+                <input type="checkbox" id="f-published" />
+                <span class="switch__slider"></span>
+              </span>
+              <span>Publié</span>
+            </label>
+            <label style="display: inline-flex; align-items: center; gap: 10px; cursor: pointer;">
+              <span class="switch">
+                <input type="checkbox" id="f-featured" />
+                <span class="switch__slider"></span>
+              </span>
+              <span>Mis en avant</span>
+            </label>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="card__foot">
+      <span id="form-error" style="color: #E67878; font-size: 12.5px;"></span>
+      <div style="display: flex; gap: 8px; margin-left: auto;">
+        <button class="btn-admin btn-admin--primary" id="form-save">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__body card__body--flush">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Auteur</th>
+            <th>Citation</th>
+            <th>Note</th>
+            <th>Statut</th>
+            <th>Position</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tmn-tbody">
+          {testimonials.length === 0 && (
+            <tr>
+              <td colspan="6">
+                <div class="empty">
+                  <div class="empty__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                      <polygon points="12 3 14.5 9 21 9.5 16 14 17.5 21 12 17.5 6.5 21 8 14 3 9.5 9.5 9"></polygon>
+                    </svg>
+                  </div>
+                  <div class="empty__title">Aucun témoignage</div>
+                  <div class="empty__sub">Cliquez sur « Nouveau témoignage » pour commencer.</div>
+                </div>
+              </td>
+            </tr>
+          )}
+          {testimonials.map((t) => (
+            <tr data-id={t.id}>
+              <td>
+                <div class="tbl__primary">
+                  <div class="tbl__avatar">{initialsOf(t.authorName)}</div>
+                  <div>
+                    <div class="tbl__name">{t.authorName}</div>
+                    <div class="tbl__meta">{[t.authorRole, t.authorOrg].filter(Boolean).join(" · ")}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="tbl__excerpt" style="font-style: italic; max-width: 36ch;">
+                  «&nbsp;{t.quote}&nbsp;»
+                </div>
+              </td>
+              <td>
+                <span style="color: var(--gold); font-family: ui-monospace, monospace;">
+                  {"★".repeat(t.rating)}{"☆".repeat(5 - t.rating)}
+                </span>
+              </td>
+              <td>
+                {t.published ? (
+                  <span class="badge badge--done">Publié</span>
+                ) : (
+                  <span class="badge badge--draft">Brouillon</span>
+                )}
+                {t.featured && <span class="badge badge--new" style="margin-left: 4px;">★ Mis en avant</span>}
+              </td>
+              <td style="font-family: ui-monospace, monospace; color: var(--ink-3);">{t.position}</td>
+              <td>
+                <div class="row-actions">
+                  <button class="btn-admin btn-admin--ghost" data-edit={t.id} style="padding: 5px 10px; font-size: 11px;">Éditer</button>
+                  <button class="btn-admin btn-admin--ghost" data-toggle-pub={t.id} style="padding: 5px 10px; font-size: 11px;">
+                    {t.published ? "Dépublier" : "Publier"}
+                  </button>
+                  <button class="btn-admin btn-admin--danger" data-delete={t.id} style="padding: 5px 10px; font-size: 11px;">×</button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ items: testimonials }}>
+    const formCard = document.getElementById("form-card");
+    const form = document.getElementById("tmn-form");
+    const errorEl = document.getElementById("form-error");
+    const titleEl = document.getElementById("form-title");
+    const subEl = document.getElementById("form-sub");
+    const fId = document.getElementById("f-id");
+    const fName = document.getElementById("f-author-name");
+    const fRole = document.getElementById("f-author-role");
+    const fOrg = document.getElementById("f-author-org");
+    const fQuote = document.getElementById("f-quote");
+    const fRating = document.getElementById("f-rating");
+    const fPos = document.getElementById("f-position");
+    const fPub = document.getElementById("f-published");
+    const fFeat = document.getElementById("f-featured");
+
+    function showForm(t) {
+      errorEl.textContent = "";
+      if (t) {
+        titleEl.innerHTML = "Modifier <em>" + escapeHtml(t.authorName) + "</em>";
+        subEl.textContent = "Mise à jour du témoignage";
+        fId.value = t.id;
+        fName.value = t.authorName;
+        fRole.value = t.authorRole || "";
+        fOrg.value = t.authorOrg || "";
+        fQuote.value = t.quote;
+        fRating.value = String(t.rating);
+        fPos.value = String(t.position);
+        fPub.checked = t.published;
+        fFeat.checked = t.featured;
+      } else {
+        titleEl.innerHTML = "Nouveau <em>témoignage</em>";
+        subEl.textContent = "Renseignez les champs puis enregistrez";
+        fId.value = "";
+        form.reset();
+        fRating.value = "5";
+        fPos.value = "999";
+        fPub.checked = true;
+      }
+      formCard.style.display = "";
+      formCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      fName.focus();
+    }
+    function hideForm() {
+      formCard.style.display = "none";
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+    }
+
+    document.getElementById("new-tmn-btn").addEventListener("click", () => showForm(null));
+    document.getElementById("form-cancel").addEventListener("click", hideForm);
+    document.getElementById("form-save").addEventListener("click", async () => {
+      const payload = {
+        authorName: fName.value.trim(),
+        authorRole: fRole.value.trim() || null,
+        authorOrg: fOrg.value.trim() || null,
+        quote: fQuote.value.trim(),
+        rating: Number(fRating.value),
+        position: Number(fPos.value),
+        published: fPub.checked,
+        featured: fFeat.checked,
+      };
+      if (!payload.authorName || !payload.quote) {
+        errorEl.textContent = "Auteur et citation sont obligatoires.";
+        return;
+      }
+      const id = fId.value;
+      const url = id ? "/api/admin/testimonials/" + encodeURIComponent(id) : "/api/admin/testimonials";
+      const method = id ? "PATCH" : "POST";
+      const r = await fetch(url, {
+        method,
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok) {
+        errorEl.textContent = "Échec de l'enregistrement (" + r.status + ").";
+        return;
+      }
+      window.location.reload();
+    });
+
+    document.querySelectorAll("[data-edit]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-edit");
+        const t = items.find((x) => x.id === id);
+        if (t) showForm(t);
+      });
+    });
+    document.querySelectorAll("[data-delete]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const id = btn.getAttribute("data-delete");
+        if (!confirm("Supprimer définitivement ce témoignage ?")) return;
+        const r = await fetch("/api/admin/testimonials/" + encodeURIComponent(id), {
+          method: "DELETE",
+          headers: { "content-type": "application/json" },
+        });
+        if (!r.ok) { alert("Échec de la suppression."); return; }
+        window.location.reload();
+      });
+    });
+    document.querySelectorAll("[data-toggle-pub]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const id = btn.getAttribute("data-toggle-pub");
+        const t = items.find((x) => x.id === id);
+        if (!t) return;
+        const r = await fetch("/api/admin/testimonials/" + encodeURIComponent(id), {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ published: !t.published }),
+        });
+        if (!r.ok) { alert("Échec."); return; }
+        window.location.reload();
+      });
+    });
+  </script>
+</AdminLayout>

@@ -1,0 +1,128 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+import { clientsRepo } from "@features/clients/infra/repository.ts";
+import { initialsOf, STAGE_LABELS, CLIENT_STAGES } from "@features/clients/domain/types.ts";
+
+const clients = clientsRepo().list();
+const counts = clientsRepo().countByStage();
+const total = Object.values(counts).reduce((s, n) => s + n, 0);
+const byStage = Object.fromEntries(
+  CLIENT_STAGES.map((s) => [s, clients.filter((c) => c.stage === s)]),
+) as Record<(typeof CLIENT_STAGES)[number], typeof clients>;
+
+const stageDotClass: Record<(typeof CLIENT_STAGES)[number], string> = {
+  prospect: "kanban__col-dot--prospect",
+  qualified: "kanban__col-dot--qualified",
+  meeting: "kanban__col-dot--meeting",
+  proposal: "kanban__col-dot--proposal",
+  client: "kanban__col-dot--client",
+  lost: "kanban__col-dot--lost",
+};
+---
+
+<AdminLayout
+  title="Pipeline — Maison Fwurtz Admin"
+  active="crm"
+  breadcrumb="Pipeline"
+  screenLabel="Admin · CRM"
+>
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Pipeline <em>commercial</em></h1>
+      <p class="admin-page-head__sub">
+        {total} opportunités · drag & drop pour changer d'étape · cliquez une carte pour ouvrir la fiche
+      </p>
+    </div>
+    <div class="admin-page-head__actions">
+      <a class="btn-admin btn-admin--ghost" href="/admin/clients">Vue liste →</a>
+    </div>
+  </div>
+
+  <div class="kanban">
+    {CLIENT_STAGES.map((stage) => (
+      <div class="kanban__col" data-stage={stage}>
+        <div class="kanban__col-head">
+          <div class="kanban__col-title">
+            <span class={`kanban__col-dot ${stageDotClass[stage]}`}></span>
+            {STAGE_LABELS[stage]}
+          </div>
+          <span class="kanban__col-count">{counts[stage]}</span>
+        </div>
+        <div class="kanban__col-body" data-stage-body={stage}>
+          {byStage[stage].map((c) => (
+            <div class="kcard" draggable="true" data-id={c.id} data-stage={c.stage}>
+              <div class="kcard__head">
+                <div class="kcard__avatar">{initialsOf(c.name)}</div>
+                <div style="min-width: 0;">
+                  <div class="kcard__name">{c.name}</div>
+                  <div class="kcard__meta">{c.org ?? c.source}</div>
+                </div>
+              </div>
+              {c.notes && (
+                <div class="kcard__subject">{c.notes}</div>
+              )}
+              <div class="kcard__foot">
+                <span class="kcard__score">★ {c.score}</span>
+                <a href={`/admin/clients/${c.id}`} style="color: var(--ink-3); font-size: 11px;">Ouvrir →</a>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="kanban__col-foot">{counts[stage]} carte{counts[stage] > 1 ? "s" : ""}</div>
+      </div>
+    ))}
+  </div>
+
+  <script is:inline>
+    let dragged = null;
+
+    document.querySelectorAll(".kcard").forEach((card) => {
+      card.addEventListener("dragstart", (e) => {
+        dragged = card;
+        card.style.opacity = "0.4";
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", card.dataset.id);
+      });
+      card.addEventListener("dragend", () => {
+        card.style.opacity = "";
+        dragged = null;
+      });
+    });
+
+    document.querySelectorAll("[data-stage-body]").forEach((body) => {
+      body.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        body.style.background = "rgba(212, 175, 122, 0.05)";
+      });
+      body.addEventListener("dragleave", () => {
+        body.style.background = "";
+      });
+      body.addEventListener("drop", async (e) => {
+        e.preventDefault();
+        body.style.background = "";
+        if (!dragged) return;
+        const newStage = body.dataset.stageBody;
+        const oldStage = dragged.dataset.stage;
+        if (newStage === oldStage) return;
+        const id = dragged.dataset.id;
+        // optimistic UI
+        body.appendChild(dragged);
+        dragged.dataset.stage = newStage;
+        const r = await fetch("/api/admin/clients/" + encodeURIComponent(id), {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ stage: newStage }),
+        });
+        if (!r.ok) {
+          alert("Échec de la mise à jour. Rechargement…");
+          window.location.reload();
+        } else {
+          // refresh column counts
+          window.location.reload();
+        }
+      });
+    });
+  </script>
+</AdminLayout>

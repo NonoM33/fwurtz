@@ -1,0 +1,174 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+import { clientsRepo } from "@features/clients/infra/repository.ts";
+import { initialsOf, STAGE_LABELS, CLIENT_STAGES, CLIENT_SOURCES } from "@features/clients/domain/types.ts";
+
+const id = Astro.params.id;
+const client = id ? clientsRepo().get(id) : null;
+if (!client) {
+  return Astro.redirect("/admin/clients");
+}
+---
+
+<AdminLayout
+  title={`${client.name} — Maison Fwurtz Admin`}
+  active="clients"
+  breadcrumb={`Clients / ${client.name}`}
+  screenLabel="Admin · Fiche client"
+>
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">{client.name}</h1>
+      <p class="admin-page-head__sub">
+        {client.org ?? "—"} · ajouté le {client.createdAt.slice(0, 10)} · maj {client.updatedAt.slice(0, 10)}
+      </p>
+    </div>
+    <div class="admin-page-head__actions">
+      <a class="btn-admin btn-admin--ghost" href="/admin/clients">← Retour</a>
+      <button class="btn-admin btn-admin--danger" id="del-btn">Supprimer</button>
+    </div>
+  </div>
+
+  <div class="client-detail">
+    <aside class="client-card">
+      <div class="client-card__cover"></div>
+      <div class="client-card__inner">
+        <div class="client-card__avatar">{initialsOf(client.name)}</div>
+        <h2 class="client-card__name">{client.name}</h2>
+        <div class="client-card__org">{client.org ?? "—"}</div>
+
+        <div class="client-card__stage">
+          <span class={`badge ${client.stage === "client" ? "badge--done" : client.stage === "lost" ? "badge--alert" : "badge--ongoing"}`}>
+            {STAGE_LABELS[client.stage]}
+          </span>
+        </div>
+
+        <div class="client-card__meta">
+          {client.email && (
+            <div class="client-card__meta-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+              <a href={`mailto:${client.email}`}>{client.email}</a>
+            </div>
+          )}
+          {client.phone && (
+            <div class="client-card__meta-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 16v3a2 2 0 01-2 2c-9 0-17-8-17-17a2 2 0 012-2h3a1 1 0 011 1l1 4-2 2c1.5 3 4.5 6 7.5 7.5l2-2 4 1a1 1 0 011 1z"/></svg>
+              <a href={`tel:${client.phone}`}>{client.phone}</a>
+            </div>
+          )}
+          <div class="client-card__meta-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+            <span style="font-size: 12px; text-transform: capitalize;">via {client.source}</span>
+          </div>
+          <div class="client-card__meta-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polygon points="12 3 14.5 9 21 9.5 16 14 17.5 21 12 17.5 6.5 21 8 14 3 9.5 9.5 9"/></svg>
+            <span style="font-size: 13px;">Score : <strong style="color: var(--gold);">{client.score}</strong>/100</span>
+          </div>
+        </div>
+
+        <div class="client-card__actions">
+          <button class="btn-admin btn-admin--primary" id="save-btn">Enregistrer</button>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card__head">
+          <div>
+            <h3 class="card__title">Informations</h3>
+            <div class="card__sub">Modifiable inline — clic « Enregistrer » à gauche</div>
+          </div>
+        </div>
+        <div class="card__body">
+          <div class="form-grid">
+            <div class="form-row">
+              <div><div class="form-label">Nom</div></div>
+              <div><input class="input-admin" id="f-name" value={client.name} /></div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-label">Organisation</div></div>
+              <div><input class="input-admin" id="f-org" value={client.org ?? ""} /></div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-label">Email & téléphone</div></div>
+              <div class="input-group">
+                <input class="input-admin" id="f-email" type="email" value={client.email ?? ""} />
+                <input class="input-admin" id="f-phone" value={client.phone ?? ""} />
+              </div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-label">Étape & source</div></div>
+              <div class="input-group">
+                <select class="input-admin" id="f-stage">
+                  {CLIENT_STAGES.map((s) => <option value={s} selected={s === client.stage}>{STAGE_LABELS[s]}</option>)}
+                </select>
+                <select class="input-admin" id="f-source">
+                  {CLIENT_SOURCES.map((s) => <option value={s} selected={s === client.source}>{s}</option>)}
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-label">Score</div></div>
+              <div><input class="input-admin" id="f-score" type="number" min="0" max="100" value={client.score} style="max-width: 100px;" /></div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-label">Notes</div><div class="form-help">Tout contexte utile</div></div>
+              <div><textarea class="input-admin" id="f-notes" rows="6">{client.notes ?? ""}</textarea></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__head">
+          <div>
+            <h3 class="card__title">Activité</h3>
+            <div class="card__sub">Timeline (à venir : conversations Marie, devis, RDV)</div>
+          </div>
+        </div>
+        <div class="card__body">
+          <div class="empty">
+            <div class="empty__title">Pas encore d'activité</div>
+            <div class="empty__sub">Les conversations Marie, devis et RDV s'afficheront ici quand ils seront capturés.</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script is:inline define:vars={{ clientId: client.id }}>
+    document.getElementById("save-btn").addEventListener("click", async () => {
+      const get = (id) => document.getElementById(id);
+      const payload = {
+        name: get("f-name").value.trim(),
+        org: get("f-org").value.trim() || null,
+        email: get("f-email").value.trim() || null,
+        phone: get("f-phone").value.trim() || null,
+        stage: get("f-stage").value,
+        source: get("f-source").value,
+        score: Number(get("f-score").value),
+        notes: get("f-notes").value.trim() || null,
+      };
+      const btn = document.getElementById("save-btn");
+      const orig = btn.textContent;
+      btn.textContent = "Enregistrement…"; btn.disabled = true;
+      const r = await fetch("/api/admin/clients/" + encodeURIComponent(clientId), {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok) { alert("Échec."); btn.textContent = orig; btn.disabled = false; return; }
+      btn.textContent = "✓ Enregistré";
+      setTimeout(() => window.location.reload(), 600);
+    });
+
+    document.getElementById("del-btn").addEventListener("click", async () => {
+      if (!confirm("Supprimer définitivement cette fiche client ?")) return;
+      const r = await fetch("/api/admin/clients/" + encodeURIComponent(clientId), { method: "DELETE", headers: { "content-type": "application/json" } });
+      if (!r.ok) { alert("Échec."); return; }
+      window.location.href = "/admin/clients";
+    });
+  </script>
+</AdminLayout>

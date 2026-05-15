@@ -1,0 +1,308 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+import { resourcesRepo } from "@features/resources/infra/repository.ts";
+import { RESOURCE_TYPES, formatPrice } from "@features/resources/domain/types.ts";
+
+const resources = resourcesRepo().list();
+const totalDownloads = resources.reduce((s, r) => s + r.downloadsCount, 0);
+const counts = {
+  total: resources.length,
+  published: resources.filter((r) => r.published).length,
+};
+---
+
+<AdminLayout
+  title="Ressources — Maison Fwurtz Admin"
+  active="ressources"
+  breadcrumb="Ressources"
+  screenLabel="Admin · Ressources"
+>
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Ressources <em>& e-books</em></h1>
+      <p class="admin-page-head__sub">
+        {counts.total} ressources · <strong style="color: #6BCB77;">{counts.published} publiée{counts.published > 1 ? "s" : ""}</strong>
+        · {totalDownloads} téléchargement{totalDownloads > 1 ? "s" : ""} cumulés
+      </p>
+    </div>
+    <div class="admin-page-head__actions">
+      <button class="btn-admin btn-admin--primary" id="new-res-btn">+ Nouvelle ressource</button>
+    </div>
+  </div>
+
+  <div class="card" id="form-card" style="display: none; margin-bottom: 16px;">
+    <div class="card__head">
+      <div>
+        <h3 class="card__title" id="form-title">Nouvelle <em>ressource</em></h3>
+        <div class="card__sub">URL publique : <code>/ressources#[slug]</code></div>
+      </div>
+      <div class="card__actions">
+        <button class="btn-admin btn-admin--ghost" id="form-cancel">Annuler</button>
+      </div>
+    </div>
+    <div class="card__body">
+      <form id="res-form" class="form-grid" onsubmit="return false;">
+        <input type="hidden" id="f-id" />
+        <div class="form-row">
+          <div>
+            <div class="form-label">Titre</div>
+            <div class="form-help">Affiché en grand sur la carte</div>
+          </div>
+          <div>
+            <input class="input-admin" id="f-title" placeholder="Organisation & Productivité" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <div class="form-label">Type</div>
+            <div class="form-help">Catégorie de ressource</div>
+          </div>
+          <div>
+            <select class="input-admin" id="f-type">
+              {RESOURCE_TYPES.map((t) => <option value={t}>{t}</option>)}
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <div class="form-label">Slug</div>
+            <div class="form-help">Auto-généré si vide</div>
+          </div>
+          <div>
+            <input class="input-admin" id="f-slug" placeholder="organisation-productivite" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <div class="form-label">Résumé</div>
+            <div class="form-help">2-3 phrases descriptives</div>
+          </div>
+          <div>
+            <textarea class="input-admin" id="f-summary" rows="3" required></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <div class="form-label">Prix (€)</div>
+            <div class="form-help">Laisser à 0 pour gratuit</div>
+          </div>
+          <div>
+            <input class="input-admin" id="f-price" type="number" step="0.01" min="0" value="0" style="max-width: 150px;" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <div class="form-label">Lien externe</div>
+            <div class="form-help">URL Stripe / Gumroad / page produit (optionnel)</div>
+          </div>
+          <div>
+            <input class="input-admin" id="f-link" placeholder="https://..." />
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <div class="form-label">Badge & CTA</div>
+            <div class="form-help">Texte de la pastille couverture / bouton</div>
+          </div>
+          <div class="input-group">
+            <input class="input-admin" id="f-badge" placeholder="GUIDE" />
+            <input class="input-admin" id="f-cta" placeholder="Découvrir" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <div class="form-label">Position</div>
+            <div class="form-help">Ordre dans la grille</div>
+          </div>
+          <div>
+            <input class="input-admin" id="f-position" type="number" value="999" style="max-width: 100px;" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <div class="form-label">Statut</div>
+            <div class="form-help">Brouillons cachés du site public</div>
+          </div>
+          <div style="display: flex; gap: 24px; align-items: center;">
+            <label style="display: inline-flex; align-items: center; gap: 10px; cursor: pointer;">
+              <span class="switch">
+                <input type="checkbox" id="f-published" checked />
+                <span class="switch__slider"></span>
+              </span>
+              <span>Publié</span>
+            </label>
+            <label style="display: inline-flex; align-items: center; gap: 10px; cursor: pointer;">
+              <span class="switch">
+                <input type="checkbox" id="f-capture" />
+                <span class="switch__slider"></span>
+              </span>
+              <span>Capturer l'email avant download</span>
+            </label>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="card__foot">
+      <span id="form-error" style="color: #E67878; font-size: 12.5px;"></span>
+      <div style="display: flex; gap: 8px; margin-left: auto;">
+        <button class="btn-admin btn-admin--primary" id="form-save">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__body card__body--flush">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Ressource</th>
+            <th>Type</th>
+            <th>Prix</th>
+            <th>Statut</th>
+            <th>↓</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {resources.map((r) => (
+            <tr>
+              <td>
+                <div class="tbl__primary">
+                  <div class="tbl__avatar" style="font-family: var(--font-serif); font-size: 11px;">
+                    {r.bodyJson.badgeLabel?.slice(0, 3) ?? r.type.slice(0, 3).toUpperCase()}
+                  </div>
+                  <div>
+                    <div class="tbl__name">{r.title}</div>
+                    <div class="tbl__meta tbl__excerpt" style="max-width: 36ch;">{r.summary}</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge--ongoing" style="text-transform: capitalize;">{r.type}</span></td>
+              <td style="font-family: var(--font-serif); font-style: italic; color: var(--gold);">{formatPrice(r.bodyJson.priceCents)}</td>
+              <td>
+                {r.published ? <span class="badge badge--done">Publié</span> : <span class="badge badge--draft">Brouillon</span>}
+              </td>
+              <td style="font-family: ui-monospace, monospace; color: var(--ink-3);">{r.downloadsCount}</td>
+              <td>
+                <div class="row-actions">
+                  <button class="btn-admin btn-admin--ghost" data-edit={r.id} style="padding: 5px 10px; font-size: 11px;">Éditer</button>
+                  <button class="btn-admin btn-admin--ghost" data-toggle-pub={r.id} style="padding: 5px 10px; font-size: 11px;">
+                    {r.published ? "Dépublier" : "Publier"}
+                  </button>
+                  <button class="btn-admin btn-admin--danger" data-delete={r.id} style="padding: 5px 10px; font-size: 11px;">×</button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ items: resources }}>
+    const formCard = document.getElementById("form-card");
+    const errorEl = document.getElementById("form-error");
+    const titleEl = document.getElementById("form-title");
+    const f = (id) => document.getElementById(id);
+    const ids = ["id","title","type","slug","summary","price","link","badge","cta","position","published","capture"];
+    const els = Object.fromEntries(ids.map((k) => [k, f("f-" + k)]));
+
+    function showForm(r) {
+      errorEl.textContent = "";
+      if (r) {
+        titleEl.innerHTML = "Modifier <em>" + escapeHtml(r.title) + "</em>";
+        els.id.value = r.id;
+        els.title.value = r.title;
+        els.type.value = r.type;
+        els.slug.value = r.slug;
+        els.summary.value = r.summary;
+        els.price.value = String((r.bodyJson?.priceCents ?? 0) / 100);
+        els.link.value = r.linkUrl || "";
+        els.badge.value = r.bodyJson?.badgeLabel || "";
+        els.cta.value = r.bodyJson?.ctaLabel || "";
+        els.position.value = String(r.position);
+        els.published.checked = r.published;
+        els.capture.checked = r.captureEmail;
+      } else {
+        titleEl.innerHTML = "Nouvelle <em>ressource</em>";
+        Object.values(els).forEach((el) => { if (el.tagName === "INPUT" && el.type === "checkbox") el.checked = false; else if (el) el.value = ""; });
+        els.type.value = "ebook";
+        els.position.value = "999";
+        els.published.checked = true;
+      }
+      formCard.style.display = "";
+      formCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      els.title.focus();
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+    }
+
+    document.getElementById("new-res-btn").addEventListener("click", () => showForm(null));
+    document.getElementById("form-cancel").addEventListener("click", () => formCard.style.display = "none");
+    document.getElementById("form-save").addEventListener("click", async () => {
+      const priceCents = Math.round(Number(els.price.value || 0) * 100);
+      const payload = {
+        title: els.title.value.trim(),
+        type: els.type.value,
+        slug: els.slug.value.trim(),
+        summary: els.summary.value.trim(),
+        bodyJson: {
+          priceCents: priceCents > 0 ? priceCents : 0,
+          badgeLabel: els.badge.value.trim() || undefined,
+          ctaLabel: els.cta.value.trim() || undefined,
+        },
+        linkUrl: els.link.value.trim() || null,
+        position: Number(els.position.value),
+        published: els.published.checked,
+        captureEmail: els.capture.checked,
+      };
+      if (!payload.title || !payload.summary) {
+        errorEl.textContent = "Titre et résumé sont obligatoires.";
+        return;
+      }
+      const id = els.id.value;
+      const r = await fetch(id ? "/api/admin/resources/" + encodeURIComponent(id) : "/api/admin/resources", {
+        method: id ? "PATCH" : "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok) {
+        const err = await r.json().catch(() => ({}));
+        errorEl.textContent = err.error === "slug_taken" ? "Ce slug est déjà utilisé." : "Échec (" + r.status + ").";
+        return;
+      }
+      window.location.reload();
+    });
+
+    document.querySelectorAll("[data-edit]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const r = items.find((x) => x.id === btn.getAttribute("data-edit"));
+        if (r) showForm(r);
+      });
+    });
+    document.querySelectorAll("[data-delete]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        if (!confirm("Supprimer définitivement cette ressource ?")) return;
+        const r = await fetch("/api/admin/resources/" + encodeURIComponent(btn.getAttribute("data-delete")), { method: "DELETE", headers: { "content-type": "application/json" } });
+        if (!r.ok) { alert("Échec."); return; }
+        window.location.reload();
+      });
+    });
+    document.querySelectorAll("[data-toggle-pub]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const id = btn.getAttribute("data-toggle-pub");
+        const r = items.find((x) => x.id === id);
+        if (!r) return;
+        const resp = await fetch("/api/admin/resources/" + encodeURIComponent(id), {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ published: !r.published }),
+        });
+        if (!resp.ok) { alert("Échec."); return; }
+        window.location.reload();
+      });
+    });
+  </script>
+</AdminLayout>

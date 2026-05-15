@@ -1,0 +1,318 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+import { documentsRepo } from "@features/documents/infra/repository.ts";
+import { clientsRepo } from "@features/clients/infra/repository.ts";
+import { STATUS_LABELS, formatEur } from "@features/documents/domain/types.ts";
+import type { DocumentStatus } from "@features/documents/domain/types.ts";
+import { initialsOf } from "@features/clients/domain/types.ts";
+
+const url = Astro.url;
+const tab = (url.searchParams.get("tab") ?? "all") as "all" | "devis" | "factures" | "brouillons" | "retard";
+
+let documents = documentsRepo().list();
+if (tab === "devis") documents = documents.filter((d) => d.type === "devis");
+if (tab === "factures") documents = documents.filter((d) => d.type === "facture");
+if (tab === "brouillons") documents = documents.filter((d) => d.status === "brouillon");
+if (tab === "retard") documents = documents.filter((d) => d.status === "retard");
+
+const totals = documentsRepo().totals();
+const allClients = clientsRepo().list();
+const clientById = new Map(allClients.map((c) => [c.id, c]));
+
+const tabs = [
+  { id: "all", label: `Tous (${documentsRepo().list().length})` },
+  { id: "devis", label: `Devis (${documentsRepo().list({ type: "devis" }).length})` },
+  { id: "factures", label: `Factures (${documentsRepo().list({ type: "facture" }).length})` },
+  { id: "brouillons", label: `Brouillons (${documentsRepo().list({ status: "brouillon" }).length})` },
+  { id: "retard", label: `En retard (${documentsRepo().list({ status: "retard" }).length})`, alert: true },
+];
+
+function badgeClassFor(status: DocumentStatus): string {
+  switch (status) {
+    case "paye": case "accepte": return "badge badge--done";
+    case "envoye": return "badge badge--ongoing";
+    case "retard": return "badge badge--alert";
+    case "brouillon": return "badge badge--draft";
+    default: return "badge badge--paused";
+  }
+}
+---
+
+<AdminLayout
+  title="Facturation — Maison Fwurtz Admin"
+  active="facturation"
+  breadcrumb="Facturation"
+  screenLabel="Admin · Facturation"
+>
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Devis <em>& factures</em></h1>
+      <p class="admin-page-head__sub">
+        {documentsRepo().list().length} documents
+        · <strong style="color: var(--gold);">{formatEur(totals.en_attente)}</strong> en attente
+        · <strong style="color: #6BCB77;">{formatEur(totals.encaisses)}</strong> encaissés
+      </p>
+    </div>
+    <div class="admin-page-head__actions">
+      <button class="btn-admin btn-admin--ghost" id="new-devis-btn">+ Nouveau devis</button>
+      <button class="btn-admin btn-admin--primary" id="new-fact-btn">+ Nouvelle facture</button>
+    </div>
+  </div>
+
+  <div class="kpi-grid" style="margin-bottom: 24px;">
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">Encaissé</span></div>
+      <div class="kpi__value"><em>{formatEur(totals.encaisses)}</em></div>
+      <div class="kpi__delta" style="color: var(--ink-3);">Total payé à ce jour</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">En attente</span></div>
+      <div class="kpi__value" style="color: var(--gold);">{formatEur(totals.en_attente)}</div>
+      <div class="kpi__delta" style="color: var(--gold);">Factures envoyées non payées</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">Devis envoyés</span></div>
+      <div class="kpi__value"><em>{totals.devis_envoyes}</em></div>
+      <div class="kpi__delta" style="color: var(--ink-3);">En attente de réponse</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">En retard</span></div>
+      <div class="kpi__value" style="color: #E67878;">{formatEur(totals.en_retard)}</div>
+      <div class="kpi__delta" style="color: #E67878;">À relancer</div>
+    </div>
+  </div>
+
+  <div class="crm-toolbar">
+    <div class="tabs">
+      {tabs.map((t) => (
+        <a class={`tabs__tab${t.id === tab ? " is-active" : ""}`} href={`/admin/facturation${t.id === "all" ? "" : `?tab=${t.id}`}`} style={t.alert ? "color: #E67878;" : undefined}>
+          {t.label}
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <div class="card" id="form-card" style="display: none; margin-bottom: 16px;">
+    <div class="card__head">
+      <div>
+        <h3 class="card__title" id="form-title">Nouveau document</h3>
+        <div class="card__sub">Le numéro est généré automatiquement</div>
+      </div>
+      <div class="card__actions">
+        <button class="btn-admin btn-admin--ghost" id="form-cancel">Annuler</button>
+      </div>
+    </div>
+    <div class="card__body">
+      <form class="form-grid" onsubmit="return false;">
+        <input type="hidden" id="f-type" />
+        <div class="form-row">
+          <div><div class="form-label">Client</div><div class="form-help">Sélectionnez la fiche destinataire</div></div>
+          <div>
+            <select class="input-admin" id="f-client">
+              <option value="">— choisir un client —</option>
+              {allClients.map((c) => <option value={c.id}>{c.name}{c.org ? ` · ${c.org}` : ""}</option>)}
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div><div class="form-label">Lignes</div><div class="form-help">Cliquez « + Ligne » pour en ajouter</div></div>
+          <div>
+            <div id="f-lines"></div>
+            <button class="btn-admin btn-admin--ghost" id="add-line-btn" type="button" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;">+ Ligne</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <div><div class="form-label">TVA</div><div class="form-help">Taux en %, ex. 20 = 20%</div></div>
+          <div><input class="input-admin" id="f-vat" type="number" min="0" max="100" step="0.5" value="20" style="max-width: 100px;" /></div>
+        </div>
+        <div class="form-row">
+          <div><div class="form-label">Émis le / échéance</div></div>
+          <div class="input-group">
+            <input class="input-admin" id="f-emitted" type="date" />
+            <input class="input-admin" id="f-due" type="date" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div><div class="form-label">Notes</div></div>
+          <div><textarea class="input-admin" id="f-notes" rows="2"></textarea></div>
+        </div>
+        <div class="form-row">
+          <div><div class="form-label">Total</div><div class="form-help">Calculé automatiquement</div></div>
+          <div>
+            <div style="font-family: var(--font-serif); font-size: 24px; color: var(--gold);">
+              <span id="f-ht">0,00 €</span> HT — <span id="f-ttc">0,00 €</span> TTC
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="card__foot">
+      <span id="form-error" style="color: #E67878; font-size: 12.5px;"></span>
+      <div style="display: flex; gap: 8px; margin-left: auto;">
+        <button class="btn-admin btn-admin--primary" id="form-save">Créer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__body card__body--flush">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Client</th>
+            <th>Type</th>
+            <th>Émis</th>
+            <th>Échéance</th>
+            <th>Montant TTC</th>
+            <th>Statut</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {documents.length === 0 && (
+            <tr><td colspan="8">
+              <div class="empty">
+                <div class="empty__title">Aucun document</div>
+                <div class="empty__sub">Créez un devis ou une facture pour commencer.</div>
+              </div>
+            </td></tr>
+          )}
+          {documents.map((d) => {
+            const c = clientById.get(d.clientId);
+            return (
+              <tr>
+                <td>
+                  <a href={`/admin/facturation/${d.id}`} style={`color: ${d.status === "retard" ? "#E67878" : "var(--gold)"}; font-family: ui-monospace, monospace; font-weight: 500;`}>
+                    {d.number}
+                  </a>
+                </td>
+                <td>
+                  <div class="tbl__primary">
+                    <div class="tbl__avatar">{c ? initialsOf(c.name) : "?"}</div>
+                    <div>
+                      <div class="tbl__name">{c?.name ?? "—"}</div>
+                      <div class="tbl__meta">{c?.org ?? ""}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class={d.type === "facture" ? "badge badge--new" : "badge badge--ongoing"}>
+                    {d.type === "facture" ? "Facture" : "Devis"}
+                  </span>
+                </td>
+                <td>{d.emittedAt?.slice(0, 10) ?? "—"}</td>
+                <td style={d.status === "retard" ? "color: #E67878; font-weight: 500;" : undefined}>
+                  {d.dueAt?.slice(0, 10) ?? "—"}
+                </td>
+                <td>
+                  <strong style={`font-family: var(--font-serif); font-style: italic; font-size: 16px; color: ${d.status === "retard" ? "#E67878" : "var(--gold)"};`}>
+                    {formatEur(d.amountTtcCents)}
+                  </strong>
+                </td>
+                <td><span class={badgeClassFor(d.status)}>{STATUS_LABELS[d.status]}</span></td>
+                <td>
+                  <div class="row-actions">
+                    <a class="btn-admin btn-admin--ghost" href={`/admin/facturation/${d.id}`} style="padding: 5px 10px; font-size: 11px;">Ouvrir</a>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script is:inline>
+    const formCard = document.getElementById("form-card");
+    const errorEl = document.getElementById("form-error");
+    const titleEl = document.getElementById("form-title");
+    const linesContainer = document.getElementById("f-lines");
+
+    function showForm(type) {
+      errorEl.textContent = "";
+      document.getElementById("f-type").value = type;
+      titleEl.textContent = type === "devis" ? "Nouveau devis" : "Nouvelle facture";
+      document.getElementById("f-client").value = "";
+      linesContainer.innerHTML = "";
+      addLine();
+      document.getElementById("f-vat").value = "20";
+      document.getElementById("f-emitted").value = new Date().toISOString().slice(0, 10);
+      document.getElementById("f-due").value = "";
+      document.getElementById("f-notes").value = "";
+      recalc();
+      formCard.style.display = "";
+      formCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    function addLine() {
+      const i = linesContainer.children.length;
+      const row = document.createElement("div");
+      row.className = "input-group";
+      row.style.gridTemplateColumns = "2.5fr 0.7fr 1fr 32px";
+      row.style.marginBottom = "8px";
+      row.innerHTML = `
+        <input class="input-admin line-label" placeholder="Description"/>
+        <input class="input-admin line-qty" type="number" min="0" step="0.5" value="1"/>
+        <input class="input-admin line-price" type="number" min="0" step="0.01" value="0" placeholder="€ HT/unité"/>
+        <button type="button" class="btn-admin btn-admin--ghost line-rm" style="padding: 0; min-width: 32px;">×</button>
+      `;
+      row.querySelector(".line-rm").addEventListener("click", () => { row.remove(); recalc(); });
+      ["input"].forEach((evt) => row.addEventListener(evt, recalc));
+      linesContainer.appendChild(row);
+    }
+    function readLines() {
+      const lines = [];
+      linesContainer.querySelectorAll(".input-group").forEach((row) => {
+        lines.push({
+          label: row.querySelector(".line-label").value.trim(),
+          qty: Number(row.querySelector(".line-qty").value || 0),
+          unitPriceCents: Math.round(Number(row.querySelector(".line-price").value || 0) * 100),
+        });
+      });
+      return lines;
+    }
+    function fmtEur(cents) {
+      return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(cents / 100);
+    }
+    function recalc() {
+      const lines = readLines();
+      const ht = lines.reduce((s, l) => s + Math.round(l.qty * l.unitPriceCents), 0);
+      const vatBps = Math.round(Number(document.getElementById("f-vat").value || 0) * 100);
+      const ttc = Math.round(ht * (1 + vatBps / 10000));
+      document.getElementById("f-ht").textContent = fmtEur(ht);
+      document.getElementById("f-ttc").textContent = fmtEur(ttc);
+    }
+
+    document.getElementById("new-devis-btn").addEventListener("click", () => showForm("devis"));
+    document.getElementById("new-fact-btn").addEventListener("click", () => showForm("facture"));
+    document.getElementById("form-cancel").addEventListener("click", () => formCard.style.display = "none");
+    document.getElementById("add-line-btn").addEventListener("click", () => { addLine(); recalc(); });
+    document.getElementById("f-vat").addEventListener("input", recalc);
+
+    document.getElementById("form-save").addEventListener("click", async () => {
+      const lines = readLines().filter((l) => l.label);
+      const clientId = document.getElementById("f-client").value;
+      if (!clientId) { errorEl.textContent = "Sélectionnez un client."; return; }
+      if (lines.length === 0) { errorEl.textContent = "Au moins une ligne avec une description."; return; }
+      const payload = {
+        type: document.getElementById("f-type").value,
+        clientId,
+        lines,
+        vatRateBps: Math.round(Number(document.getElementById("f-vat").value || 0) * 100),
+        emittedAt: document.getElementById("f-emitted").value || null,
+        dueAt: document.getElementById("f-due").value || null,
+        notes: document.getElementById("f-notes").value.trim() || null,
+      };
+      const r = await fetch("/api/admin/documents", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok) { errorEl.textContent = "Échec (" + r.status + ")."; return; }
+      const data = await r.json();
+      window.location.href = "/admin/facturation/" + data.document.id;
+    });
+  </script>
+</AdminLayout>

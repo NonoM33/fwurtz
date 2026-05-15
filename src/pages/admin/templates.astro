@@ -1,0 +1,138 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+
+const body = `
+
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Modèles <em>d'e-mails</em></h1>
+      <p class="admin-page-head__sub">12 modèles · personnalisez chaque étape relationnelle de la Maison.</p>
+    </div>
+    <div class="admin-page-head__actions">
+      <button class="btn-admin btn-admin--ghost">+ Importer un modèle</button>
+      <button class="btn-admin btn-admin--primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouveau modèle</button>
+    </div>
+  </div>
+
+  <!-- Template categories grid -->
+  <div class="cols-2" style="grid-template-columns: 320px 1fr; gap: 16px;">
+
+    <!-- Sidebar: template list -->
+    <div style="display: grid; gap: 16px;">
+
+      <div class="card">
+        <div class="card__head"><div><h3 class="card__title">Acquisition</h3></div></div>
+        <div style="display: grid;">
+          <a class="content-nav__item" href="#" style="margin: 0; border-radius: 0; padding: 14px 20px; border-bottom: 1px solid var(--admin-line-soft);"><span style="font-family: var(--font-serif); font-size: 14px; color: var(--ink);">Premier contact reçu</span><span style="margin-left: auto; font-size: 10px; color: var(--ink-4); font-family: ui-monospace, monospace;">↗ 87 envois</span></a>
+          <a class="content-nav__item is-active" href="#" style="margin: 0; border-radius: 0; padding: 14px 20px; border-bottom: 1px solid var(--admin-line-soft);"><span style="font-family: var(--font-serif); font-size: 14px;">Confirmation de RDV</span><span style="margin-left: auto; font-size: 10px; color: var(--gold); font-family: ui-monospace, monospace;">↗ 124 envois</span></a>
+          <a class="content-nav__item" href="#" style="margin: 0; border-radius: 0; padding: 14px 20px;"><span style="font-family: var(--font-serif); font-size: 14px; color: var(--ink);">Récap après RDV</span><span style="margin-left: auto; font-size: 10px; color: var(--ink-4); font-family: ui-monospace, monospace;">↗ 76 envois</span></a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__head"><div><h3 class="card__title">Devis & contrats</h3></div></div>
+        <div style="display: grid;">
+          <a class="content-nav__item" href="#" style="margin: 0; border-radius: 0; padding: 14px 20px; border-bottom: 1px solid var(--admin-line-soft);"><span style="font-family: var(--font-serif); font-size: 14px; color: var(--ink);">Envoi de devis</span><span style="margin-left: auto; font-size: 10px; color: var(--ink-4); font-family: ui-monospace, monospace;">↗ 47</span></a>
+          <a class="content-nav__item" href="#" style="margin: 0; border-radius: 0; padding: 14px 20px; border-bottom: 1px solid var(--admin-line-soft);"><span style="font-family: var(--font-serif); font-size: 14px; color: var(--ink);">Relance devis · J+5</span><span style="margin-left: auto; font-size: 10px; color: var(--gold); font-family: ui-monospace, monospace;">⌁ 31</span></a>
+          <a class="content-nav__item" href="#" style="margin: 0; border-radius: 0; padding: 14px 20px;"><span style="font-family: var(--font-serif); font-size: 14px; color: var(--ink);">Contrat à signer</span><span style="margin-left: auto; font-size: 10px; color: var(--ink-4); font-family: ui-monospace, monospace;">↗ 18</span></a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__head"><div><h3 class="card__title">Suivi client</h3></div></div>
+        <div style="display: grid;">
+          <a class="content-nav__item" href="#" style="margin: 0; border-radius: 0; padding: 14px 20px; border-bottom: 1px solid var(--admin-line-soft);"><span style="font-family: var(--font-serif); font-size: 14px; color: var(--ink);">Bienvenue · nouveau client</span><span style="margin-left: auto; font-size: 10px; color: var(--ink-4); font-family: ui-monospace, monospace;">↗ 14</span></a>
+          <a class="content-nav__item" href="#" style="margin: 0; border-radius: 0; padding: 14px 20px; border-bottom: 1px solid var(--admin-line-soft);"><span style="font-family: var(--font-serif); font-size: 14px; color: var(--ink);">Livraison projet</span><span style="margin-left: auto; font-size: 10px; color: var(--ink-4); font-family: ui-monospace, monospace;">↗ 12</span></a>
+          <a class="content-nav__item" href="#" style="margin: 0; border-radius: 0; padding: 14px 20px;"><span style="font-family: var(--font-serif); font-size: 14px; color: var(--ink);">Demande de témoignage</span><span style="margin-left: auto; font-size: 10px; color: var(--ink-4); font-family: ui-monospace, monospace;">↗ 9</span></a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__head"><div><h3 class="card__title">Comptable</h3></div></div>
+        <div style="display: grid;">
+          <a class="content-nav__item" href="#" style="margin: 0; border-radius: 0; padding: 14px 20px; border-bottom: 1px solid var(--admin-line-soft);"><span style="font-family: var(--font-serif); font-size: 14px; color: var(--ink);">Envoi de facture</span><span style="margin-left: auto; font-size: 10px; color: var(--ink-4); font-family: ui-monospace, monospace;">↗ 38</span></a>
+          <a class="content-nav__item" href="#" style="margin: 0; border-radius: 0; padding: 14px 20px; border-bottom: 1px solid var(--admin-line-soft);"><span style="font-family: var(--font-serif); font-size: 14px; color: #E67878;">Relance impayé · J+7</span><span style="margin-left: auto; font-size: 10px; color: #E67878; font-family: ui-monospace, monospace;">↗ 4</span></a>
+          <a class="content-nav__item" href="#" style="margin: 0; border-radius: 0; padding: 14px 20px;"><span style="font-family: var(--font-serif); font-size: 14px; color: var(--ink);">Reçu paiement</span><span style="margin-left: auto; font-size: 10px; color: var(--ink-4); font-family: ui-monospace, monospace;">↗ 31</span></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Editor right column -->
+    <div class="card">
+      <div class="card__head">
+        <div>
+          <h3 class="card__title">Confirmation <em>de rendez-vous</em></h3>
+          <div class="card__sub">Envoyé automatiquement après chaque RDV validé · 124 envois</div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-admin btn-admin--ghost" style="padding: 7px 12px; font-size: 12px;">Tester l'envoi</button>
+          <label class="switch"><input type="checkbox" checked><span class="switch__slider"></span></label>
+        </div>
+      </div>
+
+      <div class="card__body">
+        <div class="form-grid">
+          <div class="form-row" style="grid-template-columns: 160px 1fr; padding: 16px 0;">
+            <div><div class="form-label" style="font-size: 14px;">Objet</div></div>
+            <div><input class="input-admin" value="Confirmation de notre échange — {{date_rdv}}"></div>
+          </div>
+          <div class="form-row" style="grid-template-columns: 160px 1fr; padding: 16px 0;">
+            <div><div class="form-label" style="font-size: 14px;">Expéditeur</div></div>
+            <div><div class="input-group"><input class="input-admin" value="{{assignee_name}}"><input class="input-admin" value="contact@maison-fwurtz.fr"></div></div>
+          </div>
+          <div class="form-row" style="grid-template-columns: 160px 1fr; padding: 16px 0;">
+            <div><div class="form-label" style="font-size: 14px;">Déclencheur</div></div>
+            <div><select class="input-admin" style="max-width: 320px;"><option>RDV confirmé dans l'admin</option><option>RDV créé par le client</option><option>Manuel</option></select></div>
+          </div>
+          <div class="form-row" style="grid-template-columns: 160px 1fr; padding: 16px 0;">
+            <div><div class="form-label" style="font-size: 14px;">Délai d'envoi</div></div>
+            <div style="display: flex; gap: 12px; align-items: center;"><select class="input-admin" style="max-width: 200px;"><option>Immédiatement</option><option>Après 5 minutes</option><option>Après 1 heure</option></select></div>
+          </div>
+        </div>
+
+        <!-- Mail preview -->
+        <div style="margin-top: 24px; padding: 28px 32px; background: linear-gradient(180deg, #F7F0E0 0%, #FAF6EC 100%); border-radius: 12px;">
+          <div style="text-align: center; margin-bottom: 28px;">
+            <svg width="80" height="40" viewBox="0 0 116 56" fill="none" style="margin: 0 auto;">
+              <g stroke="#08111E" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 26 L5 6 L13 21 L21 6 L21 26"/><path d="M28 26 L28 11.5 C28 8 30 5.5 33.5 5.5"/><line x1="25" y1="13" x2="34" y2="13"/></g>
+              <text x="44" y="16" font-family="Cormorant Garamond, serif" font-size="10" font-weight="500" letter-spacing="2.4" fill="#08111E">MAISON</text>
+              <text x="44" y="28" font-family="Cormorant Garamond, serif" font-size="10" font-weight="500" letter-spacing="2.4" fill="#08111E">FWURTZ</text>
+            </svg>
+          </div>
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 16px; color: #2A1F12; line-height: 1.7;">
+            Bonjour <strong style="color: #08111E;">{{client_prenom}}</strong>,<br><br>
+            Notre échange est confirmé pour le <em style="color: #B8945F; font-style: italic;">{{date_rdv}}</em> à <em style="color: #B8945F; font-style: italic;">{{heure_rdv}}</em>.<br><br>
+            <span style="display: inline-block; padding: 10px 14px; background: rgba(212, 175, 122, 0.15); border-left: 2px solid #D4AF7A; border-radius: 4px;">📍 <strong>{{lieu_rdv}}</strong> &middot; durée prévue {{duree_rdv}}</span><br><br>
+            J'aurai à cœur de comprendre votre projet en profondeur. <em style="color: #B8945F;">Prenez quelques minutes</em> en amont pour me partager les éléments dont vous disposez déjà (références, contraintes, échéances).<br><br>
+            À très vite,<br>
+            <strong style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: #08111E;">{{assignee_name}}</strong> · Maison Fwurtz
+          </div>
+          <div style="margin-top: 32px; padding-top: 20px; border-top: 1px solid rgba(8, 17, 30, 0.1); text-align: center; font-size: 11px; color: rgba(8, 17, 30, 0.5); letter-spacing: 0.08em;">
+            MAISON FWURTZ · PARIS · contact@maison-fwurtz.fr<br>
+            <a href="#" style="color: #B8945F;">Modifier le RDV</a> · <a href="#" style="color: #B8945F;">Annuler</a>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 14px; margin-top: 18px; padding: 14px 18px; background: rgba(196, 181, 253, 0.06); border: 1px solid rgba(196, 181, 253, 0.2); border-radius: 10px;">
+          <span class="ai-card__badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15 9 22 12 15 15 12 22 9 15 2 12 9 9"/></svg> Marie</span>
+          <span style="font-size: 12.5px; color: var(--ink-2); font-family: var(--font-serif); font-style: italic;">Ce modèle obtient un <strong style="color: var(--gold);">taux d'ouverture de 94 %</strong>. Bravo, c'est dans le top 5 % des e-mails de RDV de votre secteur.</span>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end;">
+          <button class="btn-admin btn-admin--ghost">Variables disponibles</button>
+          <button class="btn-admin btn-admin--ghost">Voir l'historique</button>
+          <button class="btn-admin btn-admin--primary" data-save>Enregistrer le modèle</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+---
+
+<AdminLayout
+  title="Modèles e-mails — Maison Fwurtz Admin" active="templates"
+  breadcrumb="Modèles e-mails"
+  screenLabel="Admin · Templates"
+>
+  <Fragment set:html={body} />
+</AdminLayout>

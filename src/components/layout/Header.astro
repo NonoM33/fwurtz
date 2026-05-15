@@ -44,14 +44,16 @@ const items = [
       </button>
     </nav>
   </div>
-  <div class="nav__mobile">
-    {
-      items.map((item) => (
-        <a class={item.key === active ? "is-active" : ""} href={item.href}>
-          {item.label}
-        </a>
-      ))
-    }
-    <a class="btn btn--outline" href="#" data-open-rdv>Réserver un échange</a>
-  </div>
 </header>
+<!-- Lifted out of <header> so position:fixed is relative to the viewport,
+     not to .site-header (which has backdrop-filter, creating a containing block). -->
+<div class="nav__mobile" aria-hidden="true">
+  {
+    items.map((item) => (
+      <a class={item.key === active ? "is-active" : ""} href={item.href}>
+        {item.label}
+      </a>
+    ))
+  }
+  <a class="btn btn--outline" href="#" data-open-rdv>Réserver un échange</a>
+</div>

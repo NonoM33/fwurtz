@@ -1,0 +1,194 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+
+const body = `
+
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Messages <em>& conversations</em></h1>
+      <p class="admin-page-head__sub">Conciergerie de Marie et formulaires de contact, en un seul endroit.</p>
+    </div>
+    <div class="admin-page-head__actions">
+      <button class="btn-admin btn-admin--ghost">Marquer tout lu</button>
+      <button class="btn-admin btn-admin--primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouveau message</button>
+    </div>
+  </div>
+
+  <div class="convo">
+    <!-- LEFT: list -->
+    <div class="convo__list">
+      <div class="convo__filter">
+        <div class="tabs" style="flex: 1; overflow-x: auto; max-width: 100%;">
+          <button class="tabs__tab is-active" style="white-space: nowrap;">Toutes&nbsp;·&nbsp;12</button>
+          <button class="tabs__tab" style="white-space: nowrap;">Non lues&nbsp;·&nbsp;<span style="color: var(--gold);">3</span></button>
+          <button class="tabs__tab" style="white-space: nowrap;">Marie</button>
+          <button class="tabs__tab" style="white-space: nowrap;">Formulaire</button>
+        </div>
+      </div>
+
+      <div class="convo__items">
+        <div class="convo-item is-active" data-detail="camille">
+          <div class="convo-item__avatar">CL</div>
+          <div class="convo-item__body">
+            <div class="convo-item__head">
+              <span class="convo-item__name">Camille Larue</span>
+              <span class="convo-item__time">12 min</span>
+            </div>
+            <div class="convo-item__preview">Bonjour Marie, je souhaite refondre le site de mon atelier de céramique. Pourriez-vous me dire…</div>
+            <div class="convo-item__source">⟢ Conciergerie · Atelier Bardin</div>
+          </div>
+          <div class="convo-item__dot"></div>
+        </div>
+
+        <div class="convo-item" data-detail="marc">
+          <div class="convo-item__avatar">MD</div>
+          <div class="convo-item__body">
+            <div class="convo-item__head">
+              <span class="convo-item__name">Marc Dubois</span>
+              <span class="convo-item__time">2 h</span>
+            </div>
+            <div class="convo-item__preview">Nous organisons un mariage en septembre pour environ 120 invités à Saint-Cloud. Pouvez-vous nous accompagner ?</div>
+            <div class="convo-item__source">✉ Formulaire · Événementiel</div>
+          </div>
+          <div class="convo-item__dot"></div>
+        </div>
+
+        <div class="convo-item" data-detail="julien">
+          <div class="convo-item__avatar">JH</div>
+          <div class="convo-item__body">
+            <div class="convo-item__head">
+              <span class="convo-item__name">Julien Hervé</span>
+              <span class="convo-item__time">3 h</span>
+            </div>
+            <div class="convo-item__preview">Merci, je confirme le rendez-vous de vendredi 10h. À très vite.</div>
+            <div class="convo-item__source">⟢ Conciergerie · Galerie Saint-Honoré</div>
+          </div>
+          <div class="convo-item__dot"></div>
+        </div>
+
+        <div class="convo-item" data-detail="anne">
+          <div class="convo-item__avatar">AS</div>
+          <div class="convo-item__body">
+            <div class="convo-item__head">
+              <span class="convo-item__name">Anne-Sophie Bernard</span>
+              <span class="convo-item__time">hier</span>
+            </div>
+            <div class="convo-item__preview">Quels documents faut-il préparer pour notre échange ? Je vous remercie.</div>
+            <div class="convo-item__source">⟢ Conciergerie · Indépendante</div>
+          </div>
+        </div>
+
+        <div class="convo-item">
+          <div class="convo-item__avatar">PL</div>
+          <div class="convo-item__body">
+            <div class="convo-item__head">
+              <span class="convo-item__name">Pierre Lambert</span>
+              <span class="convo-item__time">hier</span>
+            </div>
+            <div class="convo-item__preview">Bonjour, j'aurais besoin d'une rédaction CGV pour ma nouvelle activité de coaching. Bien à vous.</div>
+            <div class="convo-item__source">✉ Formulaire · Juridique</div>
+          </div>
+        </div>
+
+        <div class="convo-item">
+          <div class="convo-item__avatar">M&P</div>
+          <div class="convo-item__body">
+            <div class="convo-item__head">
+              <span class="convo-item__name">Marc & Pauline V.</span>
+              <span class="convo-item__time">3 j</span>
+            </div>
+            <div class="convo-item__preview">Encore mille mercis. Tout était parfait. Nous parlons de vous autour de nous !</div>
+            <div class="convo-item__source">⟢ Conciergerie · Client</div>
+          </div>
+        </div>
+
+        <div class="convo-item">
+          <div class="convo-item__avatar">MD</div>
+          <div class="convo-item__body">
+            <div class="convo-item__head">
+              <span class="convo-item__name">Mathilde Devos</span>
+              <span class="convo-item__time">5 j</span>
+            </div>
+            <div class="convo-item__preview">J'ai téléchargé votre e-book sur le lancement d'activité, c'est précieux. Auriez-vous le temps pour un appel ?</div>
+            <div class="convo-item__source">✉ Formulaire · Ressources</div>
+          </div>
+        </div>
+
+        <div class="convo-item">
+          <div class="convo-item__avatar">DR</div>
+          <div class="convo-item__body">
+            <div class="convo-item__head">
+              <span class="convo-item__name">Denis Rondeau</span>
+              <span class="convo-item__time">1 sem</span>
+            </div>
+            <div class="convo-item__preview">Bonjour, je suis directeur d'un domaine viticole et je cherche quelqu'un pour structurer ma gestion administrative…</div>
+            <div class="convo-item__source">⟢ Conciergerie · Domaine Saint-Loup</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: conversation -->
+    <div class="convo__panel" data-conv-panel="camille">
+      <div class="convo__panel-head">
+        <div class="convo-item__avatar">CL</div>
+        <div style="flex: 1;">
+          <div style="font-family: var(--font-serif); font-size: 18px; color: var(--ink); font-weight: 500;">Camille Larue</div>
+          <div style="font-size: 12px; color: var(--ink-3); margin-top: 2px;">camille@atelier-bardin.fr · 06 ** ** ** ** · Atelier Bardin</div>
+        </div>
+        <div class="row-actions">
+          <span class="badge badge--new">Nouveau lead</span>
+          <button class="row-action" title="Marquer en suivi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polygon points="12 3 14.5 9 21 9.5 16 14 17.5 21 12 17.5 6.5 21 8 14 3 9.5 9.5 9"/></svg></button>
+          <button class="row-action" title="Convertir en RDV"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button>
+          <button class="row-action" title="Archiver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="3 6 5 6 21 6"/><path d="M19 6 L18 20 a2 2 0 01-2 2 H8 a2 2 0 01-2-2 L5 6"/></svg></button>
+        </div>
+      </div>
+
+      <div class="convo__messages">
+        <div style="text-align: center; font-size: 11px; color: var(--ink-4); letter-spacing: 0.1em; margin: 8px 0 16px;">— Conversation via la conciergerie · 15 mai à 19h12 —</div>
+
+        <div class="convo__msg convo__msg--in">Bonsoir Marie. Je m'appelle Camille, je tiens un atelier de céramique à Lyon. Mon site actuel a 6 ans et ne me ressemble plus. J'aimerais quelque chose de plus éditorial, qui mette en valeur mes pièces.</div>
+        <div class="convo__msg-time" style="align-self: flex-start;">19h12</div>
+
+        <div class="convo__msg convo__msg--out">Bonsoir Camille — quelle belle démarche. Pour vous accompagner au mieux, j'aurais quelques questions : avez-vous des références visuelles qui vous parlent ? Et un budget en tête ?</div>
+        <div class="convo__msg-time" style="align-self: flex-end;">19h13 · Marie</div>
+
+        <div class="convo__msg convo__msg--in">Pour l'esthétique, je pense à quelque chose de minéral, des photos en lumière naturelle. Pour le budget, on parle de 5-7 000 € si c'est dans cette gamme. Sinon, dites-moi votre avis.</div>
+        <div class="convo__msg-time" style="align-self: flex-start;">19h17</div>
+
+        <div class="convo__msg convo__msg--out">C'est tout à fait dans nos gammes. Pour un site vitrine éditorial avec direction artistique, séance photo et 5-7 pages, on est sur cette fourchette. *Souhaitez-vous que nous prenions 30 minutes ensemble cette semaine ?*</div>
+        <div class="convo__msg-time" style="align-self: flex-end;">19h18 · Marie</div>
+
+        <div class="convo__msg convo__msg--in">Avec plaisir. Je suis libre vendredi après-midi ou lundi matin. Je vous laisse mes coordonnées.</div>
+        <div class="convo__msg-time" style="align-self: flex-start;">19h21</div>
+
+        <div style="background: rgba(212,175,122,0.06); border: 1px solid var(--gold-line); border-radius: 10px; padding: 14px 18px; margin: 8px 0; max-width: 78%; align-self: flex-start;">
+          <div style="font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px;">⟢ Coordonnées transmises</div>
+          <div style="font-size: 13px; color: var(--ink-2); line-height: 1.6;">
+            <strong style="color: var(--ink); font-family: var(--font-serif);">Camille Larue</strong><br>
+            camille@atelier-bardin.fr<br>
+            06 ** ** ** **
+          </div>
+        </div>
+      </div>
+
+      <div class="convo__compose">
+        <div class="convo__compose-row">
+          <textarea placeholder="Répondre à Camille…" rows="1">Bonjour Camille, ravie de vous lire. Je vous propose vendredi à 14h ou 15h, ou lundi à 9h30. </textarea>
+          <button class="btn-admin btn-admin--ghost" style="padding: 8px 12px;" title="Modèles">⚏</button>
+          <button class="btn-admin btn-admin--primary" style="padding: 8px 14px;" data-save><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="20" x2="20" y2="4"/><polygon points="4 20 10 13 15 18 20 4"/></svg> Envoyer</button>
+        </div>
+        <div style="font-size: 11px; color: var(--ink-4); margin-top: 8px; text-align: center;">Cette réponse sera envoyée par e-mail à <strong style="color: var(--gold);">camille@atelier-bardin.fr</strong></div>
+      </div>
+    </div>
+  </div>`;
+---
+
+<AdminLayout
+  title="Messages — Maison Fwurtz Admin" active="messages"
+  breadcrumb="Messages"
+  screenLabel="Admin · Messages"
+>
+  <Fragment set:html={body} />
+</AdminLayout>
