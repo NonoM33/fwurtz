@@ -1,0 +1,23 @@
+-- Seed the public site pages so the editor isn't empty.
+INSERT OR IGNORE INTO pages (id, slug, title, blocks_json, draft_blocks_json, meta_description, published_at, updated_at) VALUES
+  ('seed-page-1', 'index', 'Accueil', '{}', NULL,
+   'Maison Fwurtz : accompagnement sur mesure pour simplifier, structurer et développer vos projets. Web, administratif, juridique, événementiel.',
+   datetime('now'), datetime('now')),
+  ('seed-page-2', 'services', 'Services', '{}', NULL,
+   'Découvrez les savoir-faire de Maison Fwurtz : sites web, gestion administrative, accompagnement juridique, événementiel.',
+   datetime('now'), datetime('now')),
+  ('seed-page-3', 'a-propos', 'À propos', '{}', NULL,
+   'Maison Fwurtz, votre alliée au quotidien. Découvrez notre histoire, notre approche et nos valeurs.',
+   datetime('now'), datetime('now')),
+  ('seed-page-4', 'processus', 'Processus', '{}', NULL,
+   'Notre processus de collaboration en 5 étapes : écoute, audit, plan, exécution, accompagnement.',
+   datetime('now'), datetime('now')),
+  ('seed-page-5', 'ressources', 'Ressources', '{}', NULL,
+   'E-books, guides et outils pour les indépendants, entrepreneurs et particuliers.',
+   datetime('now'), datetime('now')),
+  ('seed-page-6', 'contact', 'Contact', '{}', NULL,
+   'Contactez Maison Fwurtz : formulaire, e-mail, téléphone. Réponse sous 24h ouvrées.',
+   datetime('now'), datetime('now')),
+  ('seed-page-7', 'mentions-legales', 'Mentions légales', '{}', NULL,
+   'Mentions légales de Maison Fwurtz.',
+   datetime('now'), datetime('now'));

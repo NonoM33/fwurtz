@@ -76,10 +76,31 @@ const stageDotClass: Record<(typeof CLIENT_STAGES)[number], string> = {
 
   <script is:inline>
     let dragged = null;
+    let originalParent = null;
+
+    function recountColumns() {
+      document.querySelectorAll(".kanban__col").forEach((col) => {
+        const stage = col.dataset.stage;
+        const body = col.querySelector(".kanban__col-body");
+        const n = body ? body.querySelectorAll(".kcard").length : 0;
+        const countEl = col.querySelector(".kanban__col-count");
+        const footEl = col.querySelector(".kanban__col-foot");
+        if (countEl) countEl.textContent = String(n);
+        if (footEl) footEl.textContent = n + " carte" + (n > 1 ? "s" : "");
+      });
+    }
+
+    function flashError(card, msg) {
+      const prev = card.style.outline;
+      card.style.outline = "2px solid #E67878";
+      card.title = msg;
+      setTimeout(() => { card.style.outline = prev; card.title = ""; }, 1800);
+    }
 
     document.querySelectorAll(".kcard").forEach((card) => {
       card.addEventListener("dragstart", (e) => {
         dragged = card;
+        originalParent = card.parentElement;
         card.style.opacity = "0.4";
         e.dataTransfer.effectAllowed = "move";
         e.dataTransfer.setData("text/plain", card.dataset.id);
@@ -87,6 +108,7 @@ const stageDotClass: Record<(typeof CLIENT_STAGES)[number], string> = {
       card.addEventListener("dragend", () => {
         card.style.opacity = "";
         dragged = null;
+        originalParent = null;
       });
     });
 
@@ -107,20 +129,23 @@ const stageDotClass: Record<(typeof CLIENT_STAGES)[number], string> = {
         const oldStage = dragged.dataset.stage;
         if (newStage === oldStage) return;
         const id = dragged.dataset.id;
-        // optimistic UI
-        body.appendChild(dragged);
-        dragged.dataset.stage = newStage;
+        const card = dragged;
+        const before = originalParent;
+        // optimistic move + recount
+        body.appendChild(card);
+        card.dataset.stage = newStage;
+        recountColumns();
         const r = await fetch("/api/admin/clients/" + encodeURIComponent(id), {
           method: "PATCH",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ stage: newStage }),
         });
         if (!r.ok) {
-          alert("Échec de la mise à jour. Rechargement…");
-          window.location.reload();
-        } else {
-          // refresh column counts
-          window.location.reload();
+          // rollback
+          before?.appendChild(card);
+          card.dataset.stage = oldStage;
+          recountColumns();
+          flashError(card, "Échec — restauré");
         }
       });
     });

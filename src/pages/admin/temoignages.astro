@@ -292,12 +292,13 @@ const counts = {
       btn.addEventListener("click", async () => {
         const id = btn.getAttribute("data-delete");
         if (!confirm("Supprimer définitivement ce témoignage ?")) return;
+        const row = btn.closest("tr");
         const r = await fetch("/api/admin/testimonials/" + encodeURIComponent(id), {
           method: "DELETE",
           headers: { "content-type": "application/json" },
         });
         if (!r.ok) { alert("Échec de la suppression."); return; }
-        window.location.reload();
+        row?.remove();
       });
     });
     document.querySelectorAll("[data-toggle-pub]").forEach((btn) => {
@@ -305,13 +306,24 @@ const counts = {
         const id = btn.getAttribute("data-toggle-pub");
         const t = items.find((x) => x.id === id);
         if (!t) return;
+        const newPublished = !t.published;
         const r = await fetch("/api/admin/testimonials/" + encodeURIComponent(id), {
           method: "PATCH",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ published: !t.published }),
+          body: JSON.stringify({ published: newPublished }),
         });
         if (!r.ok) { alert("Échec."); return; }
-        window.location.reload();
+        // optimistic UI update
+        t.published = newPublished;
+        const row = btn.closest("tr");
+        const statusCell = row?.querySelectorAll("td")[3];
+        if (statusCell) {
+          statusCell.innerHTML = newPublished
+            ? '<span class="badge badge--done">Publié</span>'
+            : '<span class="badge badge--draft">Brouillon</span>';
+          if (t.featured) statusCell.innerHTML += '<span class="badge badge--new" style="margin-left: 4px;">★ Mis en avant</span>';
+        }
+        btn.textContent = newPublished ? "Dépublier" : "Publier";
       });
     });
   </script>

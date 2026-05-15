@@ -261,9 +261,10 @@ const counts = {
     document.querySelectorAll("[data-delete]").forEach((btn) => {
       btn.addEventListener("click", async () => {
         if (!confirm("Supprimer définitivement ce service ?")) return;
+        const row = btn.closest("tr");
         const r = await fetch("/api/admin/services/" + encodeURIComponent(btn.getAttribute("data-delete")), { method: "DELETE", headers: { "content-type": "application/json" } });
         if (!r.ok) { alert("Échec."); return; }
-        window.location.reload();
+        row?.remove();
       });
     });
     document.querySelectorAll("[data-toggle-pub]").forEach((btn) => {
@@ -271,13 +272,22 @@ const counts = {
         const id = btn.getAttribute("data-toggle-pub");
         const s = items.find((x) => x.id === id);
         if (!s) return;
+        const newPublished = !s.published;
         const r = await fetch("/api/admin/services/" + encodeURIComponent(id), {
           method: "PATCH",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ published: !s.published }),
+          body: JSON.stringify({ published: newPublished }),
         });
         if (!r.ok) { alert("Échec."); return; }
-        window.location.reload();
+        s.published = newPublished;
+        const row = btn.closest("tr");
+        const statusCell = row?.querySelectorAll("td")[2];
+        if (statusCell) {
+          statusCell.innerHTML = newPublished
+            ? '<span class="badge badge--done">Publié</span>'
+            : '<span class="badge badge--draft">Brouillon</span>';
+        }
+        btn.textContent = newPublished ? "Dépublier" : "Publier";
       });
     });
   </script>
