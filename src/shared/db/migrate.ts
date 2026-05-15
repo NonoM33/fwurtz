@@ -14,6 +14,7 @@ import seedClients from "./migrations/0005_seed_clients.sql?raw";
 import seedDocuments from "./migrations/0006_seed_documents.sql?raw";
 import seedPages from "./migrations/0007_seed_pages.sql?raw";
 import seedUsers from "./migrations/0008_seed_users.sql?raw";
+import convoMetadata from "./migrations/0009_conversations_metadata.sql?raw";
 
 interface Migration {
   name: string;
@@ -29,6 +30,7 @@ const MIGRATIONS: ReadonlyArray<Migration> = [
   { name: "0006_seed_documents.sql", sql: seedDocuments },
   { name: "0007_seed_pages.sql", sql: seedPages },
   { name: "0008_seed_users.sql", sql: seedUsers },
+  { name: "0009_conversations_metadata.sql", sql: convoMetadata },
 ];
 
 interface MigrationRow {

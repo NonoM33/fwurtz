@@ -30,7 +30,6 @@ const SESSION_KEY = "mf-concierge-session";
 const TOAST_DELAY_MS = 16_000;
 const PROPOSE_RDV_AFTER = 3;
 const HISTORY_CAP = 16;
-const POLL_INTERVAL_MS = 6_000;
 
 function ensureSessionId(): string {
   try {
@@ -301,7 +300,6 @@ function init(): void {
   }
 
   const sessionId = ensureSessionId();
-  let lastPollTs = new Date(0).toISOString();
   const seenAdminIds = new Set<string>();
 
   async function callBackend(): Promise<string> {
@@ -319,43 +317,38 @@ function init(): void {
     return typeof body.text === "string" ? body.text : "";
   }
 
-  async function pollAdminReplies(): Promise<void> {
+  // Real-time SSE stream from the back office. EventSource auto-reconnects on
+  // network blips. We start it on first open and keep it alive while the
+  // panel is open (closing the panel stops the channel to save server work).
+  let eventSource: EventSource | null = null;
+  function startStream(): void {
+    if (eventSource) return;
     try {
-      const since = encodeURIComponent(lastPollTs);
-      const r = await fetch(`/api/concierge/poll?sessionId=${encodeURIComponent(sessionId)}&since=${since}`, {
-        headers: { Accept: "application/json" },
+      eventSource = new EventSource(`/api/concierge/stream?sessionId=${encodeURIComponent(sessionId)}`);
+      eventSource.addEventListener("message", (ev) => {
+        try {
+          const data = JSON.parse((ev as MessageEvent).data) as {
+            id: string; text: string; author: string; createdAt: string;
+          };
+          if (seenAdminIds.has(data.id)) return;
+          seenAdminIds.add(data.id);
+          addConcierge(data.text);
+          if (!panel.classList.contains("is-open")) showBadge("•");
+        } catch {
+          /* ignore malformed event */
+        }
       });
-      if (!r.ok) return;
-      const body = (await r.json()) as {
-        messages: { id: string; text: string; author: string; createdAt: string }[];
-        status: string | null;
-      };
-      for (const m of body.messages ?? []) {
-        if (seenAdminIds.has(m.id)) continue;
-        seenAdminIds.add(m.id);
-        addConcierge(m.text);
-        lastPollTs = m.createdAt;
-        if (!panel.classList.contains("is-open")) showBadge("•");
-      }
-      // Track polling tip even when no new message, to avoid resending the
-      // entire conversation every poll.
-      if (body.messages && body.messages.length === 0) {
-        lastPollTs = new Date().toISOString();
-      }
+      // Errors fire when the connection drops; EventSource will reconnect by
+      // itself, no action needed beyond logging in dev.
     } catch {
-      /* network blip — try again next tick */
+      /* SSE unavailable (very old browsers) — degrade silently, the visitor
+         can still see admin messages on next page load via SSR */
     }
   }
-  let pollTimer: ReturnType<typeof setInterval> | null = null;
-  function startPolling(): void {
-    if (pollTimer) return;
-    void pollAdminReplies();
-    pollTimer = setInterval(() => void pollAdminReplies(), POLL_INTERVAL_MS);
-  }
-  function stopPolling(): void {
-    if (pollTimer) {
-      clearInterval(pollTimer);
-      pollTimer = null;
+  function stopStream(): void {
+    if (eventSource) {
+      eventSource.close();
+      eventSource = null;
     }
   }
 
@@ -445,13 +438,13 @@ function init(): void {
     state.opened = true;
     saveState();
     initializeConversation();
-    startPolling();
+    startStream();
     setTimeout(() => inputEl.focus(), 320);
   }
   function closePanel(): void {
     panel.classList.remove("is-open");
     fab.classList.remove("is-open");
-    stopPolling();
+    stopStream();
   }
 
   fab.addEventListener("click", () =>

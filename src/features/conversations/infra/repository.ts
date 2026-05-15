@@ -10,6 +10,7 @@ import type {
   MessageDirection,
 } from "../domain/types.ts";
 import { CHANNELS, STATUSES } from "../domain/types.ts";
+import { messageBus } from "./event-bus.ts";
 
 interface ConvRow {
   id: string;
@@ -17,6 +18,9 @@ interface ConvRow {
   client_id: string | null;
   visitor_name: string | null;
   visitor_email: string | null;
+  visitor_ip_hash: string | null;
+  user_agent: string | null;
+  started_page: string | null;
   subject: string | null;
   status: string;
   last_message_at: string;
@@ -40,6 +44,9 @@ function convRowToEntity(r: ConvRow): Conversation {
     clientId: r.client_id,
     visitorName: r.visitor_name,
     visitorEmail: r.visitor_email,
+    visitorIpHash: r.visitor_ip_hash,
+    userAgent: r.user_agent,
+    startedPage: r.started_page,
     subject: r.subject,
     status: (STATUSES.includes(r.status as ConversationStatus) ? r.status : "ouvert") as ConversationStatus,
     lastMessageAt: r.last_message_at,
@@ -105,21 +112,51 @@ export class ConversationsRepository {
     channel?: ConversationChannel;
     visitorName?: string | null;
     visitorEmail?: string | null;
+    visitorIpHash?: string | null;
+    userAgent?: string | null;
+    startedPage?: string | null;
     subject?: string | null;
   }): Conversation {
     const existing = this.get(input.id);
-    if (existing) return existing;
+    if (existing) {
+      // Refresh metadata when newly captured (UA might come on a later request).
+      if (input.visitorIpHash || input.userAgent || input.startedPage) {
+        db()
+          .prepare(
+            `UPDATE conversations
+             SET visitor_ip_hash = COALESCE(@ip, visitor_ip_hash),
+                 user_agent = COALESCE(@ua, user_agent),
+                 started_page = COALESCE(started_page, @page)
+             WHERE id = @id`,
+          )
+          .run({
+            id: input.id,
+            ip: input.visitorIpHash ?? null,
+            ua: input.userAgent ?? null,
+            page: input.startedPage ?? null,
+          });
+        const refreshed = this.get(input.id);
+        return refreshed ?? existing;
+      }
+      return existing;
+    }
     const now = new Date().toISOString();
     db()
       .prepare(
-        `INSERT INTO conversations (id, channel, visitor_name, visitor_email, subject, status, last_message_at, unread_count, created_at)
-         VALUES (@id, @channel, @visitorName, @visitorEmail, @subject, 'ouvert', @now, 0, @now)`,
+        `INSERT INTO conversations
+          (id, channel, visitor_name, visitor_email, visitor_ip_hash, user_agent, started_page,
+           subject, status, last_message_at, unread_count, created_at)
+         VALUES (@id, @channel, @visitorName, @visitorEmail, @ip, @ua, @page,
+                 @subject, 'ouvert', @now, 0, @now)`,
       )
       .run({
         id: input.id,
         channel: input.channel ?? "concierge",
         visitorName: input.visitorName ?? null,
         visitorEmail: input.visitorEmail ?? null,
+        ip: input.visitorIpHash ?? null,
+        ua: input.userAgent ?? null,
+        page: input.startedPage ?? null,
         subject: input.subject ?? null,
         now,
       });
@@ -130,7 +167,9 @@ export class ConversationsRepository {
 
   setStatus(id: string, status: ConversationStatus): Conversation | null {
     db().prepare("UPDATE conversations SET status = ? WHERE id = ?").run(status, id);
-    return this.get(id);
+    const updated = this.get(id);
+    if (updated) messageBus.emit("status", { conversationId: id, status });
+    return updated;
   }
 
   markAllRead(id: string): void {
@@ -158,7 +197,6 @@ export class ConversationsRepository {
         body: input.body,
         now,
       });
-    // bump conversation
     if (input.direction === "in") {
       db().prepare("UPDATE conversations SET last_message_at = ?, unread_count = unread_count + 1 WHERE id = ?")
         .run(now, input.conversationId);
@@ -166,7 +204,7 @@ export class ConversationsRepository {
       db().prepare("UPDATE conversations SET last_message_at = ? WHERE id = ?")
         .run(now, input.conversationId);
     }
-    return {
+    const message: ChatMessage = {
       id,
       conversationId: input.conversationId,
       direction: input.direction,
@@ -174,6 +212,8 @@ export class ConversationsRepository {
       body: input.body,
       createdAt: now,
     };
+    messageBus.emit("message", message);
+    return message;
   }
 
   messages(conversationId: string, opts: { sinceIso?: string; limit?: number } = {}): ChatMessage[] {
@@ -192,7 +232,6 @@ export class ConversationsRepository {
     return rows.map(msgRowToEntity);
   }
 
-  /** Outbound messages from staff that the visitor hasn't seen yet. */
   pollOutboundSince(conversationId: string, sinceIso: string): ChatMessage[] {
     const rows = db()
       .prepare<unknown[], MsgRow>(

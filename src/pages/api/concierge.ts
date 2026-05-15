@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { createHash } from "node:crypto";
 import { ChatRequestSchema } from "@features/concierge/domain/validation";
 import { ConciergeError } from "@features/concierge/domain/errors";
 import { getConciergeServices } from "@features/concierge/infra/composition";
@@ -11,6 +12,21 @@ function clientKey(req: Request, clientAddress: string | undefined): string {
   const fwd = req.headers.get("x-forwarded-for");
   if (fwd) return fwd.split(",")[0]?.trim() ?? "unknown";
   return req.headers.get("cf-connecting-ip") ?? "unknown";
+}
+
+function hashIp(ip: string): string {
+  // Daily-rotating salt: same visitor stays correlated through a day for
+  // session continuity, but the hash can't be linked back to the IP a week
+  // later. RGPD-friendly pseudonymisation.
+  const day = new Date().toISOString().slice(0, 10);
+  const salt = process.env.IP_SALT ?? "mf-static-fallback-salt";
+  return createHash("sha256").update(`${ip}|${day}|${salt}`).digest("hex").slice(0, 16);
+}
+
+function longestCommonPrefix(a: ReadonlyArray<string>, b: ReadonlyArray<string>): number {
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  return i;
 }
 
 function jsonResponse(body: unknown, init?: ResponseInit): Response {
@@ -44,6 +60,8 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   }
 
   const { history, sessionId } = parsed.data;
+  const visitorIpHash = hashIp(clientKey(request, clientAddress));
+  const visitorUa = request.headers.get("user-agent")?.slice(0, 240) ?? null;
 
   // Persist the visitor's message into the conversation log if a session id
   // was provided. We never let logging crash the visitor experience, so the
@@ -51,22 +69,30 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   let conversationStatus: "ouvert" | "en_cours" | "clos" = "ouvert";
   if (sessionId) {
     try {
-      const conv = conversationsRepo().upsert({ id: sessionId, channel: "concierge" });
+      const conv = conversationsRepo().upsert({
+        id: sessionId,
+        channel: "concierge",
+        visitorIpHash,
+        userAgent: visitorUa,
+      });
       conversationStatus = conv.status;
-      const lastUser = [...history].reverse().find((m) => m.role === "user");
-      if (lastUser) {
-        // Avoid double-logging if the same text is the most recent in DB.
-        const existing = conversationsRepo().messages(sessionId, { limit: 1 });
-        const newest = existing.length > 0 ? existing[existing.length - 1] : undefined;
-        const isDuplicate = newest && newest.direction === "in" && newest.body === lastUser.text;
-        if (!isDuplicate) {
-          conversationsRepo().appendMessage({
-            conversationId: sessionId,
-            direction: "in",
-            author: "visitor",
-            body: lastUser.text,
-          });
-        }
+      // Sync the full visitor-side history with the DB. Walk through the
+      // visitor messages in order; whatever is past what we already have in
+      // DB is appended. This keeps capture robust to retries, dropped
+      // messages, and bursts of messages between Marie's replies.
+      const visitorMessages = history.filter((m) => m.role === "user").map((m) => m.text);
+      const existing = conversationsRepo()
+        .messages(sessionId, { limit: 500 })
+        .filter((m) => m.direction === "in")
+        .map((m) => m.body);
+      const overlap = longestCommonPrefix(existing, visitorMessages);
+      for (let i = overlap; i < visitorMessages.length; i++) {
+        conversationsRepo().appendMessage({
+          conversationId: sessionId,
+          direction: "in",
+          author: "visitor",
+          body: visitorMessages[i] ?? "",
+        });
       }
     } catch {
       /* logging failure should never break the visitor flow */

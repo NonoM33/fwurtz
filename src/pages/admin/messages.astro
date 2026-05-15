@@ -19,6 +19,32 @@ function formatTime(iso: string): string {
   }
   return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
 }
+
+/** Convert a raw user-agent into "Browser / OS" — best-effort, no library. */
+function shortUa(ua: string | null): string {
+  if (!ua) return "Inconnu";
+  const browser = /Edg\//.test(ua)
+    ? "Edge"
+    : /Chrome\//.test(ua) && !/Chromium/.test(ua)
+      ? "Chrome"
+      : /Safari\//.test(ua) && !/Chrome\//.test(ua)
+        ? "Safari"
+        : /Firefox\//.test(ua)
+          ? "Firefox"
+          : "Navigateur";
+  const os = /Mac OS X/.test(ua)
+    ? "macOS"
+    : /Windows NT/.test(ua)
+      ? "Windows"
+      : /Android/.test(ua)
+        ? "Android"
+        : /iPhone|iPad/.test(ua)
+          ? "iOS"
+          : /Linux/.test(ua)
+            ? "Linux"
+            : "OS";
+  return `${browser} · ${os}`;
+}
 ---
 
 <AdminLayout
@@ -41,20 +67,21 @@ function formatTime(iso: string): string {
     <div class="convo__list">
       <div class="convo__filter">
         <div class="tabs">
-          <button class="tabs__tab is-active">Tous ({conversations.length})</button>
+          <button class="tabs__tab is-active">Tous (<span id="convo-count">{conversations.length}</span>)</button>
         </div>
       </div>
-      <div class="convo__items">
+      <div class="convo__items" id="convo-items">
         {conversations.length === 0 && (
           <div class="empty" style="padding: 48px 24px;">
             <div class="empty__title">Aucune conversation</div>
-            <div class="empty__sub">Les échanges des visiteurs avec Marie apparaîtront ici.</div>
+            <div class="empty__sub">Les échanges des visiteurs avec Marie apparaîtront ici en temps réel.</div>
           </div>
         )}
         {conversations.map(({ conversation, lastMessage }) => (
           <a
             class={`convo-item${conversation.id === activeId ? " is-active" : ""}`}
             href={`/admin/messages?c=${encodeURIComponent(conversation.id)}`}
+            data-cid={conversation.id}
           >
             <div class="convo-item__avatar">
               {conversation.visitorName ? conversation.visitorName.slice(0, 2).toUpperCase() : "??"}
@@ -78,6 +105,9 @@ function formatTime(iso: string): string {
               </div>
               <div class="convo-item__source">
                 {conversation.channel} · {STATUS_LABELS[conversation.status]}
+                {conversation.visitorIpHash && (
+                  <> · <span style="color: var(--gold);">IP {conversation.visitorIpHash.slice(0, 6)}</span></>
+                )}
               </div>
             </div>
             {conversation.unreadCount > 0 && conversation.id !== activeId && (
@@ -99,9 +129,17 @@ function formatTime(iso: string): string {
               <div style="font-family: var(--font-serif); font-size: 16px; color: var(--ink); font-weight: 500;">
                 {active.visitorName ?? "Visiteur anonyme"}
               </div>
-              <div style="font-size: 12px; color: var(--ink-3);">
-                ID <code style="font-family: ui-monospace, monospace; font-size: 11px;">{active.id.slice(0, 8)}…</code>
-                · Démarrée {formatTime(active.createdAt)}
+              <div style="font-size: 11px; color: var(--ink-4); display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 4px;">
+                <span title="Identifiant de session" style="font-family: ui-monospace, monospace;">
+                  ID <code>{active.id.slice(0, 8)}…</code>
+                </span>
+                {active.visitorIpHash && (
+                  <span title="IP hashée RGPD-friendly (rotation quotidienne du sel)" style="font-family: ui-monospace, monospace; color: var(--gold);">
+                    IP {active.visitorIpHash}
+                  </span>
+                )}
+                <span>{shortUa(active.userAgent)}</span>
+                <span>Démarrée {formatTime(active.createdAt)}</span>
               </div>
             </div>
             <div class="row-actions" style="margin-left: auto;">
@@ -154,16 +192,16 @@ function formatTime(iso: string): string {
   </div>
 
   {active && (
-    <script is:inline define:vars={{ convId: active.id, currentStatus: active.status }}>
+    <script is:inline define:vars={{ convId: active.id }}>
       const stream = document.getElementById("msg-stream");
       const inputEl = document.getElementById("reply-input");
       const sendBtn = document.getElementById("reply-send");
-      const statusBadge = document.getElementById("status-badge");
 
       function scrollDown() { stream.scrollTop = stream.scrollHeight; }
       scrollDown();
 
       function appendMessage(m, direction) {
+        if (stream.querySelector(`[data-mid="${m.id}"]`)) return; // dedupe
         const bubble = document.createElement("div");
         bubble.className = "convo__msg " + (direction === "in" ? "convo__msg--in" : "convo__msg--out");
         bubble.dataset.mid = m.id;
@@ -211,21 +249,50 @@ function formatTime(iso: string): string {
       takeBtn?.addEventListener("click", () => setStatus("en_cours"));
       giveBtn?.addEventListener("click", () => setStatus("ouvert"));
 
-      // Light auto-refresh: pull new messages every 5s.
-      let lastRefresh = new Date().toISOString();
-      setInterval(async () => {
+      // Real-time stream for THIS conversation. EventSource auto-reconnects.
+      const es = new EventSource("/api/admin/conversations/stream?conversationId=" + encodeURIComponent(convId));
+      es.addEventListener("message", (ev) => {
         try {
-          const r = await fetch("/api/admin/conversations/" + encodeURIComponent(convId) + "?markRead=1");
-          if (!r.ok) return;
-          const data = await r.json();
-          const known = new Set(Array.from(stream.querySelectorAll("[data-mid]")).map((el) => el.dataset.mid));
-          for (const m of data.messages) {
-            if (known.has(m.id)) continue;
-            appendMessage(m, m.direction);
-          }
-          lastRefresh = new Date().toISOString();
+          const data = JSON.parse(ev.data);
+          appendMessage(data, data.direction);
         } catch {}
-      }, 5000);
+      });
+      window.addEventListener("beforeunload", () => es.close());
     </script>
   )}
+
+  <script is:inline>
+    // Global stream feeding the conversation list (badges, new convos).
+    const itemsEl = document.getElementById("convo-items");
+    const countEl = document.getElementById("convo-count");
+    if (itemsEl) {
+      const globalEs = new EventSource("/api/admin/conversations/stream");
+      globalEs.addEventListener("message", (ev) => {
+        try {
+          const m = JSON.parse(ev.data);
+          if (m.direction !== "in") return;
+          const link = itemsEl.querySelector(`[data-cid="${m.conversationId}"]`);
+          if (link) {
+            // Bump the preview line + dot
+            const preview = link.querySelector(".convo-item__preview");
+            if (preview) preview.textContent = m.body.slice(0, 80);
+            const time = link.querySelector(".convo-item__time");
+            if (time) time.textContent = new Date(m.createdAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }).replace(":", "h");
+            if (!link.classList.contains("is-active") && !link.querySelector(".convo-item__dot")) {
+              const dot = document.createElement("div");
+              dot.className = "convo-item__dot";
+              link.appendChild(dot);
+            }
+            // Move to the top of the list
+            itemsEl.prepend(link);
+          } else {
+            // New conversation that wasn't in the SSR snapshot — reload to fetch it
+            // (rare; keeps DOM logic simple)
+            window.location.reload();
+          }
+        } catch {}
+      });
+      window.addEventListener("beforeunload", () => globalEs.close());
+    }
+  </script>
 </AdminLayout>

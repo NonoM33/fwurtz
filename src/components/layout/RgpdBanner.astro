@@ -1,0 +1,102 @@
+<div class="rgpd-banner" id="rgpd-banner" role="region" aria-label="Politique de confidentialité" hidden>
+  <div class="rgpd-banner__inner">
+    <div class="rgpd-banner__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2 L21 6 V12 C21 17 17 21 12 22 C7 21 3 17 3 12 V6 Z"></path>
+        <path d="M9 12 L11 14 L15 10"></path>
+      </svg>
+    </div>
+    <div class="rgpd-banner__body">
+      <p>
+        <strong>Confidentialité.</strong> Maison Fwurtz utilise vos messages et formulaires
+        uniquement pour vous répondre. Pour la sécurité, votre adresse IP est transformée en
+        identifiant anonyme à rotation quotidienne — aucun cookie de pistage publicitaire.
+        <a href="/mentions-legales">En savoir plus</a>.
+      </p>
+    </div>
+    <div class="rgpd-banner__actions">
+      <button class="rgpd-banner__btn" id="rgpd-accept" type="button">J'ai compris</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .rgpd-banner {
+    position: fixed;
+    inset: auto 16px 16px;
+    z-index: 200;
+    background: rgba(11, 23, 41, 0.95);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--gold-line);
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    color: var(--ink-2);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.5;
+    transform: translateY(120%);
+    transition: transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .rgpd-banner.is-visible { transform: translateY(0); }
+  .rgpd-banner__inner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 16px;
+    align-items: center;
+  }
+  .rgpd-banner__icon {
+    color: var(--gold);
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  .rgpd-banner__icon svg { width: 100%; height: 100%; }
+  .rgpd-banner__body p { margin: 0; }
+  .rgpd-banner__body a { color: var(--gold); text-decoration: underline; }
+  .rgpd-banner__btn {
+    background: var(--gold);
+    color: var(--navy-950);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 180ms;
+    flex-shrink: 0;
+  }
+  .rgpd-banner__btn:hover { background: var(--gold-bright); }
+
+  @media (max-width: 640px) {
+    .rgpd-banner__inner {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .rgpd-banner__icon { display: none; }
+    .rgpd-banner__btn { width: 100%; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const STORAGE_KEY = "mf-rgpd-ack-v1";
+    const banner = document.getElementById("rgpd-banner");
+    const accept = document.getElementById("rgpd-accept");
+    if (!banner || !accept) return;
+    let ack = false;
+    try { ack = localStorage.getItem(STORAGE_KEY) === "1"; } catch {}
+    if (ack) return;
+    banner.hidden = false;
+    requestAnimationFrame(() => banner.classList.add("is-visible"));
+    accept.addEventListener("click", () => {
+      try { localStorage.setItem(STORAGE_KEY, "1"); } catch {}
+      banner.classList.remove("is-visible");
+      setTimeout(() => { banner.hidden = true; }, 350);
+    });
+  })();
+</script>

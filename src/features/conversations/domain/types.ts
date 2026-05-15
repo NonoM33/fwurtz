@@ -19,6 +19,9 @@ export interface Conversation {
   clientId: string | null;
   visitorName: string | null;
   visitorEmail: string | null;
+  visitorIpHash: string | null;
+  userAgent: string | null;
+  startedPage: string | null;
   subject: string | null;
   status: ConversationStatus;
   lastMessageAt: string;
