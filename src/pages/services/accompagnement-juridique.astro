@@ -1,0 +1,151 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Accompagnement juridique — Maison Fwurtz"
+  description="Orientation juridique sur mesure pour sécuriser vos contrats, statuts et obligations courantes."
+  active="services"
+>
+<section class="page-hero" style="min-height: 480px;">
+  <div class="page-hero__bg"><div class="hero__photo"><div class="hero-portrait"><div class="hero-portrait__silhouette"></div></div></div><div class="hero__overlay"></div></div>
+  <div class="container"><div class="breadcrumb" style="padding-top: 24px;"><a href="/">Accueil</a><svg class="breadcrumb__sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6l6 6-6 6"/></svg><a href="/services">Services</a><svg class="breadcrumb__sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6l6 6-6 6"/></svg><span class="breadcrumb__current">Accompagnement juridique</span></div></div>
+  <div class="container"><div class="page-hero__grid" style="padding-top: 24px;">
+    <div class="page-hero__content">
+      <div class="reveal"><span class="eyebrow">Accompagnement juridique</span></div>
+      <h1 class="reveal reveal-delay-1 serif">Un accompagnement juridique simple, clair et sécurisé <em class="italic">pour entreprendre sereinement.</em></h1>
+      <div class="reveal reveal-delay-2"><div class="divider"></div></div>
+      <p class="lead reveal reveal-delay-2">Nous vous guidons dans vos démarches et sécurisons vos projets pour que vous puissiez vous concentrer sur l'essentiel : le développement de votre activité.</p>
+      <div class="reveal reveal-delay-3" style="margin-top: 30px;"><a class="btn btn--outline" href="#" data-open-rdv>Parlons de votre projet</a></div>
+    </div>
+    <div class="reveal reveal-delay-2">
+      <div class="slot-frame slot-frame--tall" style="max-height: 460px; height: 100%;">
+        <image-slot id="services-accompagnement-juridi" shape="rounded" radius="12" placeholder="Glissez portrait formel" style="width:100%; height:100%;"></image-slot>
+        <div class="slot-frame__caption">Portrait formel</div>
+      </div>
+    </div>
+  </div></div>
+</section>
+<section class="section" style="background: var(--navy-900);">
+  <div class="container">
+    <div class="two-col" style="gap: 80px;">
+      <div class="reveal">
+        <span class="eyebrow">Notre approche</span>
+        <h2 class="serif" style="margin-top: 18px; font-size: 36px; line-height: 1.15;"><em class="italic">Vous conseiller</em>, vous orienter, vous protéger.</h2>
+        <p style="margin-top: 24px; color: var(--ink-2); font-size: 15px; line-height: 1.7;">Chaque situation est unique. Nous analysons vos besoins et vous apportons des solutions juridiques adaptées à votre activité, en toute simplicité et en toute confidentialité.</p>
+        <ul class="checklist" style="margin-top: 28px;">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Analyse de votre situation et de vos besoins</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Conseils personnalisés et adaptés à votre activité</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Rédaction et vérification de documents juridiques</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Sécurisation de vos contrats et engagements</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Suivi et accompagnement dans la durée</span></li>
+        </ul>
+      </div>
+      <div class="slot-frame slot-frame--landscape reveal reveal-delay-1">
+        <image-slot id="juridique-photo" shape="rounded" radius="12" placeholder="Glissez une photo : bibliothèque juridique" style="width:100%; height:100%;"></image-slot>
+        <div class="slot-frame__caption">Bibliothèque — droit & contrats</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ section -->
+<section class="section" style="background: var(--navy-950);">
+  <div class="container">
+    <div class="two-col" style="gap: 64px; align-items: start;">
+      <div class="reveal">
+        <span class="eyebrow">Questions fréquentes</span>
+        <h2 class="serif" style="margin-top: 18px; font-size: 36px; line-height: 1.15;">Les questions <em class="italic" style="color: var(--gold);">que l'on nous pose</em> le plus souvent.</h2>
+        <div class="divider"></div>
+        <p style="font-size: 14.5px; color: var(--ink-3); margin-top: 20px;">Vous ne trouvez pas votre réponse&nbsp;? Écrivez-nous directement.</p>
+        <a class="btn btn--outline" href="/contact" style="margin-top: 20px;">Poser ma question</a>
+      </div>
+      <div class="faq reveal reveal-delay-1">
+        <div class="faq__item">
+          <button class="faq__btn">Êtes-vous avocate&nbsp;? <svg class="faq__btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <div class="faq__panel"><div class="faq__panel-inner">Non. J'accompagne et oriente, mais je ne plaide pas. Pour les contentieux ou actes notariés, je travaille en binôme avec un réseau de professionnels qualifiés que je vous présente si besoin.</div></div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__btn">À partir de quel budget travailler ensemble&nbsp;? <svg class="faq__btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <div class="faq__panel"><div class="faq__panel-inner">Un audit ponctuel démarre à 350&nbsp;€. Un accompagnement mensuel à 480&nbsp;€/mois. Chaque devis est calibré sur vos besoins réels après notre premier échange — pas avant.</div></div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__btn">Quels documents pouvez-vous rédiger&nbsp;? <svg class="faq__btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <div class="faq__panel"><div class="faq__panel-inner">CGV, CGU, mentions légales, contrats commerciaux courants, NDA, lettres formelles, mises en demeure d'usage. Pour les actes complexes — statuts, pactes d'associés — je vous oriente vers un avocat de confiance.</div></div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__btn">La confidentialité, comment c'est garanti&nbsp;? <svg class="faq__btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <div class="faq__panel"><div class="faq__panel-inner">Accord de confidentialité signé en début de mission, hébergement RGPD-compliant, communications chiffrées. Vos documents ne sortent jamais d'un cercle de deux personnes.</div></div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__btn">Délai de réponse moyen&nbsp;? <svg class="faq__btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <div class="faq__panel"><div class="faq__panel-inner">24h ouvrées pour un premier retour, qu'il s'agisse d'une demande nouvelle ou d'un client en cours d'accompagnement. Pour les urgences caractérisées, un canal direct vous est ouvert.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section" style="background: var(--navy-950);">
+  <div class="container">
+    <div class="reveal" style="margin-bottom: 36px;"><span class="eyebrow">Nos prestations</span></div>
+    <div class="services-grid reveal reveal-delay-1" style="grid-template-columns: repeat(5, 1fr);">
+      <div class="service-card" style="text-align: left;">
+        <div style="width: 32px; height: 32px; color: var(--gold); margin-bottom: 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="21"/><line x1="7" y1="21" x2="17" y2="21"/><path d="M7 6 L4 13 H10 Z"/><path d="M17 6 L14 13 H20 Z"/><line x1="7" y1="6" x2="17" y2="6"/></svg></div>
+        <h3 style="font-size: 17px; text-align: left;">Conseil juridique</h3>
+        <p style="text-align: left;">Nous vous conseillons sur vos droits, obligations et choix juridiques pour sécuriser vos décisions.</p>
+      </div><div class="service-card" style="text-align: left;">
+        <div style="width: 32px; height: 32px; color: var(--gold); margin-bottom: 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3 H15 L19 7 V21 H6 Z"/><polyline points="15 3 15 7 19 7"/><line x1="9" y1="13" x2="16" y2="13"/><line x1="9" y1="17" x2="16" y2="17"/></svg></div>
+        <h3 style="font-size: 17px; text-align: left;">Rédaction de contrats</h3>
+        <p style="text-align: left;">Rédaction et relecture de contrats, CGV, mentions légales et autres documents juridiques.</p>
+      </div><div class="service-card" style="text-align: left;">
+        <div style="width: 32px; height: 32px; color: var(--gold); margin-bottom: 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L20 5 V11 C20 16 16.5 19.5 12 21 C7.5 19.5 4 16 4 11 V5 Z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+        <h3 style="font-size: 17px; text-align: left;">Protection de votre activité</h3>
+        <p style="text-align: left;">Nous sécurisons vos relations commerciales et vos engagements pour prévenir les risques et litiges.</p>
+      </div><div class="service-card" style="text-align: left;">
+        <div style="width: 32px; height: 32px; color: var(--gold); margin-bottom: 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21 C4 16 8 14 12 14 C16 14 20 16 20 21"/></svg></div>
+        <h3 style="font-size: 17px; text-align: left;">Accompagnement</h3>
+        <p style="text-align: left;">Un suivi personnalisé pour répondre à vos questions et vous guider dans vos démarches juridiques au quotidien.</p>
+      </div><div class="service-card" style="text-align: left;">
+        <div style="width: 32px; height: 32px; color: var(--gold); margin-bottom: 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21 L7 17 L17 7 L21 11 L11 21 Z"/></svg></div>
+        <h3 style="font-size: 17px; text-align: left;">Mise en conformité</h3>
+        <p style="text-align: left;">Nous vous aidons à vous mettre en conformité avec la réglementation applicable à votre activité.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section" style="background: var(--navy-900);">
+  <div class="container">
+    <div class="two-col" style="gap: 64px; margin-bottom: 56px;">
+      <div class="reveal">
+        <span class="eyebrow">Pourquoi choisir Maison Fwurtz ?</span>
+        
+        
+        
+      </div>
+      <div class="reveal reveal-delay-1" style="display: grid; grid-template-columns: 1fr 1fr; gap: 28px 32px;">
+        <div style="display:grid; grid-template-columns: 44px 1fr; gap: 14px;">
+          <div style="width: 40px; height: 40px; border: 1px solid var(--gold-line); border-radius: 999px; display:flex; align-items:center; justify-content:center; color: var(--gold);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11 V7 a4 4 0 018 0 V11"/></svg></div>
+          <div><h4 class="serif" style="font-size: 17px; color: var(--ink); margin: 6px 0 6px;">Confidentialité absolue</h4><p style="font-size: 13px; color: var(--ink-3); margin: 0; line-height: 1.55;">Vos informations sont traitées avec la plus grande discrétion et en toute sécurité.</p></div>
+        </div><div style="display:grid; grid-template-columns: 44px 1fr; gap: 14px;">
+          <div style="width: 40px; height: 40px; border: 1px solid var(--gold-line); border-radius: 999px; display:flex; align-items:center; justify-content:center; color: var(--gold);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></div>
+          <div><h4 class="serif" style="font-size: 17px; color: var(--ink); margin: 6px 0 6px;">Réactivité & disponibilité</h4><p style="font-size: 13px; color: var(--ink-3); margin: 0; line-height: 1.55;">Nous répondons rapidement à vos besoins pour vous apporter des solutions efficaces.</p></div>
+        </div><div style="display:grid; grid-template-columns: 44px 1fr; gap: 14px;">
+          <div style="width: 40px; height: 40px; border: 1px solid var(--gold-line); border-radius: 999px; display:flex; align-items:center; justify-content:center; color: var(--gold);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21 C4 16 8 14 12 14 C16 14 20 16 20 21"/></svg></div>
+          <div><h4 class="serif" style="font-size: 17px; color: var(--ink); margin: 6px 0 6px;">Solutions sur mesure</h4><p style="font-size: 13px; color: var(--ink-3); margin: 0; line-height: 1.55;">Chaque accompagnement est adapté à votre activité et à vos objectifs.</p></div>
+        </div><div style="display:grid; grid-template-columns: 44px 1fr; gap: 14px;">
+          <div style="width: 40px; height: 40px; border: 1px solid var(--gold-line); border-radius: 999px; display:flex; align-items:center; justify-content:center; color: var(--gold);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="9" r="6"/><polyline points="9 14 7 21 12 18 17 21 15 14"/></svg></div>
+          <div><h4 class="serif" style="font-size: 17px; color: var(--ink); margin: 6px 0 6px;">Sécurité juridique</h4><p style="font-size: 13px; color: var(--ink-3); margin: 0; line-height: 1.55;">Nous vous aidons à sécuriser vos projets et à entreprendre en toute sérénité.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section--tight" style="background: var(--navy-950); padding-bottom: var(--section);">
+  <div class="container">
+    <div class="cta-band reveal">
+      <div style="display:flex; align-items:center; gap: 20px;">
+        <div style="width: 44px; height: 44px; border: 1px solid var(--gold-line); border-radius: 999px; display:flex; align-items:center; justify-content:center; color: var(--gold); flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg></div>
+        <div class="cta-band__title">Besoin d'un accompagnement <em class="italic" style="font-style:italic; color:var(--gold); display:block;">juridique ?</em></div>
+      </div>
+      <p class="cta-band__sub">Échangeons sur vos besoins et construisons ensemble la meilleure solution.</p>
+      <a class="btn btn--outline" href="#" data-open-rdv>Prendre rendez-vous</a>
+    </div>
+  </div>
+</section>
+</BaseLayout>

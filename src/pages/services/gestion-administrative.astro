@@ -1,0 +1,132 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Gestion administrative — Maison Fwurtz"
+  description="Organisation, suivi des échéances, classement, courriers — déléguez votre administratif en toute confiance."
+  active="services"
+>
+<section class="page-hero" style="min-height: 480px;">
+  <div class="page-hero__bg"><div class="hero__photo"><div class="hero-portrait"><div class="hero-portrait__silhouette"></div></div></div><div class="hero__overlay"></div></div>
+  <div class="container"><div class="breadcrumb" style="padding-top: 24px;"><a href="/">Accueil</a><svg class="breadcrumb__sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6l6 6-6 6"/></svg><a href="/services">Services</a><svg class="breadcrumb__sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6l6 6-6 6"/></svg><span class="breadcrumb__current">Gestion administrative</span></div></div>
+  <div class="container"><div class="page-hero__grid" style="padding-top: 24px;">
+    <div class="page-hero__content">
+      <div class="reveal"><span class="eyebrow">Gestion administrative</span></div>
+      <h1 class="reveal reveal-delay-1 serif">Une gestion administrative fluide pour vous faire gagner du temps et <em class="italic">vous concentrer sur l'essentiel.</em></h1>
+      <div class="reveal reveal-delay-2"><div class="divider"></div></div>
+      <p class="lead reveal reveal-delay-2">Nous prenons en charge vos tâches administratives quotidiennes avec rigueur, discrétion et efficacité, pour vous offrir sérénité et organisation.</p>
+      <div class="reveal reveal-delay-3" style="margin-top: 30px;"><a class="btn btn--outline" href="#" data-open-rdv>Parlons de vos besoins</a></div>
+    </div>
+    <div class="reveal reveal-delay-2">
+      <div class="slot-frame slot-frame--tall" style="max-height: 460px; height: 100%;">
+        <image-slot id="services-gestion-administrativ" shape="rounded" radius="12" placeholder="Glissez portrait — bureau" style="width:100%; height:100%;"></image-slot>
+        <div class="slot-frame__caption">Portrait — bureau</div>
+      </div>
+    </div>
+  </div></div>
+</section>
+<section class="section" style="background: var(--navy-900);">
+  <div class="container">
+    <div class="two-col" style="gap: 80px;">
+      <div class="reveal">
+        <span class="eyebrow">Notre approche</span>
+        <h2 class="serif" style="margin-top: 18px; font-size: 36px; line-height: 1.15;"><em class="italic">Un accompagnement rigoureux</em> et adapté à votre activité.</h2>
+        <p style="margin-top: 24px; color: var(--ink-2); font-size: 15px; line-height: 1.7;">Chaque entreprise a ses propres besoins. Nous adaptons notre intervention à votre organisation pour vous apporter un soutien sur mesure, fiable et durable.</p>
+        <ul class="checklist" style="margin-top: 28px;">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Organisation et suivi administratif complets</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Gestion des documents et des dossiers</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Suivi des échéances et des obligations</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Optimisation des processus administratifs</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Confidentialité et discrétion garanties</span></li>
+        </ul>
+      </div>
+      <div class="slot-frame slot-frame--landscape reveal reveal-delay-1">
+        <image-slot id="gestion-photo" shape="rounded" radius="12" placeholder="Glissez une photo : classeurs et bureau" style="width:100%; height:100%;"></image-slot>
+        <div class="slot-frame__caption">Classeurs et bureau — gestion documentaire</div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section" style="background: var(--navy-950);">
+  <div class="container">
+    <div class="section-head reveal" style="text-align: left; margin-bottom: 48px;">
+      <span class="eyebrow">Nos prestations</span>
+      <h2 class="serif" style="margin-top: 18px; font-size: 36px;">Chaque détail mérite sa place. <em class="italic" style="color: var(--gold);">Voici les vôtres.</em></h2>
+      <div class="divider"></div>
+    </div>
+    <div class="editorial-list reveal reveal-delay-1">
+      <div class="editorial">
+        <div class="editorial__step">Documents</div>
+        <div>
+          <h3>Gestion documentaire complète</h3>
+          <p>Classement intelligent, archivage numérique, recherche instantanée. Vos factures, contrats et courriers retrouvent leur place — et vous, le contrôle.</p>
+        </div>
+      </div>
+      <div class="editorial">
+        <div class="editorial__step">Échéances</div>
+        <div>
+          <h3>Suivi administratif rigoureux</h3>
+          <p>Plus jamais d'échéance manquée. Nous orchestrons vos relances, rappels et obligations légales avec la précision d'un métronome — sans le bruit.</p>
+        </div>
+      </div>
+      <div class="editorial">
+        <div class="editorial__step">Correspondance</div>
+        <div>
+          <h3>Rédaction & traitement</h3>
+          <p>Courriers, comptes rendus, emails délicats. Une plume qui sait ajuster son ton — administratif, commercial, juridique — sans jamais perdre la vôtre.</p>
+        </div>
+      </div>
+      <div class="editorial">
+        <div class="editorial__step">Fournisseurs</div>
+        <div>
+          <h3>Relations & suivi commercial</h3>
+          <p>De la commande à la facture, de la négociation à la relance. Une interface unique pour vos fournisseurs — et un interlocuteur qui parle leur langue.</p>
+        </div>
+      </div>
+      <div class="editorial">
+        <div class="editorial__step">Reporting</div>
+        <div>
+          <h3>Tableaux de pilotage</h3>
+          <p>Des indicateurs lisibles, mis à jour chaque semaine. Pas du dashboard pour dashboard — des chiffres qui éclairent vos décisions.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section" style="background: var(--navy-900);">
+  <div class="container">
+    <div class="two-col" style="gap: 64px; margin-bottom: 56px;">
+      <div class="reveal">
+        <span class="eyebrow">Pourquoi choisir Maison Fwurtz ?</span>
+        
+        
+        
+      </div>
+      <div class="reveal reveal-delay-1" style="display: grid; grid-template-columns: 1fr 1fr; gap: 28px 32px;">
+        <div style="display:grid; grid-template-columns: 44px 1fr; gap: 14px;">
+          <div style="width: 40px; height: 40px; border: 1px solid var(--gold-line); border-radius: 999px; display:flex; align-items:center; justify-content:center; color: var(--gold);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L20 5 V11 C20 16 16.5 19.5 12 21 C7.5 19.5 4 16 4 11 V5 Z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+          <div><h4 class="serif" style="font-size: 17px; color: var(--ink); margin: 6px 0 6px;">Fiabilité & confidentialité</h4><p style="font-size: 13px; color: var(--ink-3); margin: 0; line-height: 1.55;">Vos informations sont traitées avec la plus grande discrétion et en toute sécurité.</p></div>
+        </div><div style="display:grid; grid-template-columns: 44px 1fr; gap: 14px;">
+          <div style="width: 40px; height: 40px; border: 1px solid var(--gold-line); border-radius: 999px; display:flex; align-items:center; justify-content:center; color: var(--gold);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></div>
+          <div><h4 class="serif" style="font-size: 17px; color: var(--ink); margin: 6px 0 6px;">Gain de temps</h4><p style="font-size: 13px; color: var(--ink-3); margin: 0; line-height: 1.55;">Nous prenons en charge vos tâches chronophages pour vous permettre de vous concentrer sur votre cœur de métier.</p></div>
+        </div><div style="display:grid; grid-template-columns: 44px 1fr; gap: 14px;">
+          <div style="width: 40px; height: 40px; border: 1px solid var(--gold-line); border-radius: 999px; display:flex; align-items:center; justify-content:center; color: var(--gold);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></div>
+          <div><h4 class="serif" style="font-size: 17px; color: var(--ink); margin: 6px 0 6px;">Organisation optimale</h4><p style="font-size: 13px; color: var(--ink-3); margin: 0; line-height: 1.55;">Des processus clairs et efficaces pour une gestion administrative structurée et sans stress.</p></div>
+        </div><div style="display:grid; grid-template-columns: 44px 1fr; gap: 14px;">
+          <div style="width: 40px; height: 40px; border: 1px solid var(--gold-line); border-radius: 999px; display:flex; align-items:center; justify-content:center; color: var(--gold);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21 C4 16 8 14 12 14 C16 14 20 16 20 21"/></svg></div>
+          <div><h4 class="serif" style="font-size: 17px; color: var(--ink); margin: 6px 0 6px;">Flexibilité</h4><p style="font-size: 13px; color: var(--ink-3); margin: 0; line-height: 1.55;">Un accompagnement adapté à vos besoins, que ce soit ponctuel ou régulier.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section--tight" style="background: var(--navy-950); padding-bottom: var(--section);">
+  <div class="container">
+    <div class="cta-band reveal">
+      <div style="display:flex; align-items:center; gap: 20px;">
+        <div style="width: 44px; height: 44px; border: 1px solid var(--gold-line); border-radius: 999px; display:flex; align-items:center; justify-content:center; color: var(--gold); flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg></div>
+        <div class="cta-band__title">Déléguez votre administratif <em class="italic" style="font-style:italic; color:var(--gold); display:block;">en toute confiance.</em></div>
+      </div>
+      <p class="cta-band__sub">Échangeons sur vos besoins et construisons ensemble la meilleure solution.</p>
+      <a class="btn btn--outline" href="#" data-open-rdv>Prendre rendez-vous</a>
+    </div>
+  </div>
+</section>
+</BaseLayout>

@@ -1,0 +1,154 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Processus — Maison Fwurtz"
+  description="La méthode Maison Fwurtz, de l'échange initial à l'accompagnement au long cours."
+  active="processus"
+>
+<section class="page-hero">
+  <div class="page-hero__bg"><div class="hero__photo"><div class="hero-portrait"><div class="hero-portrait__silhouette"></div></div></div><div class="hero__overlay"></div></div>
+  <div class="container"><div class="page-hero__grid">
+    <div class="page-hero__content">
+      <div class="reveal"><span class="eyebrow">Notre processus</span></div>
+      <h1 class="reveal reveal-delay-1 serif">Une méthode <em class="italic">claire</em>, fluide et efficace.</h1>
+      <div class="reveal reveal-delay-2"><div class="divider"></div></div>
+      <p class="lead reveal reveal-delay-2">Chaque projet suit un processus structuré pour garantir des résultats concrets et un accompagnement sur mesure, à chaque étape.</p>
+    </div>
+    <div class="reveal reveal-delay-2">
+      <div class="slot-frame slot-frame--tall" style="max-height: 460px; height: 100%;">
+        <image-slot id="processus-hero" shape="rounded" radius="12" placeholder="Glissez carnet de travail" style="width:100%; height:100%;"></image-slot>
+        <div class="slot-frame__caption">Carnet de travail</div>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<section class="section" style="background: var(--navy-900);">
+  <div class="container">
+    <div class="reveal" style="margin-bottom: 48px;">
+      <span class="eyebrow">Les étapes clés</span>
+    </div>
+    <div class="steps steps--4">
+      <div class="step reveal">
+        <div style="display:flex; align-items: baseline; gap: 12px; margin-bottom: 14px;">
+          <span class="step__num" style="margin-bottom: 0;">01</span>
+          <svg class="step__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-top:0;"><rect x="3" y="5" width="18" height="13" rx="1.5"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="22" x2="15" y2="22"/></svg>
+        </div>
+        <h3 class="serif">Échange</h3>
+        <p>Nous prenons le temps de comprendre votre projet, vos objectifs et vos enjeux lors d'un premier échange.</p>
+      </div>
+      <div class="step reveal reveal-delay-1">
+        <div style="display:flex; align-items: baseline; gap: 12px; margin-bottom: 14px;">
+          <span class="step__num" style="margin-bottom: 0;">02</span>
+          <svg class="step__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-top:0;"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+        </div>
+        <h3 class="serif">Analyse</h3>
+        <p>Nous analysons votre situation, votre marché et vos besoins pour construire une stratégie adaptée.</p>
+      </div>
+      <div class="step reveal reveal-delay-2">
+        <div style="display:flex; align-items: baseline; gap: 12px; margin-bottom: 14px;">
+          <span class="step__num" style="margin-bottom: 0;">03</span>
+          <svg class="step__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-top:0;"><circle cx="12" cy="12" r="3"/><path d="M12 1v6M12 17v6M4.2 4.2l4.3 4.3M15.5 15.5l4.3 4.3M1 12h6M17 12h6M4.2 19.8l4.3-4.3M15.5 8.5l4.3-4.3"/></svg>
+        </div>
+        <h3 class="serif">Mise en place</h3>
+        <p>Nous déployons les solutions définies avec rigueur et organisons chaque étape de manière efficace.</p>
+      </div>
+      <div class="step reveal reveal-delay-3">
+        <div style="display:flex; align-items: baseline; gap: 12px; margin-bottom: 14px;">
+          <span class="step__num" style="margin-bottom: 0;">04</span>
+          <svg class="step__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-top:0;"><path d="M3 17 L9 11 L13 15 L21 7"/><path d="M15 7 L21 7 L21 13"/></svg>
+        </div>
+        <h3 class="serif">Suivi & optimisation</h3>
+        <p>Nous restons à vos côtés pour suivre les performances, ajuster et faire évoluer votre projet dans la durée.</p>
+      </div>
+    </div>
+
+    <div class="cta-band reveal" style="margin-top: 72px;">
+      <div><div class="cta-band__title">Un projet, une question ? <em class="italic" style="font-style:italic; color:var(--gold); display:block;">Parlons-en.</em></div></div>
+      <p class="cta-band__sub">Échangeons sur vos besoins et trouvons ensemble les solutions les plus adaptées à vos projets.</p>
+      <a class="btn btn--outline" href="#" data-open-rdv>Prendre rendez-vous</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background: var(--navy-950);">
+  <div class="container">
+    <div class="two-col" style="gap: 64px; align-items: start;">
+      <div class="reveal">
+        <span class="eyebrow">Contact</span>
+        <h2 class="serif" style="margin-top: 18px;">Parlons de votre projet.</h2>
+        <div class="divider"></div>
+        <p style="font-size:14.5px; color: var(--ink-3);">Chaque projet mérite une attention unique. Échangeons sur vos besoins et construisons ensemble la meilleure solution.</p>
+        <div class="contact-info" style="margin-top: 32px; padding: 0; background: transparent; border: none;">
+          <ul>
+            <li><div class="contact-info__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M22 16.9v3a2 2 0 01-2.2 2A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.6a2 2 0 01-.5 2.1L8 9.7a16 16 0 006.3 6.3l1.3-1.3a2 2 0 012.1-.5c.8.3 1.7.5 2.6.6a2 2 0 011.7 2z"/></svg></div><div><div class="contact-info__primary">06 21 22 23 24</div><div class="contact-info__sub">Du lundi au vendredi · 9h00 – 18h00</div></div></li>
+            <li><div class="contact-info__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div><div><div class="contact-info__primary">contact@maison-fwurtz.fr</div><div class="contact-info__sub">Réponse sous 24h ouvrées</div></div></li>
+            <li><div class="contact-info__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="contact-info__primary">Paris, France</div><div class="contact-info__sub">Déplacements possibles selon les projets</div></div></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="form-card reveal reveal-delay-1">
+        <h3>Envoyez-nous un message</h3>
+        <form class="contact-form" data-fake-submit>
+          <div class="form-field"><input type="text" placeholder="Nom complet" required></div>
+          <div class="form-field"><input type="email" placeholder="Adresse e-mail" required></div>
+          <div class="form-field"><input type="text" placeholder="Sujet"></div>
+          <div class="form-field"><textarea placeholder="Votre message"></textarea></div>
+          <button type="submit" class="btn btn--outline btn--lg">Envoyer le message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background: var(--navy-900);">
+  <div class="container">
+    <div class="two-col reveal" style="gap: 48px;">
+      <div>
+        <span class="eyebrow">Offres & accompagnements</span>
+        <h2 class="serif" style="margin-top: 18px; font-size: 36px;">Des formules claires pour des résultats durables.</h2>
+        <p style="margin-top: 20px; color: var(--ink-3); font-size: 14.5px;">Des accompagnements adaptés à vos besoins pour vous aider à structurer, développer et pérenniser vos projets.</p>
+      </div>
+      <div class="pricing-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="pricing-card">
+          <div class="pricing-card__eyebrow">Audit & stratégie</div>
+          <h3 class="serif">Audit de site<br>& recommandation</h3>
+          <div class="pricing-card__price">500€</div>
+          <span class="pricing-card__price-unit">Paiement unique</span>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> Analyse complète de votre site</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> Recommandations personnalisées</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> Plan d'actions priorisées</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> Conseils stratégiques</li>
+          </ul>
+          <a class="btn btn--outline" href="#" data-open-rdv>Choisir cette offre</a>
+        </div>
+        <div class="pricing-card">
+          <div class="pricing-card__eyebrow">Accompagnement SEO</div>
+          <h3 class="serif">Référencement<br>naturel (SEO)</h3>
+          <div class="pricing-card__price">25€</div>
+          <span class="pricing-card__price-unit">/ mois</span>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> Optimisation technique</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> Optimisation du contenu</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> Netlinking & autorité</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> Suivi & reporting mensuel</li>
+          </ul>
+          <a class="btn btn--outline" href="#" data-open-rdv>Choisir cette offre</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-band reveal" style="margin-top: 48px;">
+      <div>
+        <div class="cta-band__title" style="font-size:13px; letter-spacing:0.18em; text-transform:uppercase; color: var(--ink-3); font-family: var(--font-sans); font-weight:500;">Besoin d'un accompagnement sur mesure ?</div>
+      </div>
+      <p class="cta-band__sub">Nous construisons avec vous une solution adaptée à vos objectifs.</p>
+      <a class="btn btn--outline" href="#" data-open-rdv>Prendre rendez-vous</a>
+    </div>
+  </div>
+</section>
+</BaseLayout>

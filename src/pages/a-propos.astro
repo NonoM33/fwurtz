@@ -1,0 +1,104 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="À propos — Maison Fwurtz"
+  description="Découvrez la fondatrice de Maison Fwurtz, son parcours, ses valeurs et sa façon d'accompagner vos projets."
+  active="apropos"
+>
+<section class="page-hero">
+  <div class="page-hero__bg"><div class="hero__photo"><div class="hero-portrait"><div class="hero-portrait__silhouette"></div></div></div><div class="hero__overlay"></div></div>
+  <div class="container"><div class="page-hero__grid">
+    <div class="page-hero__content">
+      <div class="reveal"><span class="eyebrow">À propos</span></div>
+      <h1 class="reveal reveal-delay-1 serif">Une approche <em class="italic">humaine</em>, structurée et sur mesure.</h1>
+      <div class="reveal reveal-delay-2"><div class="divider"></div></div>
+      <p class="lead reveal reveal-delay-2">Maison Fwurtz est née d'une volonté simple : offrir un accompagnement fiable, élégant et efficace à celles et ceux qui souhaitent avancer sereinement.</p>
+      <p class="lead reveal reveal-delay-3" style="margin-top:14px;">Polyvalente et engagée, j'accompagne entrepreneurs, indépendants et particuliers dans la gestion, l'organisation et le développement de leurs projets.</p>
+    </div>
+    <div class="reveal reveal-delay-2">
+      <div class="slot-frame slot-frame--tall" style="max-height: 460px; height: 100%;">
+        <image-slot id="apropos-hero" shape="rounded" radius="12" placeholder="Glissez portrait au bureau" style="width:100%; height:100%;"></image-slot>
+        <div class="slot-frame__caption">Portrait au bureau</div>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<section class="section" style="background: var(--navy-900);">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Ma vision</span>
+      <h2 class="serif" style="margin-top:18px;">Simplifier le quotidien,<br><em class="italic">valoriser les projets</em>,<br>et construire des relations durables.</h2>
+      <div class="divider divider--center"></div>
+    </div>
+    <p class="lead reveal reveal-delay-1" style="text-align:center; margin: 0 auto; max-width:680px;">Je crois en un accompagnement basé sur la confiance, la transparence et l'écoute. Chaque projet est unique, chaque collaboration est pensée pour créer de la valeur et des résultats concrets sur le long terme.</p>
+  </div>
+</section>
+
+<section class="section" style="background: var(--navy-950);">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Mes valeurs</span>
+      <div class="divider divider--center" style="margin-top:18px;"></div>
+    </div>
+    <div class="values-grid">
+      <div class="value-card reveal">
+        <svg class="value-card__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="22" width="26" height="20" rx="2"/><path d="M16 22 V14 a8 8 0 0116 0 V22"/></svg>
+        <h3 class="serif">Confidentialité</h3>
+        <p>Vos informations sont traitées avec la plus grande discrétion et en toute sécurité.</p>
+      </div>
+      <div class="value-card reveal reveal-delay-1">
+        <svg class="value-card__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6 L40 18 L24 42 L8 18 Z"/><path d="M8 18 L24 28 L40 18"/></svg>
+        <h3 class="serif">Excellence</h3>
+        <p>Je m'engage à fournir un travail soigné, précis et à la hauteur de vos attentes.</p>
+      </div>
+      <div class="value-card reveal reveal-delay-2">
+        <svg class="value-card__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="18"/><path d="M24 12 V24 L32 28"/></svg>
+        <h3 class="serif">Réactivité</h3>
+        <p>Disponible et réactive, je m'adapte à vos urgences et à vos contraintes.</p>
+      </div>
+      <div class="value-card reveal reveal-delay-3">
+        <svg class="value-card__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 6 H30 V14 H38 V22 H30 V30 H22 V22 H14 V14 H22 Z"/><path d="M22 30 V42 H10 V30"/></svg>
+        <h3 class="serif">Polyvalence</h3>
+        <p>Une expertise multiple pour répondre à tous vos besoins de manière globale.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background: var(--navy-900);">
+  <div class="container">
+    <div class="two-col">
+      <div class="reveal">
+        <span class="eyebrow">Mon parcours, votre avantage</span>
+        <h2 class="serif" style="margin-top:20px; font-size: 32px;">Au fil des projets et des collaborations, j'ai développé une expertise complète et une vision transversale.</h2>
+        <div class="divider"></div>
+        <p style="font-size:14.5px; color: var(--ink-2);">Mon parcours m'a permis d'acquérir des compétences solides dans des domaines complémentaires : digital, administratif, juridique, événementiel et développement commercial.</p>
+        <p style="font-size:14.5px; color: var(--ink-2);">Cette polyvalence me permet aujourd'hui d'offrir un accompagnement à 360°, adapté aux enjeux actuels des entrepreneurs et des particuliers.</p>
+        <a class="btn btn--outline" href="/services" style="margin-top: 16px;">Découvrir mes services</a>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="feature-list">
+          <div class="feature-list__item"><div class="feature-list__bullet"></div><div><h4>Expérience terrain</h4><p>Des années d'accompagnement auprès d'entrepreneurs, indépendants et entreprises de toutes tailles.</p></div></div>
+          <div class="feature-list__item"><div class="feature-list__bullet"></div><div><h4>Expertise multi-domaines</h4><p>Une maîtrise de compétences variées pour une gestion globale et efficace de vos projets.</p></div></div>
+          <div class="feature-list__item"><div class="feature-list__bullet"></div><div><h4>Résultats concrets</h4><p>Des solutions adaptées qui vous font gagner du temps, de la sérénité et de la performance.</p></div></div>
+          <div class="feature-list__item"><div class="feature-list__bullet"></div><div><h4>Engagement durable</h4><p>Une collaboration basée sur la confiance et une volonté commune de réussite.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section--tight" style="background: var(--navy-950); padding-bottom: var(--section);">
+  <div class="container">
+    <div class="cta-center reveal" style="position:relative; overflow:hidden;">
+      <span style="position:absolute; right:5%; top:50%; transform:translateY(-50%); font-family:var(--font-serif); font-size:160px; color:rgba(212,175,122,0.06); font-style:italic; pointer-events:none;">MF.</span>
+      <h2 class="serif">Parlons de votre projet.</h2>
+      <p class="lead" style="margin: 18px auto 32px; color: var(--ink-3);">Chaque projet mérite une attention unique.<br>Échangeons sur vos besoins et construisons ensemble la meilleure solution.</p>
+      <a class="btn btn--gold btn--lg" href="#" data-open-rdv>Prendre rendez-vous</a>
+    </div>
+  </div>
+</section>
+</BaseLayout>

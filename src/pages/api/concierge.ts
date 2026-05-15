@@ -42,7 +42,10 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
   let services: ReturnType<typeof getConciergeServices>;
   try {
-    services = getConciergeServices(import.meta.env);
+    // At runtime under the Node adapter, only `process.env` reflects the
+    // env vars supplied by the orchestrator (Coolify). `import.meta.env`
+    // is frozen at build time and would miss anything injected later.
+    services = getConciergeServices(process.env);
   } catch (err) {
     if (err instanceof ConciergeError && err.code === "missing_config") {
       return jsonResponse({ error: "missing_config" }, { status: 503 });

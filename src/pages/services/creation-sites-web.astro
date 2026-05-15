@@ -1,0 +1,141 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Création de sites web — Maison Fwurtz"
+  description="Des sites élégants, performants et adaptés à votre activité, livrés clé en main."
+  active="services"
+>
+<section class="page-hero" style="min-height: 480px;">
+  <div class="page-hero__bg"><div class="hero__photo"><div class="hero-portrait"><div class="hero-portrait__silhouette"></div></div></div><div class="hero__overlay"></div></div>
+  <div class="container"><div class="breadcrumb" style="padding-top: 24px;"><a href="/">Accueil</a><svg class="breadcrumb__sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6l6 6-6 6"/></svg><a href="/services">Services</a><svg class="breadcrumb__sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6l6 6-6 6"/></svg><span class="breadcrumb__current">Création de sites web</span></div></div>
+  <div class="container"><div class="page-hero__grid" style="padding-top: 24px;">
+    <div class="page-hero__content">
+      <div class="reveal"><span class="eyebrow">Création de sites web</span></div>
+      <h1 class="reveal reveal-delay-1 serif">Des sites web élégants, performants et pensés <em class="italic">pour convertir.</em></h1>
+      <div class="reveal reveal-delay-2"><div class="divider"></div></div>
+      <p class="lead reveal reveal-delay-2">Nous concevons des sites web sur mesure qui reflètent votre image, valorisent votre expertise et offrent une expérience utilisateur irréprochable.</p>
+      <div class="reveal reveal-delay-3" style="margin-top: 30px;"><a class="btn btn--outline" href="#" data-open-rdv>Parlons de votre projet</a></div>
+    </div>
+    <div class="reveal reveal-delay-2">
+      <div class="slot-frame slot-frame--tall" style="max-height: 460px; height: 100%;">
+        <image-slot id="services-creation-sites-web-ht" shape="rounded" radius="12" placeholder="Glissez portrait" style="width:100%; height:100%;"></image-slot>
+        <div class="slot-frame__caption">Portrait</div>
+      </div>
+    </div>
+  </div></div>
+</section>
+<section class="section" style="background: var(--navy-900);">
+  <div class="container">
+    <div class="two-col" style="gap: 80px;">
+      <div class="reveal">
+        <span class="eyebrow">Notre approche</span>
+        <h2 class="serif" style="margin-top: 18px; font-size: 36px; line-height: 1.15;"><em class="italic">Un site web à votre image</em>, construit avec stratégie et exigence.</h2>
+        <p style="margin-top: 24px; color: var(--ink-2); font-size: 15px; line-height: 1.7;">Chaque projet est unique. Nous prenons le temps de comprendre votre activité, vos objectifs et vos valeurs pour concevoir un site qui vous ressemble vraiment et qui parle à vos clients.</p>
+        <ul class="checklist" style="margin-top: 28px;">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Design sur mesure & expérience utilisateur optimale</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Structure stratégique pour convertir vos visiteurs</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 10 17 19 8"/></svg> <span>Site rapide, sécurisé et optimisé pour le référencement</span></li>
+        </ul>
+      </div>
+      <div class="slot-frame slot-frame--landscape reveal reveal-delay-1" style="margin-bottom: 36px;">
+        <image-slot id="sites-web-photo" shape="rounded" radius="12" placeholder="Glissez une photo : laptop et lampe" style="width:100%; height:100%;"></image-slot>
+        <div class="slot-frame__caption">Atelier de design — bureau & lampe</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CASE STUDY -->
+<section class="section" style="background: var(--navy-950);">
+  <div class="container">
+    <div class="reveal" style="margin-bottom: 36px;"><span class="eyebrow">Étude de cas</span></div>
+    <div class="case-study reveal reveal-delay-1">
+      <div>
+        <div class="case-study__eyebrow">Galerie Saint-Honoré · Site vitrine</div>
+        <p class="case-study__quote">« Le site qu'elle nous a livré nous ressemble enfin — sobre, élégant, et qui convertit. En trois mois, nos demandes d'information ont triplé. »</p>
+        <div class="case-study__author">
+          <div class="testimonial__avatar">JH</div>
+          <div><p class="testimonial__name">Julien Hervé</p><p class="testimonial__role">Directeur, Galerie Saint-Honoré</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="slot-frame slot-frame--landscape">
+          <image-slot id="sites-web-case" shape="rounded" radius="12" placeholder="Capture du site livré" style="width:100%; height:100%;"></image-slot>
+          <div class="slot-frame__caption">Réalisation — Galerie Saint-Honoré</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section" style="background: var(--navy-950);">
+  <div class="container">
+    <div class="reveal" style="margin-bottom: 36px;"><span class="eyebrow">Ce que comprend l'accompagnement</span></div>
+    <div class="services-grid reveal reveal-delay-1" style="grid-template-columns: repeat(6, 1fr);">
+      <div class="service-card" style="text-align: left;">
+        <div style="width: 32px; height: 32px; color: var(--gold); margin-bottom: 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="1"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <h3 style="font-size: 17px; text-align: left;">Design sur mesure</h3>
+        <p style="text-align: left;">Un design élégant et unique qui reflète votre identité et capte l'attention.</p>
+      </div><div class="service-card" style="text-align: left;">
+        <div style="width: 32px; height: 32px; color: var(--gold); margin-bottom: 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.5"/></svg></div>
+        <h3 style="font-size: 17px; text-align: left;">Responsive</h3>
+        <p style="text-align: left;">Votre site s'adapte parfaitement à tous les écrans (mobile, tablette, ordinateur).</p>
+      </div><div class="service-card" style="text-align: left;">
+        <div style="width: 32px; height: 32px; color: var(--gold); margin-bottom: 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg></div>
+        <h3 style="font-size: 17px; text-align: left;">SEO optimisé</h3>
+        <p style="text-align: left;">Une structure pensée pour le référencement naturel afin d'améliorer votre visibilité.</p>
+      </div><div class="service-card" style="text-align: left;">
+        <div style="width: 32px; height: 32px; color: var(--gold); margin-bottom: 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14a9 9 0 0118 0"/><line x1="12" y1="14" x2="16" y2="9"/></svg></div>
+        <h3 style="font-size: 17px; text-align: left;">Performance</h3>
+        <p style="text-align: left;">Des sites rapides et optimisés pour offrir la meilleure expérience possible.</p>
+      </div><div class="service-card" style="text-align: left;">
+        <div style="width: 32px; height: 32px; color: var(--gold); margin-bottom: 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L20 5 V11 C20 16 16.5 19.5 12 21 C7.5 19.5 4 16 4 11 V5 Z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+        <h3 style="font-size: 17px; text-align: left;">Sécurité</h3>
+        <p style="text-align: left;">Sécurité renforcée, mises à jour régulières et sauvegardes incluses.</p>
+      </div><div class="service-card" style="text-align: left;">
+        <div style="width: 32px; height: 32px; color: var(--gold); margin-bottom: 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21 C4 16 8 14 12 14 C16 14 20 16 20 21"/></svg></div>
+        <h3 style="font-size: 17px; text-align: left;">Accompagnement</h3>
+        <p style="text-align: left;">Un suivi personnalisé avant, pendant et après la mise en ligne.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section" style="background: var(--navy-900);">
+  <div class="container">
+    <div class="two-col" style="gap: 64px; margin-bottom: 56px;">
+      <div class="reveal">
+        <span class="eyebrow">Pourquoi choisir Maison Fwurtz ?</span>
+        <h2 class="serif" style="margin-top: 18px; font-size: 36px; line-height: 1.15;">Plus qu'un site, un véritable outil de croissance.</h2>
+        <p style="margin-top: 24px; color: var(--ink-3); font-size: 14.5px;">Nous allions esthétique, stratégie et performance pour créer des sites qui renforcent votre crédibilité et vous apportent des résultats concrets.</p>
+        <a class="btn btn--outline" href="/processus" style="margin-top: 24px;">Découvrir le processus</a>
+      </div>
+      <div class="reveal reveal-delay-1" style="display: grid; grid-template-columns: 1fr 1fr; gap: 28px 32px;">
+        <div style="display:grid; grid-template-columns: 44px 1fr; gap: 14px;">
+          <div style="width: 40px; height: 40px; border: 1px solid var(--gold-line); border-radius: 999px; display:flex; align-items:center; justify-content:center; color: var(--gold);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L20 9 L12 21 L4 9 Z"/><path d="M4 9 L20 9"/></svg></div>
+          <div><h4 class="serif" style="font-size: 17px; color: var(--ink); margin: 6px 0 6px;">Exigence & qualité</h4><p style="font-size: 13px; color: var(--ink-3); margin: 0; line-height: 1.55;">Chaque détail compte. Nous visons l'excellence dans chaque projet.</p></div>
+        </div><div style="display:grid; grid-template-columns: 44px 1fr; gap: 14px;">
+          <div style="width: 40px; height: 40px; border: 1px solid var(--gold-line); border-radius: 999px; display:flex; align-items:center; justify-content:center; color: var(--gold);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21 C4 16 8 14 12 14 C16 14 20 16 20 21"/></svg></div>
+          <div><h4 class="serif" style="font-size: 17px; color: var(--ink); margin: 6px 0 6px;">Écoute & compréhension</h4><p style="font-size: 13px; color: var(--ink-3); margin: 0; line-height: 1.55;">Nous prenons le temps de comprendre votre univers et vos objectifs.</p></div>
+        </div><div style="display:grid; grid-template-columns: 44px 1fr; gap: 14px;">
+          <div style="width: 40px; height: 40px; border: 1px solid var(--gold-line); border-radius: 999px; display:flex; align-items:center; justify-content:center; color: var(--gold);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14a9 9 0 0118 0"/><line x1="12" y1="14" x2="16" y2="9"/></svg></div>
+          <div><h4 class="serif" style="font-size: 17px; color: var(--ink); margin: 6px 0 6px;">Résultats concrets</h4><p style="font-size: 13px; color: var(--ink-3); margin: 0; line-height: 1.55;">Nos sites sont conçus pour convertir et faire grandir votre activité.</p></div>
+        </div><div style="display:grid; grid-template-columns: 44px 1fr; gap: 14px;">
+          <div style="width: 40px; height: 40px; border: 1px solid var(--gold-line); border-radius: 999px; display:flex; align-items:center; justify-content:center; color: var(--gold);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21 C5 12 12 6 21 5 C21 14 14 21 5 21 Z"/><path d="M5 21 L13 13"/></svg></div>
+          <div><h4 class="serif" style="font-size: 17px; color: var(--ink); margin: 6px 0 6px;">Discrétion & confidentialité</h4><p style="font-size: 13px; color: var(--ink-3); margin: 0; line-height: 1.55;">Vos informations et votre projet sont traités avec la plus grande confidentialité.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section--tight" style="background: var(--navy-950); padding-bottom: var(--section);">
+  <div class="container">
+    <div class="cta-band reveal">
+      <div style="display:flex; align-items:center; gap: 20px;">
+        <div style="width: 44px; height: 44px; border: 1px solid var(--gold-line); border-radius: 999px; display:flex; align-items:center; justify-content:center; color: var(--gold); flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg></div>
+        <div class="cta-band__title">Prêt à donner vie à votre projet web ? <em class="italic" style="font-style:italic; color:var(--gold); display:block; font-size: 22px;">Échangeons sur vos besoins et construisons ensemble un site qui vous ressemble.</em></div>
+      </div>
+      <p class="cta-band__sub">Échangeons sur vos besoins et construisons ensemble la meilleure solution.</p>
+      <a class="btn btn--outline" href="#" data-open-rdv>Prendre rendez-vous</a>
+    </div>
+  </div>
+</section>
+</BaseLayout>

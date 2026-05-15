@@ -1,0 +1,127 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Services — Maison Fwurtz"
+  description="Nos savoir-faire pour simplifier, structurer et développer vos projets — création de sites, gestion, juridique, événementiel."
+  active="services"
+>
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-hero__bg">
+    <div class="hero__photo"><div class="hero-portrait"><div class="hero-portrait__silhouette"></div></div></div>
+    <div class="hero__overlay"></div>
+  </div>
+  <div class="container">
+    <div class="page-hero__grid">
+      <div class="page-hero__content">
+        <div class="reveal"><span class="eyebrow">Nos services</span></div>
+        <h1 class="reveal reveal-delay-1 serif">Des solutions sur mesure pour <em class="italic">simplifier, structurer et développer</em> vos projets.</h1>
+        <div class="reveal reveal-delay-2"><div class="divider"></div></div>
+        <p class="lead reveal reveal-delay-2">Polyvalente et engagée, j'accompagne entrepreneurs, indépendants et particuliers avec des solutions adaptées à chaque besoin.</p>
+      </div>
+    <div class="reveal reveal-delay-2">
+      <div class="slot-frame slot-frame--tall" style="max-height: 460px; height: 100%;">
+        <image-slot id="services-hero" shape="rounded" radius="12" placeholder="Glissez portrait de la fondatrice" style="width:100%; height:100%;"></image-slot>
+        <div class="slot-frame__caption">Portrait de la fondatrice</div>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- DOMAINS GRID -->
+<section class="section" style="background: var(--navy-900);">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Nos domaines d'expertise</span>
+      <h2 class="serif" style="margin-top:18px;">Un accompagnement complet<br>pour tous vos besoins.</h2>
+      <div class="divider divider--center"></div>
+    </div>
+
+    <div class="bigcards-grid">
+      <div class="bigcard reveal">
+        <svg class="bigcard__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="9" width="36" height="24" rx="2"/><line x1="6" y1="14" x2="42" y2="14"/><line x1="18" y1="38" x2="30" y2="38"/><line x1="20" y1="33" x2="20" y2="38"/><line x1="28" y1="33" x2="28" y2="38"/></svg>
+        <h3 class="serif">Création de sites web</h3>
+        <p>Des sites élégants, performants et sur mesure pour valoriser votre activité et convertir vos visiteurs.</p>
+        <a class="text-link" href="/services/creation-sites-web">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+
+      <div class="bigcard reveal reveal-delay-1">
+        <svg class="bigcard__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="6" width="16" height="36" rx="3"/><circle cx="24" cy="37" r="1.2" fill="currentColor"/><line x1="20" y1="10" x2="28" y2="10"/></svg>
+        <h3 class="serif">Solutions digitales</h3>
+        <p>Des outils et solutions digitales pour optimiser votre présence en ligne et automatiser vos tâches.</p>
+        <a class="text-link" href="/services/creation-sites-web">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+
+      <div class="bigcard reveal reveal-delay-2">
+        <svg class="bigcard__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14 L20 14 L22 17 L42 17 L42 38 L6 38 Z"/><line x1="6" y1="22" x2="42" y2="22"/></svg>
+        <h3 class="serif">Gestion administrative</h3>
+        <p>Gestion, organisation et suivi administratif rigoureux pour vous faire gagner temps et sérénité.</p>
+        <a class="text-link" href="/services/gestion-administrative">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+
+      <div class="bigcard reveal">
+        <svg class="bigcard__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><line x1="24" y1="6" x2="24" y2="42"/><line x1="14" y1="42" x2="34" y2="42"/><path d="M14 12 L8 26 L20 26 Z"/><path d="M34 12 L28 26 L40 26 Z"/><line x1="14" y1="12" x2="34" y2="12"/></svg>
+        <h3 class="serif">Accompagnement juridique</h3>
+        <p>Un accompagnement juridique adapté pour sécuriser vos projets et prendre les bonnes décisions.</p>
+        <a class="text-link" href="/services/accompagnement-juridique">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+
+      <div class="bigcard reveal reveal-delay-1">
+        <svg class="bigcard__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="10" width="34" height="30" rx="2"/><line x1="7" y1="18" x2="41" y2="18"/><line x1="15" y1="6" x2="15" y2="14"/><line x1="33" y1="6" x2="33" y2="14"/><rect x="14" y="24" width="6" height="5"/><rect x="28" y="24" width="6" height="5"/></svg>
+        <h3 class="serif">Événementiel & coordination</h3>
+        <p>Organisation complète de vos événements professionnels et privés, de A à Z, avec exigence et discrétion.</p>
+        <a class="text-link" href="/services/evenementiel">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+
+      <div class="bigcard reveal reveal-delay-2">
+        <svg class="bigcard__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="18" r="5"/><circle cx="32" cy="18" r="5"/><path d="M6 38 C8 31 12 28 16 28 C20 28 24 31 26 38"/><path d="M22 38 C24 31 28 28 32 28 C36 28 40 31 42 38"/></svg>
+        <h3 class="serif">Apport d'affaires</h3>
+        <p>Mise en relation et développement de votre réseau pour créer de nouvelles opportunités.</p>
+        <a class="text-link" href="#">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+
+    <!-- 4-icon row -->
+    <div class="icon-row reveal" style="margin-top: 64px;">
+      <div class="icon-row__item">
+        <svg class="icon-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+        <h4>Sur mesure</h4>
+        <p>Chaque solution est adaptée à vos objectifs.</p>
+      </div>
+      <div class="icon-row__item">
+        <svg class="icon-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3 L20 6 V12 C20 17 16.5 20.5 12 22 C7.5 20.5 4 17 4 12 V6 Z"/></svg>
+        <h4>Fiabilité</h4>
+        <p>Un accompagnement rigoureux et confidentiel.</p>
+      </div>
+      <div class="icon-row__item">
+        <svg class="icon-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3 L21 9 L12 21 L3 9 Z"/><path d="M3 9 L12 15 L21 9"/></svg>
+        <h4>Expertise</h4>
+        <p>Une polyvalence au service de vos ambitions.</p>
+      </div>
+      <div class="icon-row__item">
+        <svg class="icon-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 17 L9 11 L13 15 L21 7"/><path d="M15 7 L21 7 L21 13"/></svg>
+        <h4>Résultats</h4>
+        <p>Des actions concrètes pour une croissance durable.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="section--tight" style="background: var(--navy-950); padding-bottom: var(--section);">
+  <div class="container">
+    <div class="cta-band reveal">
+      <div>
+        <div class="cta-band__title">Un projet, une question ? <em class="italic" style="font-style:italic; color:var(--gold); display:block;">Parlons-en.</em></div>
+      </div>
+      <p class="cta-band__sub">Échangeons sur vos besoins et trouvons ensemble les solutions les plus adaptées à vos projets.</p>
+      <a class="btn btn--outline" href="#" data-open-rdv>Prendre rendez-vous</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+</BaseLayout>
