@@ -1,5 +1,9 @@
 ---
 import BaseLayout from "~/layouts/BaseLayout.astro";
+import { resourcesRepo } from "@features/resources/infra/repository.ts";
+import { formatPrice } from "@features/resources/domain/types.ts";
+
+const resources = resourcesRepo().list({ publishedOnly: true });
 ---
 
 <BaseLayout
@@ -35,63 +39,24 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
     </div>
 
     <div class="ebook-grid">
-      
-      <div class="ebook-card reveal reveal-delay-1">
-        <div class="ebook-card__cover">
-          <div class="ebook-card__book">
-            <div class="ebook-card__book-label">GUIDE</div>
-            <div class="ebook-card__book-title">ORGANISATION & PRODUCTIVITÉ</div>
+      {resources.map((r, i) => (
+        <div class={`ebook-card reveal${i > 0 ? ` reveal-delay-${Math.min(i, 4)}` : ""}`}>
+          <div class="ebook-card__cover">
+            <div class="ebook-card__book">
+              <div class="ebook-card__book-label">{r.bodyJson.badgeLabel ?? r.type.toUpperCase()}</div>
+              <div class="ebook-card__book-title">{r.title.toUpperCase()}</div>
+            </div>
+          </div>
+          <div class="ebook-card__body">
+            <h3 class="serif">{r.title}</h3>
+            <p>{r.summary}</p>
+            <div class="ebook-card__price">{formatPrice(r.bodyJson.priceCents)}</div>
+            <a class="btn btn--outline" href={r.linkUrl ?? "#"} data-open-rdv={r.linkUrl ? undefined : ""}>
+              {r.bodyJson.ctaLabel ?? "Découvrir"} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 6l6 6-6 6"/></svg>
+            </a>
           </div>
         </div>
-        <div class="ebook-card__body">
-          <h3 class="serif">Organisation & Productivité</h3>
-          <p>Structurez vos journées, optimisez votre temps et boostez votre efficacité avec des méthodes simples.</p>
-          <div class="ebook-card__price">29 €</div>
-          <a class="btn btn--outline" href="#" data-open-rdv>Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 6l6 6-6 6"/></svg></a>
-        </div>
-      </div>
-      <div class="ebook-card reveal reveal-delay-2">
-        <div class="ebook-card__cover">
-          <div class="ebook-card__book">
-            <div class="ebook-card__book-label">GUIDE</div>
-            <div class="ebook-card__book-title">REVENUS COMPLÉMENTAIRES</div>
-          </div>
-        </div>
-        <div class="ebook-card__body">
-          <h3 class="serif">Revenus Complémentaires</h3>
-          <p>Découvrez des stratégies concrètes pour créer et développer des sources de revenus complémentaires.</p>
-          <div class="ebook-card__price">39 €</div>
-          <a class="btn btn--outline" href="#" data-open-rdv>Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 6l6 6-6 6"/></svg></a>
-        </div>
-      </div>
-      <div class="ebook-card reveal reveal-delay-3">
-        <div class="ebook-card__cover">
-          <div class="ebook-card__book">
-            <div class="ebook-card__book-label">GUIDE</div>
-            <div class="ebook-card__book-title">LANCER SON ACTIVITÉ</div>
-          </div>
-        </div>
-        <div class="ebook-card__body">
-          <h3 class="serif">Lancer son activité</h3>
-          <p>Le guide étape par étape pour poser les bases solides de votre activité et attirer vos premiers clients.</p>
-          <div class="ebook-card__price">49 €</div>
-          <a class="btn btn--outline" href="#" data-open-rdv>Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 6l6 6-6 6"/></svg></a>
-        </div>
-      </div>
-      <div class="ebook-card reveal reveal-delay-4">
-        <div class="ebook-card__cover">
-          <div class="ebook-card__book">
-            <div class="ebook-card__book-label">GUIDE</div>
-            <div class="ebook-card__book-title">PRÉSENCE EN LIGNE</div>
-          </div>
-        </div>
-        <div class="ebook-card__body">
-          <h3 class="serif">Présence en ligne</h3>
-          <p>Créez une présence en ligne alignée avec votre image et attirez les bonnes opportunités.</p>
-          <div class="ebook-card__price">29 €</div>
-          <a class="btn btn--outline" href="#" data-open-rdv>Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 6l6 6-6 6"/></svg></a>
-        </div>
-      </div>
+      ))}
     </div>
   </div>
 </section>

@@ -1,618 +1,128 @@
 ---
 export const prerender = false;
 import AdminLayout from "~/layouts/AdminLayout.astro";
+import { clientsRepo } from "@features/clients/infra/repository.ts";
+import { initialsOf, STAGE_LABELS, CLIENT_STAGES } from "@features/clients/domain/types.ts";
 
-const body = `
+const clients = clientsRepo().list();
+const counts = clientsRepo().countByStage();
+const total = Object.values(counts).reduce((s, n) => s + n, 0);
+const byStage = Object.fromEntries(
+  CLIENT_STAGES.map((s) => [s, clients.filter((c) => c.stage === s)]),
+) as Record<(typeof CLIENT_STAGES)[number], typeof clients>;
 
-  <div class="admin-page-head">
-    <div>
-      <h1 class="admin-page-head__title">Pipeline <em>commercial</em></h1>
-      <p class="admin-page-head__sub">24 opportunités en cours · <strong style="color: var(--gold);">68 400 €</strong> de chiffre d'affaires potentiel</p>
-    </div>
-    <div class="admin-page-head__actions">
-      <button class="btn-admin btn-admin--ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4 h18 v4 l-7 7 v6 l-4-2 v-4 l-7-7 z"/></svg> Filtres</button>
-      <button class="btn-admin btn-admin--ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Exporter</button>
-      <button class="btn-admin btn-admin--primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouvelle opportunité</button>
-    </div>
-  </div>
-
-  <!-- Stats row -->
-  <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 16px;">
-    <div class="kpi">
-      <div class="kpi__head"><span class="kpi__label">Pipeline total</span></div>
-      <div class="kpi__value">68&nbsp;<em>400</em>&nbsp;€</div>
-      <div class="kpi__delta kpi__delta--up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5V19"/><path d="M5 12L12 5L19 12"/></svg> +12 % vs avril</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi__head"><span class="kpi__label">Opportunités actives</span></div>
-      <div class="kpi__value"><em>24</em></div>
-      <div class="kpi__delta" style="color: var(--ink-3);">6 nouvelles cette semaine</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi__head"><span class="kpi__label">Taux de closing</span></div>
-      <div class="kpi__value"><em>32</em>&nbsp;%</div>
-      <div class="kpi__delta kpi__delta--up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5V19"/><path d="M5 12L12 5L19 12"/></svg> +4 pt</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi__head"><span class="kpi__label">Durée moyenne cycle</span></div>
-      <div class="kpi__value"><em>18</em>&nbsp;j</div>
-      <div class="kpi__delta kpi__delta--down" style="color: #6BCB77;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5V19"/><path d="M19 12L12 19L5 12"/></svg> −3 jours (meilleur)</div>
-    </div>
-  </div>
-
-  <!-- Toolbar: assignee filter -->
-  <div class="crm-toolbar">
-    <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-4); margin-right: 4px;">Vue&nbsp;:</div>
-    <div class="assignee-pills">
-      <button class="assignee-pill is-active">
-        <span class="assignee-pill__avatar" style="background: var(--admin-surface-3);">⊕</span>
-        <span>Tous</span>
-      </button>
-      <button class="assignee-pill">
-        <span class="assignee-pill__avatar">SF</span>
-        <span>Sophie</span>
-      </button>
-      <button class="assignee-pill">
-        <span class="assignee-pill__avatar">CB</span>
-        <span>Camille</span>
-      </button>
-      <button class="assignee-pill">
-        <span class="assignee-pill__avatar">LM</span>
-        <span>Léa</span>
-      </button>
-      <button class="assignee-pill">
-        <span class="assignee-pill__avatar" style="border-style: dashed;">?</span>
-        <span>Non assigné</span>
-      </button>
-    </div>
-    <div class="tabs" style="margin-left: auto;">
-      <button class="tabs__tab is-active">Kanban</button>
-      <button class="tabs__tab">Liste</button>
-      <button class="tabs__tab">Calendrier</button>
-    </div>
-  </div>
-
-  <!-- Kanban board -->
-  <div class="kanban">
-
-    <!-- COL 1: Prospects (nouveaux) -->
-    <div class="kanban__col">
-      <div class="kanban__col-head">
-        <div class="kanban__col-title">
-          <span class="kanban__col-dot kanban__col-dot--prospect"></span>
-          <span>Prospects <em>· 6</em></span>
-        </div>
-        <button class="kanban__col-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-      </div>
-      <div class="kanban__col-body">
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">CL</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Camille Larue</div>
-              <div class="kcard__meta">Atelier Bardin · Lyon</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Refonte site éditorial · céramique. A laissé ses coordonnées via Marie.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag kcard__tag--gold">Sites web</span>
-            <span class="kcard__tag kcard__tag--ai">⌁ Score 87</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">~ 6 000 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">SF</span> Sophie</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">MD</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Marc Dubois</div>
-              <div class="kcard__meta">Mariage · 120 invités</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Organisation mariage à Saint-Cloud en septembre. Soumis via formulaire.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag kcard__tag--gold">Événementiel</span>
-            <span class="kcard__tag kcard__tag--urgent">★ Urgent</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">~ 12 000 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar" style="background: var(--admin-surface-3); border-style: dashed;">?</span> Non assigné</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">PL</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Pierre Lambert</div>
-              <div class="kcard__meta">Coach indépendant</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Rédaction CGV pour activité de coaching.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag">Juridique</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">~ 800 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">CB</span> Camille</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">MT</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Mathilde Devos</div>
-              <div class="kcard__meta">Architecte d'intérieur</div>
-            </div>
-          </div>
-          <div class="kcard__subject">A téléchargé l'e-book « Lancer son activité ». Curieuse d'un accompagnement.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag kcard__tag--ai">⌁ À qualifier</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">~ 3 500 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">LM</span> Léa</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">AB</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Anne-Sophie Bernard</div>
-              <div class="kcard__meta">Cabinet de conseil</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Question rapide en cours via Marie sur l'organisation administrative.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag">Admin</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">—</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">SF</span> Sophie</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">VR</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Vincent Roy</div>
-              <div class="kcard__meta">Studio de design</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Recommandé par J. Hervé. À recontacter.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag kcard__tag--gold">Recommandation</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">—</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">SF</span> Sophie</span>
-          </div>
-        </a>
-
-      </div>
-      <div class="kanban__col-foot">Valeur estimée · 22 300 €</div>
-    </div>
-
-    <!-- COL 2: Qualifiés -->
-    <div class="kanban__col">
-      <div class="kanban__col-head">
-        <div class="kanban__col-title">
-          <span class="kanban__col-dot kanban__col-dot--qualified"></span>
-          <span>Qualifiés <em>· 5</em></span>
-        </div>
-        <button class="kanban__col-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-      </div>
-      <div class="kanban__col-body">
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">DR</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Denis Rondeau</div>
-              <div class="kcard__meta">Domaine Saint-Loup</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Audit administratif complet pour domaine viticole. Budget validé.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag kcard__tag--gold">Admin</span>
-            <span class="kcard__tag kcard__tag--ai">⌁ Score 92</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">~ 8 400 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">SF</span> Sophie</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">CB</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Cécile Brun</div>
-              <div class="kcard__meta">Galerie Brun & Co.</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Refonte site + accompagnement SEO trimestriel.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag kcard__tag--gold">Sites web</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">~ 4 800 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">LM</span> Léa</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">GR</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Guillaume Rocher</div>
-              <div class="kcard__meta">Restaurateur</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Inauguration restaurant — organisation 80 personnes.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag">Événementiel</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">~ 5 500 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">CB</span> Camille</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">SM</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Samia Meddah</div>
-              <div class="kcard__meta">Maison de tapis</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Refonte e-commerce avec module sur-mesure.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag kcard__tag--gold">Sites web</span>
-            <span class="kcard__tag kcard__tag--urgent">★ Premium</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">~ 9 800 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">SF</span> Sophie</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">PB</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Pauline Beaumont</div>
-              <div class="kcard__meta">Designer textile</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Stratégie digitale + lancement boutique en ligne.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag">Sites web</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">~ 6 200 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">LM</span> Léa</span>
-          </div>
-        </a>
-
-      </div>
-      <div class="kanban__col-foot">Valeur estimée · 34 700 €</div>
-    </div>
-
-    <!-- COL 3: RDV en cours -->
-    <div class="kanban__col">
-      <div class="kanban__col-head">
-        <div class="kanban__col-title">
-          <span class="kanban__col-dot kanban__col-dot--meeting"></span>
-          <span>RDV <em>· 4</em></span>
-        </div>
-        <button class="kanban__col-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-      </div>
-      <div class="kanban__col-body">
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">JH</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Julien Hervé</div>
-              <div class="kcard__meta">Galerie Saint-Honoré</div>
-            </div>
-          </div>
-          <div class="kcard__subject">2ème RDV de cadrage vendredi 10h. Site vitrine + e-shop.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag kcard__tag--gold">Sites web</span>
-            <span class="kcard__tag" style="color: #C4B5FD;">📞 17/05 · 10h</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">~ 14 200 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">SF</span> Sophie</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">ED</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Émilie Dautheville</div>
-              <div class="kcard__meta">Conseil RH indépendante</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Finalisation CGV + audit RGPD. RDV téléphonique dimanche.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag">Juridique</span>
-            <span class="kcard__tag" style="color: #C4B5FD;">📞 19/05 · 14h30</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">~ 2 400 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">CB</span> Camille</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">FR</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">François Robin</div>
-              <div class="kcard__meta">Architecte</div>
-            </div>
-          </div>
-          <div class="kcard__subject">RDV pris suite à l'e-book. Stratégie de présence en ligne.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag">Sites web</span>
-            <span class="kcard__tag" style="color: #C4B5FD;">📞 22/05</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">~ 5 800 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">LM</span> Léa</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">CL</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Carole Léger</div>
-              <div class="kcard__meta">Bijouterie familiale</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Transition digitale + reprise après deuil familial.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag kcard__tag--gold">Premium</span>
-            <span class="kcard__tag" style="color: #C4B5FD;">📞 24/05</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">~ 18 000 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">SF</span> Sophie</span>
-          </div>
-        </a>
-
-      </div>
-      <div class="kanban__col-foot">Valeur estimée · 40 400 €</div>
-    </div>
-
-    <!-- COL 4: Devis envoyé -->
-    <div class="kanban__col">
-      <div class="kanban__col-head">
-        <div class="kanban__col-title">
-          <span class="kanban__col-dot kanban__col-dot--proposal"></span>
-          <span>Devis <em>· 4</em></span>
-        </div>
-        <button class="kanban__col-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-      </div>
-      <div class="kanban__col-body">
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">M&P</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Marc & Pauline V.</div>
-              <div class="kcard__meta">Mariage Saint-Cloud</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Devis envoyé il y a 4 jours. À relancer cette semaine.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag kcard__tag--gold">Événementiel</span>
-            <span class="kcard__tag kcard__tag--ai">⌁ Relancer</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">11 200 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">SF</span> Sophie</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">LV</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Louis Vermeil</div>
-              <div class="kcard__meta">Antiquaire</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Devis pour catalogue digital + e-shop privé.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag">Sites web</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">7 800 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">LM</span> Léa</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">RB</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Raphaël Boyer</div>
-              <div class="kcard__meta">Cabinet d'avocats</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Refonte site institutionnel. Devis en cours d'arbitrage.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag kcard__tag--gold">Sites web</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">9 600 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">CB</span> Camille</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">AM</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Adèle Marchand</div>
-              <div class="kcard__meta">Atelier de mode</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Lookbook digital + gestion administrative trimestrielle.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag kcard__tag--gold">Mixte</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">5 400 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">SF</span> Sophie</span>
-          </div>
-        </a>
-
-      </div>
-      <div class="kanban__col-foot">Valeur estimée · 34 000 €</div>
-    </div>
-
-    <!-- COL 5: Clients -->
-    <div class="kanban__col">
-      <div class="kanban__col-head">
-        <div class="kanban__col-title">
-          <span class="kanban__col-dot kanban__col-dot--client"></span>
-          <span>Clients <em>· 3</em></span>
-        </div>
-        <button class="kanban__col-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-      </div>
-      <div class="kanban__col-body">
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">DR</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Domaine Saint-Loup</div>
-              <div class="kcard__meta">Denis Rondeau · récurrent</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Audit signé. Implémentation en cours.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag" style="color: #6BCB77; border-color: rgba(107,203,119,0.3); background: rgba(107,203,119,0.06);">✓ Signé</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">8 400 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">SF</span> Sophie</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">AB</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Atelier Bardin</div>
-              <div class="kcard__meta">Camille Larue</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Refonte terminée. Maintenance mensuelle active.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag" style="color: #6BCB77; border-color: rgba(107,203,119,0.3); background: rgba(107,203,119,0.06);">Récurrent</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">6 000 € + 280 €/m</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">SF</span> Sophie</span>
-          </div>
-        </a>
-
-        <a class="kcard" href="/admin/clients/sample">
-          <div class="kcard__head">
-            <div class="kcard__avatar">GS</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Galerie Saint-Honoré</div>
-              <div class="kcard__meta">Julien Hervé</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Première phase livrée. Phase 2 en cours.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag" style="color: #6BCB77; border-color: rgba(107,203,119,0.3); background: rgba(107,203,119,0.06);">En cours</span>
-          </div>
-          <div class="kcard__foot">
-            <span class="kcard__value">14 200 €</span>
-            <span class="kcard__owner"><span class="kcard__owner-avatar">SF</span> Sophie</span>
-          </div>
-        </a>
-
-      </div>
-      <div class="kanban__col-foot" style="color: #6BCB77;">Signé · 28 600 €</div>
-    </div>
-
-    <!-- COL 6: Perdus -->
-    <div class="kanban__col" style="opacity: 0.75;">
-      <div class="kanban__col-head">
-        <div class="kanban__col-title">
-          <span class="kanban__col-dot kanban__col-dot--lost"></span>
-          <span>Perdus <em>· 2</em></span>
-        </div>
-      </div>
-      <div class="kanban__col-body">
-
-        <div class="kcard" style="cursor: default; filter: grayscale(0.3);">
-          <div class="kcard__head">
-            <div class="kcard__avatar">TD</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Thomas Delaunay</div>
-              <div class="kcard__meta">Restaurant éphémère</div>
-            </div>
-          </div>
-          <div class="kcard__subject">Budget trop serré · pas de suite donnée.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag" style="color: var(--ink-4);">Budget</span>
-          </div>
-          <div class="kcard__foot">
-            <span style="font-size: 12px; color: var(--ink-4); text-decoration: line-through;">~ 4 200 €</span>
-            <span style="font-size: 11px; color: var(--ink-4);">il y a 12 j</span>
-          </div>
-        </div>
-
-        <div class="kcard" style="cursor: default; filter: grayscale(0.3);">
-          <div class="kcard__head">
-            <div class="kcard__avatar">NE</div>
-            <div style="flex: 1; min-width: 0;">
-              <div class="kcard__name">Nadia El-Hassani</div>
-              <div class="kcard__meta">Coach sportive</div>
-            </div>
-          </div>
-          <div class="kcard__subject">A choisi un concurrent. Reprendre contact dans 6 mois.</div>
-          <div class="kcard__tags">
-            <span class="kcard__tag" style="color: var(--ink-4);">Concurrent</span>
-            <span class="kcard__tag kcard__tag--ai">⌁ Réactiver Q4</span>
-          </div>
-          <div class="kcard__foot">
-            <span style="font-size: 12px; color: var(--ink-4); text-decoration: line-through;">~ 1 800 €</span>
-            <span style="font-size: 11px; color: var(--ink-4);">il y a 26 j</span>
-          </div>
-        </div>
-
-      </div>
-      <div class="kanban__col-foot" style="color: var(--ink-4);">Perdu · 6 000 €</div>
-    </div>
-
-  </div>`;
+const stageDotClass: Record<(typeof CLIENT_STAGES)[number], string> = {
+  prospect: "kanban__col-dot--prospect",
+  qualified: "kanban__col-dot--qualified",
+  meeting: "kanban__col-dot--meeting",
+  proposal: "kanban__col-dot--proposal",
+  client: "kanban__col-dot--client",
+  lost: "kanban__col-dot--lost",
+};
 ---
 
 <AdminLayout
-  title="Pipeline — Maison Fwurtz Admin" active="crm"
+  title="Pipeline — Maison Fwurtz Admin"
+  active="crm"
   breadcrumb="Pipeline"
   screenLabel="Admin · CRM"
 >
-  <Fragment set:html={body} />
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Pipeline <em>commercial</em></h1>
+      <p class="admin-page-head__sub">
+        {total} opportunités · drag & drop pour changer d'étape · cliquez une carte pour ouvrir la fiche
+      </p>
+    </div>
+    <div class="admin-page-head__actions">
+      <a class="btn-admin btn-admin--ghost" href="/admin/clients">Vue liste →</a>
+    </div>
+  </div>
+
+  <div class="kanban">
+    {CLIENT_STAGES.map((stage) => (
+      <div class="kanban__col" data-stage={stage}>
+        <div class="kanban__col-head">
+          <div class="kanban__col-title">
+            <span class={`kanban__col-dot ${stageDotClass[stage]}`}></span>
+            {STAGE_LABELS[stage]}
+          </div>
+          <span class="kanban__col-count">{counts[stage]}</span>
+        </div>
+        <div class="kanban__col-body" data-stage-body={stage}>
+          {byStage[stage].map((c) => (
+            <div class="kcard" draggable="true" data-id={c.id} data-stage={c.stage}>
+              <div class="kcard__head">
+                <div class="kcard__avatar">{initialsOf(c.name)}</div>
+                <div style="min-width: 0;">
+                  <div class="kcard__name">{c.name}</div>
+                  <div class="kcard__meta">{c.org ?? c.source}</div>
+                </div>
+              </div>
+              {c.notes && (
+                <div class="kcard__subject">{c.notes}</div>
+              )}
+              <div class="kcard__foot">
+                <span class="kcard__score">★ {c.score}</span>
+                <a href={`/admin/clients/${c.id}`} style="color: var(--ink-3); font-size: 11px;">Ouvrir →</a>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="kanban__col-foot">{counts[stage]} carte{counts[stage] > 1 ? "s" : ""}</div>
+      </div>
+    ))}
+  </div>
+
+  <script is:inline>
+    let dragged = null;
+
+    document.querySelectorAll(".kcard").forEach((card) => {
+      card.addEventListener("dragstart", (e) => {
+        dragged = card;
+        card.style.opacity = "0.4";
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", card.dataset.id);
+      });
+      card.addEventListener("dragend", () => {
+        card.style.opacity = "";
+        dragged = null;
+      });
+    });
+
+    document.querySelectorAll("[data-stage-body]").forEach((body) => {
+      body.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        body.style.background = "rgba(212, 175, 122, 0.05)";
+      });
+      body.addEventListener("dragleave", () => {
+        body.style.background = "";
+      });
+      body.addEventListener("drop", async (e) => {
+        e.preventDefault();
+        body.style.background = "";
+        if (!dragged) return;
+        const newStage = body.dataset.stageBody;
+        const oldStage = dragged.dataset.stage;
+        if (newStage === oldStage) return;
+        const id = dragged.dataset.id;
+        // optimistic UI
+        body.appendChild(dragged);
+        dragged.dataset.stage = newStage;
+        const r = await fetch("/api/admin/clients/" + encodeURIComponent(id), {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ stage: newStage }),
+        });
+        if (!r.ok) {
+          alert("Échec de la mise à jour. Rechargement…");
+          window.location.reload();
+        } else {
+          // refresh column counts
+          window.location.reload();
+        }
+      });
+    });
+  </script>
 </AdminLayout>

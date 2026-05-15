@@ -1,111 +1,41 @@
 ---
 export const prerender = false;
 import AdminLayout from "~/layouts/AdminLayout.astro";
+import { documentsRepo } from "@features/documents/infra/repository.ts";
+import { clientsRepo } from "@features/clients/infra/repository.ts";
+import { STATUS_LABELS, formatEur } from "@features/documents/domain/types.ts";
+import type { DocumentStatus } from "@features/documents/domain/types.ts";
+import { initialsOf } from "@features/clients/domain/types.ts";
 
-interface Row {
-  number: string;
-  type: "Devis" | "Facture";
-  client: { initials: string; name: string; meta: string };
-  emittedAt: string;
-  dueAt: string;
-  amount: string;
-  amountColor?: string;
-  status: { label: string; variant: "new" | "ongoing" | "done" | "alert" | "draft" };
-  rowAction?: "view" | "relance" | "danger" | "draft";
-  numberColor?: string;
-  rowBg?: string;
-}
+const url = Astro.url;
+const tab = (url.searchParams.get("tab") ?? "all") as "all" | "devis" | "factures" | "brouillons" | "retard";
 
-const rows: ReadonlyArray<Row> = [
-  {
-    number: "FAC-2026-0014",
-    type: "Facture",
-    client: { initials: "DR", name: "Domaine Saint-Loup", meta: "Denis Rondeau" },
-    emittedAt: "14/05/2026",
-    dueAt: "13/06/2026",
-    amount: "8 400 €",
-    status: { label: "Envoyée", variant: "ongoing" },
-    rowAction: "view",
-  },
-  {
-    number: "FAC-2026-0013",
-    type: "Facture",
-    client: { initials: "AB", name: "Atelier Bardin", meta: "Camille Larue · récurrent" },
-    emittedAt: "02/05/2026",
-    dueAt: "01/06/2026",
-    amount: "280 €",
-    status: { label: "Payée", variant: "done" },
-    rowAction: "view",
-  },
-  {
-    number: "DEV-2026-0007",
-    type: "Devis",
-    client: { initials: "M&P", name: "Marc & Pauline V.", meta: "Mariage · Saint-Cloud" },
-    emittedAt: "11/05/2026",
-    dueAt: "10/06/2026",
-    amount: "11 200 €",
-    status: { label: "À relancer (J+4)", variant: "alert" },
-    rowAction: "relance",
-  },
-  {
-    number: "DEV-2026-0006",
-    type: "Devis",
-    client: { initials: "RB", name: "Raphaël Boyer", meta: "Cabinet d'avocats" },
-    emittedAt: "07/05/2026",
-    dueAt: "06/06/2026",
-    amount: "9 600 €",
-    status: { label: "Envoyé", variant: "ongoing" },
-    rowAction: "view",
-  },
-  {
-    number: "FAC-2026-0011",
-    type: "Facture",
-    client: { initials: "LV", name: "Louis Vermeil", meta: "Antiquaire" },
-    emittedAt: "03/04/2026",
-    dueAt: "03/05/2026 · J+12",
-    amount: "3 200 €",
-    amountColor: "#E67878",
-    status: { label: "En retard", variant: "alert" },
-    rowAction: "danger",
-    numberColor: "#E67878",
-    rowBg: "rgba(230, 120, 120, 0.04)",
-  },
-  {
-    number: "FAC-2026-0010",
-    type: "Facture",
-    client: { initials: "JH", name: "Galerie Saint-Honoré", meta: "Julien Hervé · Acompte 50 %" },
-    emittedAt: "02/04/2026",
-    dueAt: "02/05/2026",
-    amount: "7 100 €",
-    status: { label: "Payée Stripe", variant: "done" },
-    rowAction: "view",
-  },
-  {
-    number: "DEV-2026-0005",
-    type: "Devis",
-    client: { initials: "AM", name: "Adèle Marchand", meta: "Atelier de mode" },
-    emittedAt: "05/05/2026",
-    dueAt: "04/06/2026",
-    amount: "5 400 €",
-    status: { label: "Envoyé", variant: "ongoing" },
-    rowAction: "view",
-  },
-  {
-    number: "DEV-2026-0008",
-    type: "Devis",
-    client: { initials: "CL", name: "Camille Larue", meta: "Atelier Bardin · refonte" },
-    emittedAt: "—",
-    dueAt: "—",
-    amount: "6 000 €",
-    amountColor: "var(--ink-3)",
-    numberColor: "var(--ink-4)",
-    status: { label: "Brouillon", variant: "draft" },
-    rowAction: "draft",
-  },
+let documents = documentsRepo().list();
+if (tab === "devis") documents = documents.filter((d) => d.type === "devis");
+if (tab === "factures") documents = documents.filter((d) => d.type === "facture");
+if (tab === "brouillons") documents = documents.filter((d) => d.status === "brouillon");
+if (tab === "retard") documents = documents.filter((d) => d.status === "retard");
+
+const totals = documentsRepo().totals();
+const allClients = clientsRepo().list();
+const clientById = new Map(allClients.map((c) => [c.id, c]));
+
+const tabs = [
+  { id: "all", label: `Tous (${documentsRepo().list().length})` },
+  { id: "devis", label: `Devis (${documentsRepo().list({ type: "devis" }).length})` },
+  { id: "factures", label: `Factures (${documentsRepo().list({ type: "facture" }).length})` },
+  { id: "brouillons", label: `Brouillons (${documentsRepo().list({ status: "brouillon" }).length})` },
+  { id: "retard", label: `En retard (${documentsRepo().list({ status: "retard" }).length})`, alert: true },
 ];
 
-function badgeClass(variant: Row["status"]["variant"]): string {
-  return `badge badge--${variant === "new" ? "new" : variant === "ongoing" ? "ongoing" : variant === "done" ? "done" : variant === "alert" ? "alert" : "draft"}`;
+function badgeClassFor(status: DocumentStatus): string {
+  switch (status) {
+    case "paye": case "accepte": return "badge badge--done";
+    case "envoye": return "badge badge--ongoing";
+    case "retard": return "badge badge--alert";
+    case "brouillon": return "badge badge--draft";
+    default: return "badge badge--paused";
+  }
 }
 ---
 
@@ -119,101 +49,109 @@ function badgeClass(variant: Row["status"]["variant"]): string {
     <div>
       <h1 class="admin-page-head__title">Devis <em>& factures</em></h1>
       <p class="admin-page-head__sub">
-        14 documents · <strong style="color: var(--gold);">23 800 €</strong> en attente · <strong
-          style="color: #6BCB77;">42 600 €</strong
-        > encaissés ce trimestre
+        {documentsRepo().list().length} documents
+        · <strong style="color: var(--gold);">{formatEur(totals.en_attente)}</strong> en attente
+        · <strong style="color: #6BCB77;">{formatEur(totals.encaisses)}</strong> encaissés
       </p>
     </div>
     <div class="admin-page-head__actions">
-      <button class="btn-admin btn-admin--ghost">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-        Exporter (comptable)
-      </button>
-      <button class="btn-admin btn-admin--ghost">+ Nouveau devis</button>
-      <button class="btn-admin btn-admin--primary">+ Nouvelle facture</button>
+      <button class="btn-admin btn-admin--ghost" id="new-devis-btn">+ Nouveau devis</button>
+      <button class="btn-admin btn-admin--primary" id="new-fact-btn">+ Nouvelle facture</button>
     </div>
   </div>
 
   <div class="kpi-grid" style="margin-bottom: 24px;">
     <div class="kpi">
-      <div class="kpi__head"><span class="kpi__label">CA encaissé · 2026</span></div>
-      <div class="kpi__value">87&nbsp;<em>200</em>&nbsp;€</div>
-      <div class="kpi__delta kpi__delta--up">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M12 5V19"></path>
-          <path d="M5 12L12 5L19 12"></path>
-        </svg>
-        +34 % YoY
-      </div>
+      <div class="kpi__head"><span class="kpi__label">Encaissé</span></div>
+      <div class="kpi__value"><em>{formatEur(totals.encaisses)}</em></div>
+      <div class="kpi__delta" style="color: var(--ink-3);">Total payé à ce jour</div>
     </div>
     <div class="kpi">
-      <div class="kpi__head"><span class="kpi__label">En attente de paiement</span></div>
-      <div class="kpi__value" style="color: var(--gold);">23&nbsp;<em>800</em>&nbsp;€</div>
-      <div class="kpi__delta" style="color: var(--gold);">4 factures · 28 jours moy.</div>
+      <div class="kpi__head"><span class="kpi__label">En attente</span></div>
+      <div class="kpi__value" style="color: var(--gold);">{formatEur(totals.en_attente)}</div>
+      <div class="kpi__delta" style="color: var(--gold);">Factures envoyées non payées</div>
     </div>
     <div class="kpi">
       <div class="kpi__head"><span class="kpi__label">Devis envoyés</span></div>
-      <div class="kpi__value"><em>7</em></div>
-      <div class="kpi__delta" style="color: var(--ink-3);">2 acceptés · 1 à relancer</div>
+      <div class="kpi__value"><em>{totals.devis_envoyes}</em></div>
+      <div class="kpi__delta" style="color: var(--ink-3);">En attente de réponse</div>
     </div>
     <div class="kpi">
       <div class="kpi__head"><span class="kpi__label">En retard</span></div>
-      <div class="kpi__value" style="color: #E67878;"><em>1</em></div>
-      <div class="kpi__delta" style="color: #E67878;">3 200 € · J+12</div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-bottom: 16px; border-color: var(--gold-line);">
-    <div
-      class="card__body"
-      style="display: flex; align-items: center; gap: 24px; padding: 20px 28px; flex-wrap: wrap;"
-    >
-      <div
-        style="width: 44px; height: 44px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); color: #635BFF; font-weight: 700; font-size: 22px; flex-shrink: 0;"
-      >
-        S
-      </div>
-      <div style="flex: 1; min-width: 200px;">
-        <div
-          style="font-family: var(--font-serif); font-size: 16px; color: var(--ink); margin-bottom: 4px;"
-        >
-          Stripe <em style="color: var(--gold); font-style: italic;">connecté</em>
-        </div>
-        <div style="font-size: 12.5px; color: var(--ink-3);">
-          Encaissements automatiques · paiement en 1 ou 3 fois disponible pour le client
-        </div>
-      </div>
-      <div style="display: flex; gap: 18px;">
-        <div style="text-align: right;">
-          <div
-            style="font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-4);"
-          >
-            Cette semaine
-          </div>
-          <div style="font-family: var(--font-serif); font-size: 22px; color: var(--gold);">
-            <em style="font-style: italic;">+ 9 400 €</em>
-          </div>
-        </div>
-        <button class="btn-admin btn-admin--ghost">Voir Stripe →</button>
-      </div>
+      <div class="kpi__value" style="color: #E67878;">{formatEur(totals.en_retard)}</div>
+      <div class="kpi__delta" style="color: #E67878;">À relancer</div>
     </div>
   </div>
 
   <div class="crm-toolbar">
     <div class="tabs">
-      <button class="tabs__tab is-active">Tous (14)</button>
-      <button class="tabs__tab">Devis (7)</button>
-      <button class="tabs__tab">Factures (5)</button>
-      <button class="tabs__tab">Brouillons (2)</button>
-      <button class="tabs__tab" style="color: #E67878;">En retard (1)</button>
+      {tabs.map((t) => (
+        <a class={`tabs__tab${t.id === tab ? " is-active" : ""}`} href={`/admin/facturation${t.id === "all" ? "" : `?tab=${t.id}`}`} style={t.alert ? "color: #E67878;" : undefined}>
+          {t.label}
+        </a>
+      ))}
     </div>
-    <div style="margin-left: auto; display: flex; gap: 8px;">
-      <button class="btn-admin btn-admin--ghost" style="padding: 7px 12px; font-size: 12px;">Filtres avancés</button>
-      <button class="btn-admin btn-admin--ghost" style="padding: 7px 12px; font-size: 12px;">↓ Date décroissante</button>
+  </div>
+
+  <div class="card" id="form-card" style="display: none; margin-bottom: 16px;">
+    <div class="card__head">
+      <div>
+        <h3 class="card__title" id="form-title">Nouveau document</h3>
+        <div class="card__sub">Le numéro est généré automatiquement</div>
+      </div>
+      <div class="card__actions">
+        <button class="btn-admin btn-admin--ghost" id="form-cancel">Annuler</button>
+      </div>
+    </div>
+    <div class="card__body">
+      <form class="form-grid" onsubmit="return false;">
+        <input type="hidden" id="f-type" />
+        <div class="form-row">
+          <div><div class="form-label">Client</div><div class="form-help">Sélectionnez la fiche destinataire</div></div>
+          <div>
+            <select class="input-admin" id="f-client">
+              <option value="">— choisir un client —</option>
+              {allClients.map((c) => <option value={c.id}>{c.name}{c.org ? ` · ${c.org}` : ""}</option>)}
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div><div class="form-label">Lignes</div><div class="form-help">Cliquez « + Ligne » pour en ajouter</div></div>
+          <div>
+            <div id="f-lines"></div>
+            <button class="btn-admin btn-admin--ghost" id="add-line-btn" type="button" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;">+ Ligne</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <div><div class="form-label">TVA</div><div class="form-help">Taux en %, ex. 20 = 20%</div></div>
+          <div><input class="input-admin" id="f-vat" type="number" min="0" max="100" step="0.5" value="20" style="max-width: 100px;" /></div>
+        </div>
+        <div class="form-row">
+          <div><div class="form-label">Émis le / échéance</div></div>
+          <div class="input-group">
+            <input class="input-admin" id="f-emitted" type="date" />
+            <input class="input-admin" id="f-due" type="date" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div><div class="form-label">Notes</div></div>
+          <div><textarea class="input-admin" id="f-notes" rows="2"></textarea></div>
+        </div>
+        <div class="form-row">
+          <div><div class="form-label">Total</div><div class="form-help">Calculé automatiquement</div></div>
+          <div>
+            <div style="font-family: var(--font-serif); font-size: 24px; color: var(--gold);">
+              <span id="f-ht">0,00 €</span> HT — <span id="f-ttc">0,00 €</span> TTC
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="card__foot">
+      <span id="form-error" style="color: #E67878; font-size: 12.5px;"></span>
+      <div style="display: flex; gap: 8px; margin-left: auto;">
+        <button class="btn-admin btn-admin--primary" id="form-save">Créer</button>
+      </div>
     </div>
   </div>
 
@@ -225,7 +163,7 @@ function badgeClass(variant: Row["status"]["variant"]): string {
             <th>N°</th>
             <th>Client</th>
             <th>Type</th>
-            <th>Émis le</th>
+            <th>Émis</th>
             <th>Échéance</th>
             <th>Montant TTC</th>
             <th>Statut</th>
@@ -233,106 +171,148 @@ function badgeClass(variant: Row["status"]["variant"]): string {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => (
-            <tr style={`cursor: pointer;${row.rowBg ? ` background: ${row.rowBg};` : ""}`}>
-              <td>
-                <strong
-                  style={`color: ${row.numberColor ?? "var(--gold)"}; font-family: ui-monospace, monospace;`}
-                >
-                  {row.number}
-                </strong>
-              </td>
-              <td>
-                <div class="tbl__primary">
-                  <div class="tbl__avatar">{row.client.initials}</div>
-                  <div>
-                    <div class="tbl__name">{row.client.name}</div>
-                    <div class="tbl__meta">{row.client.meta}</div>
+          {documents.length === 0 && (
+            <tr><td colspan="8">
+              <div class="empty">
+                <div class="empty__title">Aucun document</div>
+                <div class="empty__sub">Créez un devis ou une facture pour commencer.</div>
+              </div>
+            </td></tr>
+          )}
+          {documents.map((d) => {
+            const c = clientById.get(d.clientId);
+            return (
+              <tr>
+                <td>
+                  <a href={`/admin/facturation/${d.id}`} style={`color: ${d.status === "retard" ? "#E67878" : "var(--gold)"}; font-family: ui-monospace, monospace; font-weight: 500;`}>
+                    {d.number}
+                  </a>
+                </td>
+                <td>
+                  <div class="tbl__primary">
+                    <div class="tbl__avatar">{c ? initialsOf(c.name) : "?"}</div>
+                    <div>
+                      <div class="tbl__name">{c?.name ?? "—"}</div>
+                      <div class="tbl__meta">{c?.org ?? ""}</div>
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td>
-                <span class={row.type === "Facture" ? "badge badge--new" : "badge badge--ongoing"}>
-                  {row.type}
-                </span>
-              </td>
-              <td>{row.emittedAt}</td>
-              <td
-                style={row.status.variant === "alert" && row.dueAt.includes("J+") ? "color: #E67878; font-weight: 500;" : undefined}
-              >
-                {row.dueAt}
-              </td>
-              <td>
-                <strong
-                  style={`font-family: var(--font-serif); font-style: italic; font-size: 16px; color: ${row.amountColor ?? "var(--gold)"};`}
-                >
-                  {row.amount}
-                </strong>
-              </td>
-              <td><span class={badgeClass(row.status.variant)}>{row.status.label}</span></td>
-              <td>
-                <div class="row-actions">
-                  {row.rowAction === "view" && (
-                    <button class="row-action" aria-label="Voir">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-                        <path d="M2 12 C5 6 9 4 12 4 C15 4 19 6 22 12 C19 18 15 20 12 20 C9 20 5 18 2 12 Z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                      </svg>
-                    </button>
-                  )}
-                  {row.rowAction === "view" && row.number === "FAC-2026-0014" && (
-                    <button class="row-action" aria-label="Télécharger">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                      </svg>
-                    </button>
-                  )}
-                  {row.rowAction === "relance" && (
-                    <button class="btn-admin btn-admin--primary" style="padding: 5px 10px; font-size: 11px;">
-                      Relancer
-                    </button>
-                  )}
-                  {row.rowAction === "danger" && (
-                    <button class="btn-admin btn-admin--danger" style="padding: 5px 10px; font-size: 11px;">
-                      Relance comptable
-                    </button>
-                  )}
-                  {row.rowAction === "draft" && (
-                    <button class="btn-admin btn-admin--primary" style="padding: 5px 10px; font-size: 11px;">
-                      Finaliser
-                    </button>
-                  )}
-                </div>
-              </td>
-            </tr>
-          ))}
+                </td>
+                <td>
+                  <span class={d.type === "facture" ? "badge badge--new" : "badge badge--ongoing"}>
+                    {d.type === "facture" ? "Facture" : "Devis"}
+                  </span>
+                </td>
+                <td>{d.emittedAt?.slice(0, 10) ?? "—"}</td>
+                <td style={d.status === "retard" ? "color: #E67878; font-weight: 500;" : undefined}>
+                  {d.dueAt?.slice(0, 10) ?? "—"}
+                </td>
+                <td>
+                  <strong style={`font-family: var(--font-serif); font-style: italic; font-size: 16px; color: ${d.status === "retard" ? "#E67878" : "var(--gold)"};`}>
+                    {formatEur(d.amountTtcCents)}
+                  </strong>
+                </td>
+                <td><span class={badgeClassFor(d.status)}>{STATUS_LABELS[d.status]}</span></td>
+                <td>
+                  <div class="row-actions">
+                    <a class="btn-admin btn-admin--ghost" href={`/admin/facturation/${d.id}`} style="padding: 5px 10px; font-size: 11px;">Ouvrir</a>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
   </div>
 
-  <div class="ai-card" style="margin-top: 24px;">
-    <div class="ai-card__head">
-      <span class="ai-card__badge">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <polygon points="12 2 15 9 22 12 15 15 12 22 9 15 2 12 9 9"></polygon>
-        </svg>
-        Marie observe
-      </span>
-    </div>
-    <div class="ai-card__body">
-      <strong>3 actions à considérer :</strong> Le devis <em>Marc &amp; Pauline V.</em> (11 200 €) attend depuis 4 jours — moment idéal pour une relance douce. La facture <em>Louis Vermeil</em> (3 200 €) est en retard de 12 jours — proposer un paiement en 2 fois ? Le brouillon <em>Camille Larue</em> est prêt à 90 %, il manque juste la mention « Hébergement année 1 incluse ».
-    </div>
-    <div class="ai-card__actions">
-      <button
-        class="btn-admin btn-admin--primary"
-        style="background: #C4B5FD; border-color: #C4B5FD; color: var(--admin-bg);"
-      >
-        Relancer Marc & Pauline
-      </button>
-      <button class="btn-admin btn-admin--ghost">Voir les 3 suggestions</button>
-    </div>
-  </div>
+  <script is:inline>
+    const formCard = document.getElementById("form-card");
+    const errorEl = document.getElementById("form-error");
+    const titleEl = document.getElementById("form-title");
+    const linesContainer = document.getElementById("f-lines");
+
+    function showForm(type) {
+      errorEl.textContent = "";
+      document.getElementById("f-type").value = type;
+      titleEl.textContent = type === "devis" ? "Nouveau devis" : "Nouvelle facture";
+      document.getElementById("f-client").value = "";
+      linesContainer.innerHTML = "";
+      addLine();
+      document.getElementById("f-vat").value = "20";
+      document.getElementById("f-emitted").value = new Date().toISOString().slice(0, 10);
+      document.getElementById("f-due").value = "";
+      document.getElementById("f-notes").value = "";
+      recalc();
+      formCard.style.display = "";
+      formCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    function addLine() {
+      const i = linesContainer.children.length;
+      const row = document.createElement("div");
+      row.className = "input-group";
+      row.style.gridTemplateColumns = "2.5fr 0.7fr 1fr 32px";
+      row.style.marginBottom = "8px";
+      row.innerHTML = `
+        <input class="input-admin line-label" placeholder="Description"/>
+        <input class="input-admin line-qty" type="number" min="0" step="0.5" value="1"/>
+        <input class="input-admin line-price" type="number" min="0" step="0.01" value="0" placeholder="€ HT/unité"/>
+        <button type="button" class="btn-admin btn-admin--ghost line-rm" style="padding: 0; min-width: 32px;">×</button>
+      `;
+      row.querySelector(".line-rm").addEventListener("click", () => { row.remove(); recalc(); });
+      ["input"].forEach((evt) => row.addEventListener(evt, recalc));
+      linesContainer.appendChild(row);
+    }
+    function readLines() {
+      const lines = [];
+      linesContainer.querySelectorAll(".input-group").forEach((row) => {
+        lines.push({
+          label: row.querySelector(".line-label").value.trim(),
+          qty: Number(row.querySelector(".line-qty").value || 0),
+          unitPriceCents: Math.round(Number(row.querySelector(".line-price").value || 0) * 100),
+        });
+      });
+      return lines;
+    }
+    function fmtEur(cents) {
+      return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(cents / 100);
+    }
+    function recalc() {
+      const lines = readLines();
+      const ht = lines.reduce((s, l) => s + Math.round(l.qty * l.unitPriceCents), 0);
+      const vatBps = Math.round(Number(document.getElementById("f-vat").value || 0) * 100);
+      const ttc = Math.round(ht * (1 + vatBps / 10000));
+      document.getElementById("f-ht").textContent = fmtEur(ht);
+      document.getElementById("f-ttc").textContent = fmtEur(ttc);
+    }
+
+    document.getElementById("new-devis-btn").addEventListener("click", () => showForm("devis"));
+    document.getElementById("new-fact-btn").addEventListener("click", () => showForm("facture"));
+    document.getElementById("form-cancel").addEventListener("click", () => formCard.style.display = "none");
+    document.getElementById("add-line-btn").addEventListener("click", () => { addLine(); recalc(); });
+    document.getElementById("f-vat").addEventListener("input", recalc);
+
+    document.getElementById("form-save").addEventListener("click", async () => {
+      const lines = readLines().filter((l) => l.label);
+      const clientId = document.getElementById("f-client").value;
+      if (!clientId) { errorEl.textContent = "Sélectionnez un client."; return; }
+      if (lines.length === 0) { errorEl.textContent = "Au moins une ligne avec une description."; return; }
+      const payload = {
+        type: document.getElementById("f-type").value,
+        clientId,
+        lines,
+        vatRateBps: Math.round(Number(document.getElementById("f-vat").value || 0) * 100),
+        emittedAt: document.getElementById("f-emitted").value || null,
+        dueAt: document.getElementById("f-due").value || null,
+        notes: document.getElementById("f-notes").value.trim() || null,
+      };
+      const r = await fetch("/api/admin/documents", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok) { errorEl.textContent = "Échec (" + r.status + ")."; return; }
+      const data = await r.json();
+      window.location.href = "/admin/facturation/" + data.document.id;
+    });
+  </script>
 </AdminLayout>

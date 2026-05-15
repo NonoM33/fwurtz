@@ -1,184 +1,231 @@
 ---
 export const prerender = false;
 import AdminLayout from "~/layouts/AdminLayout.astro";
+import { documentsRepo } from "@features/documents/infra/repository.ts";
+import { clientsRepo } from "@features/clients/infra/repository.ts";
+import { STATUS_LABELS, DOCUMENT_STATUSES, formatEur } from "@features/documents/domain/types.ts";
+import type { DocumentStatus } from "@features/documents/domain/types.ts";
+import { initialsOf } from "@features/clients/domain/types.ts";
 
-const body = `
+const id = Astro.params.id;
+const doc = id ? documentsRepo().get(id) : null;
+if (!doc) {
+  return Astro.redirect("/admin/facturation");
+}
+const client = clientsRepo().get(doc.clientId);
 
-  <div class="admin-page-head">
-    <div>
-      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
-        <a href="/admin/facturation" style="color: var(--ink-3); font-size: 13px; text-decoration: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;"><path d="M15 18l-6-6 6-6"/></svg> Facturation</a>
-        <span style="color: var(--ink-4);">·</span>
-        <span class="badge badge--draft">Brouillon</span>
-        <span style="font-family: ui-monospace, monospace; font-size: 11px; color: var(--ink-4);">DEV-2026-0008 · enregistré il y a 4 min</span>
-      </div>
-      <h1 class="admin-page-head__title">Devis · <em>Atelier Bardin</em></h1>
-      <p class="admin-page-head__sub">Refonte de site éditorial · Camille Larue · livraison estimée juillet 2026</p>
-    </div>
-    <div class="admin-page-head__actions">
-      <button class="btn-admin btn-admin--ghost">Aperçu PDF</button>
-      <button class="btn-admin btn-admin--ghost" data-save>Enregistrer</button>
-      <button class="btn-admin btn-admin--primary">Envoyer au client</button>
-    </div>
-  </div>
-
-  <div class="cols-2" style="grid-template-columns: 1fr 320px; gap: 24px;">
-
-    <!-- LEFT: Devis preview/edit -->
-    <div class="devis-paper">
-      <div class="devis-paper__head">
-        <div class="devis-paper__brand">
-          <svg width="60" height="60" viewBox="0 0 50 50" fill="none"><g stroke="#08111E" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M6 36 L6 8 L13 24 L20 8 L20 36"/><path d="M28 36 L28 15 C28 11 30 8 34 8"/><line x1="25" y1="17" x2="36" y2="17"/></g></svg>
-          <div>
-            <div style="font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 500; color: #08111E;">Maison Fwurtz</div>
-            <div style="font-size: 10px; color: #B8945F; letter-spacing: 0.18em; text-transform: uppercase;">Votre alliée au quotidien</div>
-          </div>
-        </div>
-        <div style="text-align: right;">
-          <div class="devis-paper__num">Devis n° DEV-2026-0008</div>
-          <div class="devis-paper__title">Proposition</div>
-          <div class="devis-paper__meta">
-            Émis le <strong>15 mai 2026</strong><br>
-            Valable jusqu'au <strong>14 juin 2026</strong>
-          </div>
-        </div>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-bottom: 48px;">
-        <div>
-          <div style="font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: #B8945F; margin-bottom: 10px;">De</div>
-          <div class="devis-paper__meta"><strong>Maison Fwurtz</strong><br>Paris, France<br>contact@maison-fwurtz.fr<br>SIRET 000 000 000 00000</div>
-        </div>
-        <div>
-          <div style="font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: #B8945F; margin-bottom: 10px;">À l'attention de</div>
-          <div class="devis-paper__meta"><strong>Atelier Bardin</strong><br>Camille Larue<br>Lyon, France<br>camille@atelier-bardin.fr</div>
-        </div>
-      </div>
-
-      <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 22px; color: #08111E; margin-bottom: 28px;">Pour la refonte éditoriale de votre site vitrine —</div>
-
-      <table class="devis-table">
-        <thead><tr><th>Prestation</th><th class="r">Qté</th><th class="r">PU</th><th class="r">Total HT</th></tr></thead>
-        <tbody>
-          <tr>
-            <td><div class="item-title">Direction artistique & design</div><div class="item-sub">Moodboard, charte sur mesure, maquettes desktop & mobile (5-7 pages)</div></td>
-            <td class="r">1</td>
-            <td class="r">2 400 €</td>
-            <td class="r"><strong>2 400 €</strong></td>
-          </tr>
-          <tr>
-            <td><div class="item-title">Développement & intégration</div><div class="item-sub">HTML/CSS/JS · responsive · animations · CMS éditorial</div></td>
-            <td class="r">1</td>
-            <td class="r">2 200 €</td>
-            <td class="r"><strong>2 200 €</strong></td>
-          </tr>
-          <tr>
-            <td><div class="item-title">Séance photo & retouche</div><div class="item-sub">Demi-journée chez vous · photographe partenaire · 30 photos retouchées livrées</div></td>
-            <td class="r">1</td>
-            <td class="r">800 €</td>
-            <td class="r"><strong>800 €</strong></td>
-          </tr>
-          <tr>
-            <td><div class="item-title">Optimisation SEO de lancement</div><div class="item-sub">Audit, rédaction des métas, structure éditoriale, sitemap</div></td>
-            <td class="r">1</td>
-            <td class="r">400 €</td>
-            <td class="r"><strong>400 €</strong></td>
-          </tr>
-          <tr>
-            <td><div class="item-title">Hébergement & maintenance · 1 an</div><div class="item-sub">Inclus la première année · puis 280 €/mois en option</div></td>
-            <td class="r">12</td>
-            <td class="r">offert</td>
-            <td class="r" style="font-style: italic; color: #B8945F;">Offert</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <button class="devis-line-add">+ Ajouter une ligne</button>
-
-      <div class="devis-totals">
-        <div class="devis-totals__list">
-          <div class="devis-totals__row"><span>Sous-total HT</span><span>5 800 €</span></div>
-          <div class="devis-totals__row"><span>TVA 20 %</span><span>1 160 €</span></div>
-          <div class="devis-totals__row"><span>Acompte de réservation (30 %)</span><span style="color: #B8945F;">2 088 € TTC</span></div>
-          <div class="devis-totals__row devis-totals__row--total"><span>Total <em style="font-style: italic;">TTC</em></span><span>6 960 €</span></div>
-        </div>
-      </div>
-
-      <div style="margin-top: 48px; padding: 20px 24px; background: rgba(212,175,122,0.08); border-left: 2px solid #B8945F; border-radius: 4px 8px 8px 4px;">
-        <div style="font-style: italic; font-size: 15px; color: #08111E; line-height: 1.6;">
-          Nous nous donnons <em style="color: #B8945F;">10 semaines</em> pour livrer votre site. La séance photo se fera dès la première semaine pour capturer la lumière de l'atelier. Paiement en 3 fois sans frais possible via Stripe.
-        </div>
-      </div>
-
-      <div class="devis-paper__foot">
-        <span>Bon pour accord — signature & date</span>
-        <span style="font-family: ui-monospace, monospace;">DEV-2026-0008 · p. 1/1</span>
-      </div>
-    </div>
-
-    <!-- RIGHT: Side panel for actions -->
-    <div style="display: grid; gap: 16px; height: fit-content; position: sticky; top: calc(var(--topbar-h) + 32px);">
-
-      <div class="card">
-        <div class="card__head"><div><h3 class="card__title">Statut</h3></div></div>
-        <div class="card__body">
-          <div style="display: grid; gap: 12px;">
-            <div style="display: grid; grid-template-columns: 8px 1fr; gap: 12px; align-items: center;"><span style="width: 8px; height: 8px; border-radius: 999px; background: var(--gold);"></span><div><div style="font-family: var(--font-serif); font-size: 13px; color: var(--ink);">Brouillon en cours</div><div style="font-size: 11px; color: var(--ink-4);">Enregistré il y a 4 min</div></div></div>
-            <div style="display: grid; grid-template-columns: 8px 1fr; gap: 12px; align-items: center; opacity: 0.5;"><span style="width: 8px; height: 8px; border-radius: 999px; background: var(--ink-4);"></span><div><div style="font-family: var(--font-serif); font-size: 13px; color: var(--ink-3);">Envoyé au client</div></div></div>
-            <div style="display: grid; grid-template-columns: 8px 1fr; gap: 12px; align-items: center; opacity: 0.5;"><span style="width: 8px; height: 8px; border-radius: 999px; background: var(--ink-4);"></span><div><div style="font-family: var(--font-serif); font-size: 13px; color: var(--ink-3);">Signé électroniquement</div></div></div>
-            <div style="display: grid; grid-template-columns: 8px 1fr; gap: 12px; align-items: center; opacity: 0.5;"><span style="width: 8px; height: 8px; border-radius: 999px; background: var(--ink-4);"></span><div><div style="font-family: var(--font-serif); font-size: 13px; color: var(--ink-3);">Acompte reçu</div></div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="ai-card">
-        <div class="ai-card__head">
-          <span class="ai-card__badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15 9 22 12 15 15 12 22 9 15 2 12 9 9"/></svg> Marie suggère</span>
-        </div>
-        <div class="ai-card__body" style="font-size: 13px;">
-          Le devis est <strong>prêt à 95 %</strong>. Camille a mentionné un timing court — ajouter une <em>mention « Démarrage sous 10 jours »</em> peut sécuriser sa décision.
-        </div>
-        <div class="ai-card__actions">
-          <button class="btn-admin btn-admin--primary" style="background: #C4B5FD; border-color: #C4B5FD; color: var(--admin-bg); padding: 7px 12px; font-size: 12px;">Appliquer</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card__head"><div><h3 class="card__title">Paiement</h3></div></div>
-        <div class="card__body" style="display: grid; gap: 14px;">
-          <div>
-            <div style="font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 6px;">Modalités</div>
-            <select class="input-admin"><option>Acompte 30 % + solde à livraison</option><option>3 fois sans frais</option><option>Paiement comptant</option></select>
-          </div>
-          <div>
-            <div style="font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 6px;">Méthodes acceptées</div>
-            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-              <span class="kcard__tag kcard__tag--gold">Stripe</span>
-              <span class="kcard__tag">Virement</span>
-              <span class="kcard__tag">Chèque</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card__head"><div><h3 class="card__title">Actions</h3></div></div>
-        <div class="card__body" style="display: grid; gap: 8px;">
-          <button class="btn-admin btn-admin--ghost" style="justify-content: flex-start;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Télécharger PDF</button>
-          <button class="btn-admin btn-admin--ghost" style="justify-content: flex-start;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15 H4 a2 2 0 01-2-2 V4 a2 2 0 012-2 h9 a2 2 0 012 2 v1"/></svg> Dupliquer</button>
-          <button class="btn-admin btn-admin--ghost" style="justify-content: flex-start;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2 H6 a2 2 0 00-2 2 v16 a2 2 0 002 2 h12 a2 2 0 002-2 V8 Z"/><polyline points="14 2 14 8 20 8"/></svg> Convertir en facture</button>
-          <button class="btn-admin btn-admin--danger" style="justify-content: flex-start;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="3 6 5 6 21 6"/><path d="M19 6 L18 20 a2 2 0 01-2 2 H8 a2 2 0 01-2-2 L5 6"/></svg> Supprimer</button>
-        </div>
-      </div>
-
-    </div>
-  </div>`;
+function badgeClassFor(status: DocumentStatus): string {
+  switch (status) {
+    case "paye": case "accepte": return "badge badge--done";
+    case "envoye": return "badge badge--ongoing";
+    case "retard": return "badge badge--alert";
+    case "brouillon": return "badge badge--draft";
+    default: return "badge badge--paused";
+  }
+}
 ---
 
 <AdminLayout
-  title="Détail document — Maison Fwurtz Admin" active="facturation"
-  breadcrumb="Facturation / Détail"
-  screenLabel="Admin · Détail facturation"
+  title={`${doc.number} — Maison Fwurtz Admin`}
+  active="facturation"
+  breadcrumb={`Facturation / ${doc.number}`}
+  screenLabel="Admin · Détail"
 >
-  <Fragment set:html={body} />
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">
+        <span style="font-family: ui-monospace, monospace; color: var(--gold); font-size: 28px;">{doc.number}</span>
+      </h1>
+      <p class="admin-page-head__sub">
+        {doc.type === "facture" ? "Facture" : "Devis"} · {client?.name ?? "—"}
+        {client?.org && ` · ${client.org}`}
+      </p>
+    </div>
+    <div class="admin-page-head__actions">
+      <a class="btn-admin btn-admin--ghost" href="/admin/facturation">← Retour</a>
+      <select class="btn-admin btn-admin--ghost" id="status-select" style="padding: 8px 16px;">
+        {DOCUMENT_STATUSES.map((s) => <option value={s} selected={s === doc.status}>{STATUS_LABELS[s]}</option>)}
+      </select>
+      <button class="btn-admin btn-admin--danger" id="del-btn">Supprimer</button>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 320px; gap: 16px;">
+    <div>
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card__head">
+          <div>
+            <h3 class="card__title">Lignes</h3>
+            <div class="card__sub">Modifier les lignes recalcule HT / TTC automatiquement</div>
+          </div>
+        </div>
+        <div class="card__body">
+          <div id="lines-container"></div>
+          <button class="btn-admin btn-admin--ghost" id="add-line" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;">+ Ligne</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card__head">
+          <div><h3 class="card__title">Notes & dates</h3></div>
+        </div>
+        <div class="card__body">
+          <div class="form-grid">
+            <div class="form-row">
+              <div><div class="form-label">TVA (%)</div></div>
+              <div><input class="input-admin" id="f-vat" type="number" min="0" max="100" step="0.5" value={doc.vatRateBps / 100} style="max-width: 100px;" /></div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-label">Émis le / échéance</div></div>
+              <div class="input-group">
+                <input class="input-admin" id="f-emitted" type="date" value={doc.emittedAt?.slice(0, 10) ?? ""} />
+                <input class="input-admin" id="f-due" type="date" value={doc.dueAt?.slice(0, 10) ?? ""} />
+              </div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-label">Notes</div></div>
+              <div><textarea class="input-admin" id="f-notes" rows="3">{doc.notes ?? ""}</textarea></div>
+            </div>
+          </div>
+        </div>
+        <div class="card__foot">
+          <span id="save-error" style="color: #E67878; font-size: 12.5px;"></span>
+          <div style="display: flex; gap: 8px; margin-left: auto;">
+            <button class="btn-admin btn-admin--primary" id="save-btn">Enregistrer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="client-card" style="position: sticky; top: calc(var(--topbar-h) + 32px);">
+      <div class="client-card__cover"></div>
+      <div class="client-card__inner">
+        <div class="client-card__avatar" style="font-size: 22px;">
+          {client ? initialsOf(client.name) : "?"}
+        </div>
+        <h2 class="client-card__name">{client?.name ?? "—"}</h2>
+        <div class="client-card__org">{client?.org ?? ""}</div>
+
+        <div class="client-card__stage">
+          <span class={badgeClassFor(doc.status)} id="status-badge">{STATUS_LABELS[doc.status]}</span>
+        </div>
+
+        <div class="client-card__meta">
+          <div class="client-card__meta-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2v20M2 12h20"/></svg>
+            <div>
+              <div class="client-card__meta-label">Total HT</div>
+              <div style="font-family: var(--font-serif); color: var(--ink); font-size: 18px;" id="display-ht">{formatEur(doc.amountHtCents)}</div>
+            </div>
+          </div>
+          <div class="client-card__meta-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/></svg>
+            <div>
+              <div class="client-card__meta-label">Total TTC</div>
+              <div style="font-family: var(--font-serif); color: var(--gold); font-size: 22px; font-style: italic;" id="display-ttc">{formatEur(doc.amountTtcCents)}</div>
+            </div>
+          </div>
+        </div>
+
+        {client && (
+          <div class="client-card__actions">
+            <a class="btn-admin btn-admin--ghost" href={`/admin/clients/${client.id}`}>Voir le client →</a>
+          </div>
+        )}
+      </div>
+    </aside>
+  </div>
+
+  <script is:inline define:vars={{ docId: doc.id, initialLines: doc.lines, initialVat: doc.vatRateBps }}>
+    const linesContainer = document.getElementById("lines-container");
+
+    function fmtEur(cents) {
+      return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(cents / 100);
+    }
+    function addLine(label = "", qty = 1, price = 0) {
+      const row = document.createElement("div");
+      row.className = "input-group";
+      row.style.gridTemplateColumns = "2.5fr 0.7fr 1fr 32px";
+      row.style.marginBottom = "8px";
+      row.innerHTML = `
+        <input class="input-admin line-label" placeholder="Description"/>
+        <input class="input-admin line-qty" type="number" min="0" step="0.5"/>
+        <input class="input-admin line-price" type="number" min="0" step="0.01" placeholder="€ HT/unité"/>
+        <button type="button" class="btn-admin btn-admin--ghost" style="padding: 0; min-width: 32px;">×</button>
+      `;
+      row.querySelector(".line-label").value = label;
+      row.querySelector(".line-qty").value = String(qty);
+      row.querySelector(".line-price").value = String(price);
+      row.querySelector("button").addEventListener("click", () => { row.remove(); recalc(); });
+      row.addEventListener("input", recalc);
+      linesContainer.appendChild(row);
+    }
+    function readLines() {
+      const lines = [];
+      linesContainer.querySelectorAll(".input-group").forEach((row) => {
+        lines.push({
+          label: row.querySelector(".line-label").value.trim(),
+          qty: Number(row.querySelector(".line-qty").value || 0),
+          unitPriceCents: Math.round(Number(row.querySelector(".line-price").value || 0) * 100),
+        });
+      });
+      return lines;
+    }
+    function recalc() {
+      const lines = readLines();
+      const ht = lines.reduce((s, l) => s + Math.round(l.qty * l.unitPriceCents), 0);
+      const vatBps = Math.round(Number(document.getElementById("f-vat").value || 0) * 100);
+      const ttc = Math.round(ht * (1 + vatBps / 10000));
+      document.getElementById("display-ht").textContent = fmtEur(ht);
+      document.getElementById("display-ttc").textContent = fmtEur(ttc);
+    }
+
+    initialLines.forEach((l) => addLine(l.label, l.qty, l.unitPriceCents / 100));
+    if (initialLines.length === 0) addLine();
+    document.getElementById("add-line").addEventListener("click", () => { addLine(); recalc(); });
+    document.getElementById("f-vat").addEventListener("input", recalc);
+
+    document.getElementById("save-btn").addEventListener("click", async () => {
+      const errorEl = document.getElementById("save-error");
+      errorEl.textContent = "";
+      const payload = {
+        lines: readLines().filter((l) => l.label),
+        vatRateBps: Math.round(Number(document.getElementById("f-vat").value || 0) * 100),
+        emittedAt: document.getElementById("f-emitted").value || null,
+        dueAt: document.getElementById("f-due").value || null,
+        notes: document.getElementById("f-notes").value.trim() || null,
+      };
+      const r = await fetch("/api/admin/documents/" + encodeURIComponent(docId), {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok) { errorEl.textContent = "Échec (" + r.status + ")."; return; }
+      const data = await r.json();
+      document.getElementById("display-ht").textContent = fmtEur(data.document.amountHtCents);
+      document.getElementById("display-ttc").textContent = fmtEur(data.document.amountTtcCents);
+      const btn = document.getElementById("save-btn");
+      const orig = btn.textContent;
+      btn.textContent = "✓ Enregistré";
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    });
+
+    document.getElementById("status-select").addEventListener("change", async (e) => {
+      const newStatus = e.target.value;
+      const r = await fetch("/api/admin/documents/" + encodeURIComponent(docId), {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!r.ok) { alert("Échec."); return; }
+      window.location.reload();
+    });
+
+    document.getElementById("del-btn").addEventListener("click", async () => {
+      if (!confirm("Supprimer définitivement ce document ?")) return;
+      const r = await fetch("/api/admin/documents/" + encodeURIComponent(docId), { method: "DELETE", headers: { "content-type": "application/json" } });
+      if (!r.ok) { alert("Échec."); return; }
+      window.location.href = "/admin/facturation";
+    });
+  </script>
 </AdminLayout>
