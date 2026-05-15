@@ -26,6 +26,8 @@ interface GroqMessage {
 interface GroqBody {
   model: string;
   messages: GroqMessage[];
+  max_tokens?: number;
+  reasoning_effort?: string;
 }
 
 describe("createGroqClient", () => {
@@ -56,6 +58,25 @@ describe("createGroqClient", () => {
     expect(body.messages[0]).toEqual({ role: "system", content: "PROMPT" });
     expect(body.messages[1]).toEqual({ role: "user", content: "Bonjour" });
     expect(body.messages[2]).toEqual({ role: "assistant", content: "Bonsoir, je vous écoute" });
+  });
+
+  // Regression: gpt-oss-120b is a reasoning model. With a tight max_tokens
+  // budget the hidden reasoning chain consumes everything and `content`
+  // comes back empty (we observed this on staging — finish_reason="length",
+  // 38 reasoning tokens, 0 visible tokens). The fix is a higher budget AND
+  // `reasoning_effort: "low"` so the model spends little on chain-of-thought.
+  it("requests a token budget large enough to leave room for the answer after reasoning", async () => {
+    const { spy, fetchImpl } = fakeFetch(async () =>
+      jsonResponse({ choices: [{ message: { content: "ok" } }] }),
+    );
+    const client = createGroqClient({ apiKey: "sk", model: "openai/gpt-oss-120b", fetchImpl });
+    await client.complete({
+      systemPrompt: "p",
+      history: [{ role: "user", text: "Combien ça coûte ?" }],
+    });
+    const body = JSON.parse(String(spy.mock.calls[0]![1]?.body)) as GroqBody;
+    expect(body.max_tokens ?? 0).toBeGreaterThanOrEqual(1024);
+    expect(body.reasoning_effort).toBe("low");
   });
 
   it("maps a 401 response to upstream_unauthorized so we can surface the right error", async () => {

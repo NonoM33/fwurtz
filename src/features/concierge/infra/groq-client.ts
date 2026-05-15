@@ -49,7 +49,11 @@ export function createGroqClient(opts: GroqClientOptions): LLMClient {
               })),
             ],
             temperature: 0.7,
-            max_tokens: 280,
+            // gpt-oss-120b is a reasoning model: the budget is shared between
+            // hidden reasoning tokens and the visible answer. With 280 the
+            // whole budget went to reasoning and `content` came out empty.
+            max_tokens: 1024,
+            reasoning_effort: "low",
             top_p: 0.9,
           }),
         });
