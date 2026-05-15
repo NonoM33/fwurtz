@@ -14,6 +14,12 @@ interface ImportMetaEnv {
   readonly APP_ROLE?: "site" | "admin" | "api" | "all";
   readonly PUBLIC_API_URL?: string;
   readonly CORS_ALLOWED_ORIGINS?: string;
+  readonly DB_PATH?: string;
+}
+
+declare module "*.sql?raw" {
+  const content: string;
+  export default content;
 }
 
 interface ImportMeta {

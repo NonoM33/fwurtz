@@ -9,6 +9,9 @@ ARG NODE_VERSION=22-alpine
 FROM oven/bun:${BUN_VERSION}-alpine AS builder
 WORKDIR /app
 
+# Native build deps for better-sqlite3 (compiled if no prebuild matches).
+RUN apk add --no-cache python3 make g++ libc6-compat
+
 # Install deps with cached layer (only invalidated when manifests change).
 COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile
@@ -24,17 +27,25 @@ FROM node:${NODE_VERSION} AS runner
 WORKDIR /app
 ENV NODE_ENV=production \
     HOST=0.0.0.0 \
-    PORT=3000
+    PORT=3000 \
+    DB_PATH=/app/data/db.sqlite \
+    MEDIA_DIR=/app/data/media
+
+# Native libs needed at runtime by better-sqlite3 prebuild.
+RUN apk add --no-cache libstdc++
 
 # Pull only what is needed to run the built server.
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 
-# Drop root for runtime safety.
-RUN addgroup -S app && adduser -S -G app app && chown -R app:app /app
-USER app
+# Persistent data (mount /app/data as a Coolify volume in production).
+RUN mkdir -p /app/data/media && \
+    addgroup -S app && adduser -S -G app app && \
+    chown -R app:app /app
 
+USER app
+VOLUME ["/app/data"]
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=4s --start-period=10s --retries=3 \

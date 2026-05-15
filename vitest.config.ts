@@ -16,6 +16,8 @@ export default defineConfig({
         "src/features/admin-auth/infra/**/*.ts",
         "src/features/media/infra/**/*.ts",
         "src/features/role/**/*.ts",
+        "src/features/testimonials/infra/**/*.ts",
+        "src/shared/db/**/*.ts",
       ],
       exclude: [
         "src/**/*.test.ts",
