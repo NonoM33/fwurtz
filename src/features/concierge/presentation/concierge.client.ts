@@ -26,9 +26,25 @@ interface PersistedState {
 }
 
 const STORAGE_KEY = "mf-concierge-v2";
+const SESSION_KEY = "mf-concierge-session";
 const TOAST_DELAY_MS = 16_000;
 const PROPOSE_RDV_AFTER = 3;
 const HISTORY_CAP = 16;
+const POLL_INTERVAL_MS = 6_000;
+
+function ensureSessionId(): string {
+  try {
+    const existing = localStorage.getItem(SESSION_KEY);
+    if (existing && existing.length >= 8) return existing;
+    const fresh = (typeof crypto !== "undefined" && "randomUUID" in crypto)
+      ? crypto.randomUUID()
+      : `s-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    localStorage.setItem(SESSION_KEY, fresh);
+    return fresh;
+  } catch {
+    return `s-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  }
+}
 
 const INITIAL_QUICK_REPLIES = [
   "Découvrir vos services",
@@ -284,19 +300,63 @@ function init(): void {
     renderMessage(msg);
   }
 
+  const sessionId = ensureSessionId();
+  let lastPollTs = new Date(0).toISOString();
+  const seenAdminIds = new Set<string>();
+
   async function callBackend(): Promise<string> {
     const history = state.messages.slice(-HISTORY_CAP).map(({ role, text }) => ({ role, text }));
     const page = detectPage(location.pathname);
     const res = await fetch("/api/concierge", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ history, page }),
+      body: JSON.stringify({ history, page, sessionId }),
     });
     if (!res.ok) {
       throw new Error(`status_${res.status}`);
     }
     const body = (await res.json()) as { text?: string };
     return typeof body.text === "string" ? body.text : "";
+  }
+
+  async function pollAdminReplies(): Promise<void> {
+    try {
+      const since = encodeURIComponent(lastPollTs);
+      const r = await fetch(`/api/concierge/poll?sessionId=${encodeURIComponent(sessionId)}&since=${since}`, {
+        headers: { Accept: "application/json" },
+      });
+      if (!r.ok) return;
+      const body = (await r.json()) as {
+        messages: { id: string; text: string; author: string; createdAt: string }[];
+        status: string | null;
+      };
+      for (const m of body.messages ?? []) {
+        if (seenAdminIds.has(m.id)) continue;
+        seenAdminIds.add(m.id);
+        addConcierge(m.text);
+        lastPollTs = m.createdAt;
+        if (!panel.classList.contains("is-open")) showBadge("•");
+      }
+      // Track polling tip even when no new message, to avoid resending the
+      // entire conversation every poll.
+      if (body.messages && body.messages.length === 0) {
+        lastPollTs = new Date().toISOString();
+      }
+    } catch {
+      /* network blip — try again next tick */
+    }
+  }
+  let pollTimer: ReturnType<typeof setInterval> | null = null;
+  function startPolling(): void {
+    if (pollTimer) return;
+    void pollAdminReplies();
+    pollTimer = setInterval(() => void pollAdminReplies(), POLL_INTERVAL_MS);
+  }
+  function stopPolling(): void {
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
   }
 
   async function sendUserMessage(rawText: string): Promise<void> {
@@ -385,11 +445,13 @@ function init(): void {
     state.opened = true;
     saveState();
     initializeConversation();
+    startPolling();
     setTimeout(() => inputEl.focus(), 320);
   }
   function closePanel(): void {
     panel.classList.remove("is-open");
     fab.classList.remove("is-open");
+    stopPolling();
   }
 
   fab.addEventListener("click", () =>

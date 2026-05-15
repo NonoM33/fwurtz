@@ -25,6 +25,10 @@ export const ChatRequestSchema = z.object({
   history: z.array(MessageSchema).min(1).max(32),
   /** Page the visitor is on — drives a contextual greeting. */
   page: PageContextSchema.default("accueil"),
+  /** Stable session identifier from the widget (UUID in localStorage).
+   *  Used by the back office to group messages by visitor. Optional for
+   *  backward compatibility with widgets that haven't been refreshed. */
+  sessionId: z.string().min(8).max(80).optional(),
 });
 
 export type ChatRequestInput = z.infer<typeof ChatRequestSchema>;

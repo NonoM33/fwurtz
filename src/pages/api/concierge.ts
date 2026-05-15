@@ -2,11 +2,11 @@ import type { APIRoute } from "astro";
 import { ChatRequestSchema } from "@features/concierge/domain/validation";
 import { ConciergeError } from "@features/concierge/domain/errors";
 import { getConciergeServices } from "@features/concierge/infra/composition";
+import { conversationsRepo } from "@features/conversations/infra/repository.ts";
 
 export const prerender = false;
 
 function clientKey(req: Request, clientAddress: string | undefined): string {
-  // Astro exposes Astro.clientAddress; fall back to forwarded headers for proxies.
   if (clientAddress) return clientAddress;
   const fwd = req.headers.get("x-forwarded-for");
   if (fwd) return fwd.split(",")[0]?.trim() ?? "unknown";
@@ -24,6 +24,9 @@ function jsonResponse(body: unknown, init?: ResponseInit): Response {
   });
 }
 
+const TAKEN_OVER_REPLY =
+  "Merci, votre message vient d'arriver. Notre équipe vous répond dans les meilleurs délais — vous pouvez fermer cette fenêtre, vous serez notifié dès qu'on aura un retour.";
+
 export const POST: APIRoute = async ({ request, clientAddress }) => {
   let raw: unknown;
   try {
@@ -40,11 +43,44 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     );
   }
 
+  const { history, sessionId } = parsed.data;
+
+  // Persist the visitor's message into the conversation log if a session id
+  // was provided. We never let logging crash the visitor experience, so the
+  // try/catch swallows DB errors silently.
+  let conversationStatus: "ouvert" | "en_cours" | "clos" = "ouvert";
+  if (sessionId) {
+    try {
+      const conv = conversationsRepo().upsert({ id: sessionId, channel: "concierge" });
+      conversationStatus = conv.status;
+      const lastUser = [...history].reverse().find((m) => m.role === "user");
+      if (lastUser) {
+        // Avoid double-logging if the same text is the most recent in DB.
+        const existing = conversationsRepo().messages(sessionId, { limit: 1 });
+        const newest = existing.length > 0 ? existing[existing.length - 1] : undefined;
+        const isDuplicate = newest && newest.direction === "in" && newest.body === lastUser.text;
+        if (!isDuplicate) {
+          conversationsRepo().appendMessage({
+            conversationId: sessionId,
+            direction: "in",
+            author: "visitor",
+            body: lastUser.text,
+          });
+        }
+      }
+    } catch {
+      /* logging failure should never break the visitor flow */
+    }
+  }
+
+  // If a human took over, hold the LLM and serve a holding reply. The
+  // admin's manual replies are pulled by the widget via /api/concierge/poll.
+  if (conversationStatus === "en_cours" || conversationStatus === "clos") {
+    return jsonResponse({ text: TAKEN_OVER_REPLY });
+  }
+
   let services: ReturnType<typeof getConciergeServices>;
   try {
-    // At runtime under the Node adapter, only `process.env` reflects the
-    // env vars supplied by the orchestrator (Coolify). `import.meta.env`
-    // is frozen at build time and would miss anything injected later.
     services = getConciergeServices(process.env);
   } catch (err) {
     if (err instanceof ConciergeError && err.code === "missing_config") {
@@ -60,6 +96,18 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
   try {
     const reply = await services.replyToVisitor(parsed.data);
+    if (sessionId) {
+      try {
+        conversationsRepo().appendMessage({
+          conversationId: sessionId,
+          direction: "out",
+          author: "marie",
+          body: reply.text,
+        });
+      } catch {
+        /* logging only */
+      }
+    }
     return jsonResponse({ text: reply.text });
   } catch (err) {
     if (err instanceof ConciergeError && err.code === "rate_limited") {
