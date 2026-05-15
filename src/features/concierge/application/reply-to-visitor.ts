@@ -30,6 +30,11 @@ export function makeReplyToVisitor(deps: Dependencies) {
     } catch (err) {
       if (err instanceof ConciergeError && err.code === "rate_limited") throw err;
       if (err instanceof ConciergeError && err.code === "missing_config") throw err;
+      // Surface upstream failures in server logs so they don't disappear
+      // behind the visitor-facing fallback reply.
+      const code = err instanceof ConciergeError ? err.code : "unknown";
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn(`[concierge] upstream failed (${code}): ${message}`);
       return { text: fallbackReply(lastUserMessage) };
     }
   };
