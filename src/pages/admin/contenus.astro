@@ -4,8 +4,8 @@ import AdminLayout from "~/layouts/AdminLayout.astro";
 import { pagesRepo } from "@features/pages/infra/repository.ts";
 
 const allPages = pagesRepo().list();
-const activeSlug = Astro.url.searchParams.get("p") ?? allPages[0]?.slug ?? "";
-const active = allPages.find((p) => p.slug === activeSlug) ?? allPages[0] ?? null;
+const initialSlug = Astro.url.searchParams.get("p") ?? allPages[0]?.slug ?? "";
+const active = allPages.find((p) => p.slug === initialSlug) ?? allPages[0] ?? null;
 ---
 
 <AdminLayout
@@ -24,7 +24,7 @@ const active = allPages.find((p) => p.slug === activeSlug) ?? allPages[0] ?? nul
     <div class="admin-page-head__actions">
       {active && (
         <>
-          <a class="btn-admin btn-admin--ghost" href={active.slug === "index" ? "/" : `/${active.slug}`} target="_blank" rel="noopener">Prévisualiser →</a>
+          <a class="btn-admin btn-admin--ghost" id="preview-link" href={active.slug === "index" ? "/" : `/${active.slug}`} target="_blank" rel="noopener">Prévisualiser →</a>
           <button class="btn-admin btn-admin--primary" id="save-btn">Enregistrer</button>
         </>
       )}
@@ -35,8 +35,10 @@ const active = allPages.find((p) => p.slug === activeSlug) ?? allPages[0] ?? nul
     <aside class="content-nav">
       {allPages.map((p) => (
         <a
-          class={`content-nav__item${p.slug === activeSlug ? " is-active" : ""}`}
+          class={`content-nav__item${p.id === active?.id ? " is-active" : ""}`}
           href={`/admin/contenus?p=${encodeURIComponent(p.slug)}`}
+          data-page-id={p.id}
+          data-page-slug={p.slug}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M6 3 H15 L19 7 V21 H6 Z" />
@@ -48,7 +50,7 @@ const active = allPages.find((p) => p.slug === activeSlug) ?? allPages[0] ?? nul
     </aside>
 
     {active ? (
-      <div>
+      <div id="page-editor">
         <div class="editor-section">
           <div class="editor-section__head">
             <div class="editor-section__title">Métadonnées <em>& SEO</em></div>
@@ -61,7 +63,7 @@ const active = allPages.find((p) => p.slug === activeSlug) ?? allPages[0] ?? nul
                 <div class="form-help">Adresse publique (lecture seule)</div>
               </div>
               <div>
-                <input class="input-admin" type="text" value={active.slug === "index" ? "/" : `/${active.slug}`} disabled style="opacity: 0.6;" />
+                <input class="input-admin" id="f-url" type="text" value={active.slug === "index" ? "/" : `/${active.slug}`} disabled style="opacity: 0.6;" />
               </div>
             </div>
             <div class="form-row">
@@ -126,8 +128,8 @@ const active = allPages.find((p) => p.slug === activeSlug) ?? allPages[0] ?? nul
           </div>
         </div>
 
-        <div style="font-size: 12px; color: var(--ink-4); padding: 12px 0;">
-          Dernière mise à jour : {active.updatedAt.slice(0, 16).replace("T", " ")}
+        <div id="page-meta" style="font-size: 12px; color: var(--ink-4); padding: 12px 0;">
+          Dernière mise à jour : <span id="page-updated">{active.updatedAt.slice(0, 16).replace("T", " ")}</span>
           {active.publishedAt && (
             <> · <span style="color: #6BCB77;">● Publié</span></>
           )}
@@ -140,39 +142,107 @@ const active = allPages.find((p) => p.slug === activeSlug) ?? allPages[0] ?? nul
     )}
   </div>
 
-  {active && (
-    <script is:inline define:vars={{ pageId: active.id }}>
-      const get = (id) => document.getElementById(id);
-      const titleEl = get("f-title");
-      const descEl = get("f-desc");
-      titleEl.addEventListener("input", () => get("f-title-count").textContent = titleEl.value.length);
-      descEl.addEventListener("input", () => get("f-desc-count").textContent = descEl.value.length);
+  <script is:inline define:vars={{ allPages, initialPageId: active?.id ?? null }}>
+    let currentId = initialPageId;
 
-      get("save-btn").addEventListener("click", async () => {
-        const btn = get("save-btn");
-        const orig = btn.textContent;
-        btn.disabled = true; btn.textContent = "Enregistrement…";
-        const payload = {
-          title: titleEl.value.trim(),
-          metaDescription: descEl.value.trim() || null,
-          blocks: {
-            hero: {
-              title: get("f-hero-title").value.trim(),
-              subtitle: get("f-hero-subtitle").value.trim(),
-              cta: get("f-hero-cta").value.trim(),
-            },
-          },
-          publish: true,
-        };
-        const r = await fetch("/api/admin/pages/" + encodeURIComponent(pageId), {
-          method: "PATCH",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!r.ok) { btn.disabled = false; btn.textContent = orig; alert("Échec d'enregistrement."); return; }
-        btn.textContent = "✓ Enregistré";
-        setTimeout(() => { btn.disabled = false; btn.textContent = orig; }, 1500);
+    const get = (id) => document.getElementById(id);
+    const titleEl = get("f-title");
+    const descEl = get("f-desc");
+    const heroTitleEl = get("f-hero-title");
+    const heroSubEl = get("f-hero-subtitle");
+    const heroCtaEl = get("f-hero-cta");
+    const urlEl = get("f-url");
+    const updatedEl = get("page-updated");
+    const previewLink = get("preview-link");
+
+    function loadPage(p) {
+      if (!p) return;
+      currentId = p.id;
+      titleEl.value = p.title;
+      descEl.value = p.metaDescription ?? "";
+      heroTitleEl.value = (p.blocks?.hero?.title) ?? "";
+      heroSubEl.value = (p.blocks?.hero?.subtitle) ?? "";
+      heroCtaEl.value = (p.blocks?.hero?.cta) ?? "";
+      urlEl.value = p.slug === "index" ? "/" : "/" + p.slug;
+      updatedEl.textContent = p.updatedAt.slice(0, 16).replace("T", " ");
+      previewLink.href = p.slug === "index" ? "/" : "/" + p.slug;
+      get("f-title-count").textContent = String(titleEl.value.length);
+      get("f-desc-count").textContent = String(descEl.value.length);
+      // sidebar active state
+      document.querySelectorAll("[data-page-id]").forEach((a) => {
+        a.classList.toggle("is-active", a.getAttribute("data-page-id") === p.id);
       });
-    </script>
-  )}
+      // URL bar (no reload)
+      const url = "/admin/contenus?p=" + encodeURIComponent(p.slug);
+      history.pushState({ pageId: p.id }, "", url);
+    }
+
+    document.querySelectorAll("[data-page-id]").forEach((a) => {
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        const id = a.getAttribute("data-page-id");
+        const p = allPages.find((x) => x.id === id);
+        if (p) loadPage(p);
+      });
+    });
+
+    window.addEventListener("popstate", (e) => {
+      const id = e.state?.pageId;
+      if (id) {
+        const p = allPages.find((x) => x.id === id);
+        if (p) loadPage(p);
+      } else {
+        // fallback: read ?p= from URL
+        const slug = new URL(window.location.href).searchParams.get("p");
+        const p = allPages.find((x) => x.slug === slug);
+        if (p) loadPage(p);
+      }
+    });
+
+    titleEl?.addEventListener("input", () => get("f-title-count").textContent = String(titleEl.value.length));
+    descEl?.addEventListener("input", () => get("f-desc-count").textContent = String(descEl.value.length));
+
+    get("save-btn")?.addEventListener("click", async () => {
+      const btn = get("save-btn");
+      const orig = btn.textContent;
+      btn.disabled = true; btn.textContent = "Enregistrement…";
+      const payload = {
+        title: titleEl.value.trim(),
+        metaDescription: descEl.value.trim() || null,
+        blocks: {
+          hero: {
+            title: heroTitleEl.value.trim(),
+            subtitle: heroSubEl.value.trim(),
+            cta: heroCtaEl.value.trim(),
+          },
+        },
+        publish: true,
+      };
+      const r = await fetch("/api/admin/pages/" + encodeURIComponent(currentId), {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok) { btn.disabled = false; btn.textContent = orig; alert("Échec d'enregistrement."); return; }
+      const data = await r.json();
+      // refresh in-memory copy so subsequent navigation sees the new values
+      const idx = allPages.findIndex((x) => x.id === currentId);
+      if (idx >= 0) {
+        allPages[idx] = {
+          ...allPages[idx],
+          title: data.page.title,
+          metaDescription: data.page.metaDescription,
+          blocks: data.page.blocks,
+          updatedAt: data.page.updatedAt,
+          publishedAt: data.page.publishedAt,
+        };
+        // Update sidebar label if the title changed
+        const sidebarItem = document.querySelector(`[data-page-id="${currentId}"] span`);
+        if (sidebarItem) sidebarItem.textContent = data.page.title;
+        updatedEl.textContent = data.page.updatedAt.slice(0, 16).replace("T", " ");
+      }
+      btn.textContent = "✓ Enregistré";
+      setTimeout(() => { btn.disabled = false; btn.textContent = orig; }, 1500);
+    });
+  </script>
 </AdminLayout>
