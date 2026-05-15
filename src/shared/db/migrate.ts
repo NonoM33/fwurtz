@@ -8,6 +8,7 @@
 import { db } from "./db.ts";
 import init from "./migrations/0001_init.sql?raw";
 import seedTestimonials from "./migrations/0002_seed_testimonials.sql?raw";
+import seedServices from "./migrations/0003_seed_services.sql?raw";
 
 interface Migration {
   name: string;
@@ -17,6 +18,7 @@ interface Migration {
 const MIGRATIONS: ReadonlyArray<Migration> = [
   { name: "0001_init.sql", sql: init },
   { name: "0002_seed_testimonials.sql", sql: seedTestimonials },
+  { name: "0003_seed_services.sql", sql: seedServices },
 ];
 
 interface MigrationRow {

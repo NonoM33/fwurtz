@@ -17,6 +17,7 @@ export default defineConfig({
         "src/features/media/infra/**/*.ts",
         "src/features/role/**/*.ts",
         "src/features/testimonials/infra/**/*.ts",
+        "src/features/services/infra/**/*.ts",
         "src/shared/db/**/*.ts",
       ],
       exclude: [
