@@ -1,0 +1,143 @@
+---
+interface NavItem {
+  label: string;
+  href: string;
+  key: string;
+  icon: string;
+  count?: string;
+}
+interface NavGroup {
+  group: string;
+  items: ReadonlyArray<NavItem>;
+}
+
+interface Props {
+  active?: string | undefined;
+}
+const { active } = Astro.props;
+
+const ICON = {
+  dashboard: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/></svg>`,
+  inbox: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13 V20 a1 1 0 001 1 h16 a1 1 0 001-1 V13 L17 4 H7 Z"/><path d="M3 13 H8 L9 16 H15 L16 13 H21"/></svg>`,
+  content: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3 H15 L19 7 V21 H6 Z"/><polyline points="15 3 15 7 19 7"/><line x1="9" y1="13" x2="16" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>`,
+  services: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>`,
+  images: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 16 L16 11 L5 21"/></svg>`,
+  settings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>`,
+  calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>`,
+  stats: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="20" x2="21" y2="20"/><rect x="5" y="12" width="3" height="8"/><rect x="10" y="7" width="3" height="13"/><rect x="15" y="3" width="3" height="17"/></svg>`,
+  star: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 3 14.5 9 21 9.5 16 14 17.5 21 12 17.5 6.5 21 8 14 3 9.5 9.5 9"/></svg>`,
+  book: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4 V20 L12 18 L20 20 V4 L12 6 Z"/><line x1="12" y1="6" x2="12" y2="18"/></svg>`,
+  invoice: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2 H6 a2 2 0 00-2 2 v16 a2 2 0 002 2 h12 a2 2 0 002-2 V8 Z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>`,
+  template: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/><line x1="3" y1="13" x2="9" y2="13"/></svg>`,
+  pipeline: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="11" rx="1"/><rect x="17" y="4" width="4" height="7" rx="1"/></svg>`,
+  clients: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="10" r="3"/><path d="M2 21 C2 16 5 14 9 14 C13 14 16 16 16 21"/><path d="M14 21 C14 17 17 16 19 16 C20.5 16 22 17 22 21"/></svg>`,
+  relances: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5 a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.4 8.4 0 013.8-.9h.5a8.5 8.5 0 018 8z"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="8" cy="12" r="1" fill="currentColor"/><circle cx="16" cy="12" r="1" fill="currentColor"/></svg>`,
+};
+
+const NAV: ReadonlyArray<NavGroup> = [
+  {
+    group: "Vue",
+    items: [
+      { label: "Tableau de bord", href: "/admin/dashboard", key: "dashboard", icon: ICON.dashboard },
+      { label: "Statistiques", href: "/admin/statistiques", key: "stats", icon: ICON.stats },
+    ],
+  },
+  {
+    group: "CRM",
+    items: [
+      { label: "Pipeline", href: "/admin/crm", key: "crm", icon: ICON.pipeline, count: "24" },
+      { label: "Clients", href: "/admin/clients", key: "clients", icon: ICON.clients },
+      { label: "Relances IA", href: "/admin/relances", key: "relances", icon: ICON.relances, count: "5" },
+    ],
+  },
+  {
+    group: "Facturation",
+    items: [
+      { label: "Devis & factures", href: "/admin/facturation", key: "facturation", icon: ICON.invoice, count: "3" },
+      { label: "Modèles e-mails", href: "/admin/templates", key: "templates", icon: ICON.template },
+    ],
+  },
+  {
+    group: "Communications",
+    items: [
+      { label: "Messages", href: "/admin/messages", key: "messages", icon: ICON.inbox, count: "3" },
+      { label: "Rendez-vous", href: "/admin/rendez-vous", key: "rdv", icon: ICON.calendar, count: "2" },
+    ],
+  },
+  {
+    group: "Contenu",
+    items: [
+      { label: "Pages", href: "/admin/contenus", key: "contenus", icon: ICON.content },
+      { label: "Services", href: "/admin/services", key: "services", icon: ICON.services },
+      { label: "Témoignages", href: "/admin/temoignages", key: "temoignages", icon: ICON.star },
+      { label: "Ressources", href: "/admin/ressources", key: "ressources", icon: ICON.book },
+      { label: "Médiathèque", href: "/admin/medias", key: "medias", icon: ICON.images },
+    ],
+  },
+  {
+    group: "Maison",
+    items: [
+      { label: "Équipe & rôles", href: "/admin/equipe", key: "equipe", icon: ICON.clients },
+      { label: "Paramètres", href: "/admin/parametres", key: "parametres", icon: ICON.settings },
+    ],
+  },
+];
+
+const adminEmail = Astro.locals.adminEmail ?? "";
+const initials = (() => {
+  if (!adminEmail) return "SF";
+  const local = adminEmail.split("@")[0] ?? adminEmail;
+  return (
+    local
+      .split(/[.\-_]/)
+      .map((p) => p.charAt(0).toUpperCase())
+      .slice(0, 2)
+      .join("") || "SF"
+  );
+})();
+---
+
+<aside class="admin-aside">
+  <div class="admin-aside__brand">
+    <div class="admin-aside__logo">
+      <svg viewBox="0 0 50 50" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M6 36 L6 8 L13 24 L20 8 L20 36"></path>
+        <path d="M28 36 L28 15 C28 11 30 8 34 8"></path>
+        <line x1="25" y1="17" x2="36" y2="17"></line>
+      </svg>
+    </div>
+    <div class="admin-aside__brand-meta">
+      <span class="admin-aside__brand-name">Maison Fwurtz</span>
+      <span class="admin-aside__brand-sub">Administration</span>
+    </div>
+  </div>
+  <nav class="admin-nav">
+    {NAV.map((group) => (
+      <div class="admin-nav__group">
+        <div class="admin-nav__label">{group.group}</div>
+        {group.items.map((item) => (
+          <a
+            class={`admin-nav__link${item.key === active ? " is-active" : ""}`}
+            href={item.href}
+          >
+            <Fragment set:html={item.icon} />
+            <span>{item.label}</span>
+            {item.count && <span class="admin-nav__link-count">{item.count}</span>}
+          </a>
+        ))}
+      </div>
+    ))}
+  </nav>
+  <div class="admin-aside__foot">
+    <a class="admin-user" href="/admin/parametres">
+      <div class="admin-user__avatar">{initials}</div>
+      <div>
+        <div class="admin-user__name">{adminEmail || "Sophie Fwurtz"}</div>
+        <div class="admin-user__role">Fondatrice</div>
+      </div>
+      <svg class="admin-user__caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M6 9l6 6 6-6"></path>
+      </svg>
+    </a>
+  </div>
+</aside>

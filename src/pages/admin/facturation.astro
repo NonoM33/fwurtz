@@ -1,0 +1,338 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+
+interface Row {
+  number: string;
+  type: "Devis" | "Facture";
+  client: { initials: string; name: string; meta: string };
+  emittedAt: string;
+  dueAt: string;
+  amount: string;
+  amountColor?: string;
+  status: { label: string; variant: "new" | "ongoing" | "done" | "alert" | "draft" };
+  rowAction?: "view" | "relance" | "danger" | "draft";
+  numberColor?: string;
+  rowBg?: string;
+}
+
+const rows: ReadonlyArray<Row> = [
+  {
+    number: "FAC-2026-0014",
+    type: "Facture",
+    client: { initials: "DR", name: "Domaine Saint-Loup", meta: "Denis Rondeau" },
+    emittedAt: "14/05/2026",
+    dueAt: "13/06/2026",
+    amount: "8 400 €",
+    status: { label: "Envoyée", variant: "ongoing" },
+    rowAction: "view",
+  },
+  {
+    number: "FAC-2026-0013",
+    type: "Facture",
+    client: { initials: "AB", name: "Atelier Bardin", meta: "Camille Larue · récurrent" },
+    emittedAt: "02/05/2026",
+    dueAt: "01/06/2026",
+    amount: "280 €",
+    status: { label: "Payée", variant: "done" },
+    rowAction: "view",
+  },
+  {
+    number: "DEV-2026-0007",
+    type: "Devis",
+    client: { initials: "M&P", name: "Marc & Pauline V.", meta: "Mariage · Saint-Cloud" },
+    emittedAt: "11/05/2026",
+    dueAt: "10/06/2026",
+    amount: "11 200 €",
+    status: { label: "À relancer (J+4)", variant: "alert" },
+    rowAction: "relance",
+  },
+  {
+    number: "DEV-2026-0006",
+    type: "Devis",
+    client: { initials: "RB", name: "Raphaël Boyer", meta: "Cabinet d'avocats" },
+    emittedAt: "07/05/2026",
+    dueAt: "06/06/2026",
+    amount: "9 600 €",
+    status: { label: "Envoyé", variant: "ongoing" },
+    rowAction: "view",
+  },
+  {
+    number: "FAC-2026-0011",
+    type: "Facture",
+    client: { initials: "LV", name: "Louis Vermeil", meta: "Antiquaire" },
+    emittedAt: "03/04/2026",
+    dueAt: "03/05/2026 · J+12",
+    amount: "3 200 €",
+    amountColor: "#E67878",
+    status: { label: "En retard", variant: "alert" },
+    rowAction: "danger",
+    numberColor: "#E67878",
+    rowBg: "rgba(230, 120, 120, 0.04)",
+  },
+  {
+    number: "FAC-2026-0010",
+    type: "Facture",
+    client: { initials: "JH", name: "Galerie Saint-Honoré", meta: "Julien Hervé · Acompte 50 %" },
+    emittedAt: "02/04/2026",
+    dueAt: "02/05/2026",
+    amount: "7 100 €",
+    status: { label: "Payée Stripe", variant: "done" },
+    rowAction: "view",
+  },
+  {
+    number: "DEV-2026-0005",
+    type: "Devis",
+    client: { initials: "AM", name: "Adèle Marchand", meta: "Atelier de mode" },
+    emittedAt: "05/05/2026",
+    dueAt: "04/06/2026",
+    amount: "5 400 €",
+    status: { label: "Envoyé", variant: "ongoing" },
+    rowAction: "view",
+  },
+  {
+    number: "DEV-2026-0008",
+    type: "Devis",
+    client: { initials: "CL", name: "Camille Larue", meta: "Atelier Bardin · refonte" },
+    emittedAt: "—",
+    dueAt: "—",
+    amount: "6 000 €",
+    amountColor: "var(--ink-3)",
+    numberColor: "var(--ink-4)",
+    status: { label: "Brouillon", variant: "draft" },
+    rowAction: "draft",
+  },
+];
+
+function badgeClass(variant: Row["status"]["variant"]): string {
+  return `badge badge--${variant === "new" ? "new" : variant === "ongoing" ? "ongoing" : variant === "done" ? "done" : variant === "alert" ? "alert" : "draft"}`;
+}
+---
+
+<AdminLayout
+  title="Facturation — Maison Fwurtz Admin"
+  active="facturation"
+  breadcrumb="Facturation"
+  screenLabel="Admin · Facturation"
+>
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Devis <em>& factures</em></h1>
+      <p class="admin-page-head__sub">
+        14 documents · <strong style="color: var(--gold);">23 800 €</strong> en attente · <strong
+          style="color: #6BCB77;">42 600 €</strong
+        > encaissés ce trimestre
+      </p>
+    </div>
+    <div class="admin-page-head__actions">
+      <button class="btn-admin btn-admin--ghost">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Exporter (comptable)
+      </button>
+      <button class="btn-admin btn-admin--ghost">+ Nouveau devis</button>
+      <button class="btn-admin btn-admin--primary">+ Nouvelle facture</button>
+    </div>
+  </div>
+
+  <div class="kpi-grid" style="margin-bottom: 24px;">
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">CA encaissé · 2026</span></div>
+      <div class="kpi__value">87&nbsp;<em>200</em>&nbsp;€</div>
+      <div class="kpi__delta kpi__delta--up">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M12 5V19"></path>
+          <path d="M5 12L12 5L19 12"></path>
+        </svg>
+        +34 % YoY
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">En attente de paiement</span></div>
+      <div class="kpi__value" style="color: var(--gold);">23&nbsp;<em>800</em>&nbsp;€</div>
+      <div class="kpi__delta" style="color: var(--gold);">4 factures · 28 jours moy.</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">Devis envoyés</span></div>
+      <div class="kpi__value"><em>7</em></div>
+      <div class="kpi__delta" style="color: var(--ink-3);">2 acceptés · 1 à relancer</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">En retard</span></div>
+      <div class="kpi__value" style="color: #E67878;"><em>1</em></div>
+      <div class="kpi__delta" style="color: #E67878;">3 200 € · J+12</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 16px; border-color: var(--gold-line);">
+    <div
+      class="card__body"
+      style="display: flex; align-items: center; gap: 24px; padding: 20px 28px; flex-wrap: wrap;"
+    >
+      <div
+        style="width: 44px; height: 44px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); color: #635BFF; font-weight: 700; font-size: 22px; flex-shrink: 0;"
+      >
+        S
+      </div>
+      <div style="flex: 1; min-width: 200px;">
+        <div
+          style="font-family: var(--font-serif); font-size: 16px; color: var(--ink); margin-bottom: 4px;"
+        >
+          Stripe <em style="color: var(--gold); font-style: italic;">connecté</em>
+        </div>
+        <div style="font-size: 12.5px; color: var(--ink-3);">
+          Encaissements automatiques · paiement en 1 ou 3 fois disponible pour le client
+        </div>
+      </div>
+      <div style="display: flex; gap: 18px;">
+        <div style="text-align: right;">
+          <div
+            style="font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-4);"
+          >
+            Cette semaine
+          </div>
+          <div style="font-family: var(--font-serif); font-size: 22px; color: var(--gold);">
+            <em style="font-style: italic;">+ 9 400 €</em>
+          </div>
+        </div>
+        <button class="btn-admin btn-admin--ghost">Voir Stripe →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="crm-toolbar">
+    <div class="tabs">
+      <button class="tabs__tab is-active">Tous (14)</button>
+      <button class="tabs__tab">Devis (7)</button>
+      <button class="tabs__tab">Factures (5)</button>
+      <button class="tabs__tab">Brouillons (2)</button>
+      <button class="tabs__tab" style="color: #E67878;">En retard (1)</button>
+    </div>
+    <div style="margin-left: auto; display: flex; gap: 8px;">
+      <button class="btn-admin btn-admin--ghost" style="padding: 7px 12px; font-size: 12px;">Filtres avancés</button>
+      <button class="btn-admin btn-admin--ghost" style="padding: 7px 12px; font-size: 12px;">↓ Date décroissante</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__body card__body--flush">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Client</th>
+            <th>Type</th>
+            <th>Émis le</th>
+            <th>Échéance</th>
+            <th>Montant TTC</th>
+            <th>Statut</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr style={`cursor: pointer;${row.rowBg ? ` background: ${row.rowBg};` : ""}`}>
+              <td>
+                <strong
+                  style={`color: ${row.numberColor ?? "var(--gold)"}; font-family: ui-monospace, monospace;`}
+                >
+                  {row.number}
+                </strong>
+              </td>
+              <td>
+                <div class="tbl__primary">
+                  <div class="tbl__avatar">{row.client.initials}</div>
+                  <div>
+                    <div class="tbl__name">{row.client.name}</div>
+                    <div class="tbl__meta">{row.client.meta}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class={row.type === "Facture" ? "badge badge--new" : "badge badge--ongoing"}>
+                  {row.type}
+                </span>
+              </td>
+              <td>{row.emittedAt}</td>
+              <td
+                style={row.status.variant === "alert" && row.dueAt.includes("J+") ? "color: #E67878; font-weight: 500;" : undefined}
+              >
+                {row.dueAt}
+              </td>
+              <td>
+                <strong
+                  style={`font-family: var(--font-serif); font-style: italic; font-size: 16px; color: ${row.amountColor ?? "var(--gold)"};`}
+                >
+                  {row.amount}
+                </strong>
+              </td>
+              <td><span class={badgeClass(row.status.variant)}>{row.status.label}</span></td>
+              <td>
+                <div class="row-actions">
+                  {row.rowAction === "view" && (
+                    <button class="row-action" aria-label="Voir">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                        <path d="M2 12 C5 6 9 4 12 4 C15 4 19 6 22 12 C19 18 15 20 12 20 C9 20 5 18 2 12 Z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </button>
+                  )}
+                  {row.rowAction === "view" && row.number === "FAC-2026-0014" && (
+                    <button class="row-action" aria-label="Télécharger">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                      </svg>
+                    </button>
+                  )}
+                  {row.rowAction === "relance" && (
+                    <button class="btn-admin btn-admin--primary" style="padding: 5px 10px; font-size: 11px;">
+                      Relancer
+                    </button>
+                  )}
+                  {row.rowAction === "danger" && (
+                    <button class="btn-admin btn-admin--danger" style="padding: 5px 10px; font-size: 11px;">
+                      Relance comptable
+                    </button>
+                  )}
+                  {row.rowAction === "draft" && (
+                    <button class="btn-admin btn-admin--primary" style="padding: 5px 10px; font-size: 11px;">
+                      Finaliser
+                    </button>
+                  )}
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="ai-card" style="margin-top: 24px;">
+    <div class="ai-card__head">
+      <span class="ai-card__badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <polygon points="12 2 15 9 22 12 15 15 12 22 9 15 2 12 9 9"></polygon>
+        </svg>
+        Marie observe
+      </span>
+    </div>
+    <div class="ai-card__body">
+      <strong>3 actions à considérer :</strong> Le devis <em>Marc &amp; Pauline V.</em> (11 200 €) attend depuis 4 jours — moment idéal pour une relance douce. La facture <em>Louis Vermeil</em> (3 200 €) est en retard de 12 jours — proposer un paiement en 2 fois ? Le brouillon <em>Camille Larue</em> est prêt à 90 %, il manque juste la mention « Hébergement année 1 incluse ».
+    </div>
+    <div class="ai-card__actions">
+      <button
+        class="btn-admin btn-admin--primary"
+        style="background: #C4B5FD; border-color: #C4B5FD; color: var(--admin-bg);"
+      >
+        Relancer Marc & Pauline
+      </button>
+      <button class="btn-admin btn-admin--ghost">Voir les 3 suggestions</button>
+    </div>
+  </div>
+</AdminLayout>

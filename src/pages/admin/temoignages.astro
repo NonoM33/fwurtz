@@ -1,0 +1,179 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+
+const body = `
+
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Témoignages <em>clients</em></h1>
+      <p class="admin-page-head__sub">7 témoignages reçus · 5 publiés sur le site · 1 en attente de validation</p>
+    </div>
+    <div class="admin-page-head__actions">
+      <button class="btn-admin btn-admin--ghost">Demander un témoignage</button>
+      <button class="btn-admin btn-admin--primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Ajouter manuellement</button>
+    </div>
+  </div>
+
+  <!-- Pending -->
+  <div class="card" style="margin-bottom: 16px; border-color: var(--gold-line);">
+    <div class="card__head">
+      <div>
+        <h3 class="card__title">À <em>valider</em></h3>
+        <div class="card__sub">Un nouveau témoignage attend votre approbation</div>
+      </div>
+      <span class="badge badge--new">1 en attente</span>
+    </div>
+    <div class="card__body">
+      <div style="background: var(--admin-surface-2); border: 1px solid var(--gold-line); border-radius: 10px; padding: 24px 28px;">
+        <div style="display: flex; align-items: flex-start; gap: 18px;">
+          <div class="tbl__avatar" style="width: 48px; height: 48px; font-size: 16px;">PV</div>
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+              <div style="font-family: var(--font-serif); font-size: 17px; color: var(--ink); font-weight: 500;">Pauline V.</div>
+              <div style="display: flex; gap: 2px; color: var(--gold);">★★★★★</div>
+              <div style="font-size: 11px; color: var(--ink-4); margin-left: auto;">reçu il y a 4h</div>
+            </div>
+            <div style="font-size: 12px; color: var(--ink-4); margin-bottom: 14px;">Mariage à Saint-Cloud · juin 2024</div>
+            <p style="font-family: var(--font-serif); font-style: italic; font-size: 17px; color: var(--ink-2); line-height: 1.5; margin: 0 0 18px;">« Discrétion, élégance, efficacité. Un mariage organisé sans le moindre faux pas. On a juste eu à être heureux ce jour-là. Merci infiniment Sophie pour votre patience, votre œil et votre rigueur. »</p>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn-admin btn-admin--primary" data-save>Publier sur le site</button>
+              <button class="btn-admin btn-admin--ghost">Modifier avant publication</button>
+              <button class="btn-admin btn-admin--ghost">Demander une autorisation</button>
+              <button class="btn-admin btn-admin--danger" style="margin-left: auto;">Refuser</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Published -->
+  <div class="card">
+    <div class="card__head">
+      <div>
+        <h3 class="card__title">Témoignages <em>publiés</em></h3>
+        <div class="card__sub">Visible sur la home et les pages services pertinentes</div>
+      </div>
+      <div class="tabs">
+        <button class="tabs__tab is-active">Tous (5)</button>
+        <button class="tabs__tab">Sur la home (3)</button>
+        <button class="tabs__tab">Sur pages détail</button>
+      </div>
+    </div>
+    <div class="card__body card__body--flush">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Auteur</th>
+            <th>Citation</th>
+            <th>Service</th>
+            <th>Note</th>
+            <th>Statut</th>
+            <th>Affichage</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="tbl__primary">
+                <div class="tbl__avatar">CL</div>
+                <div>
+                  <div class="tbl__name">Camille Larue</div>
+                  <div class="tbl__meta">Atelier Bardin</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tbl__excerpt" style="font-style: italic;">« Une rigueur rare et une intelligence des situations. Maison Fwurtz a structuré mon activité… »</span></td>
+            <td><span style="color: var(--ink-3); font-size: 12px;">Gestion admin</span></td>
+            <td style="color: var(--gold); white-space: nowrap;">★★★★★</td>
+            <td><span class="badge badge--published">Publié</span></td>
+            <td><label class="switch"><input type="checkbox" checked><span class="switch__slider"></span></label></td>
+            <td><div class="row-actions"><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="3 6 5 6 21 6"/><path d="M19 6 L18 20 a2 2 0 01-2 2 H8 a2 2 0 01-2-2 L5 6"/></svg></button></div></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="tbl__primary">
+                <div class="tbl__avatar">M&P</div>
+                <div>
+                  <div class="tbl__name">Marc & Pauline V.</div>
+                  <div class="tbl__meta">Mariage Saint-Cloud</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tbl__excerpt" style="font-style: italic;">« Discrétion, élégance, efficacité. Un mariage organisé sans le moindre faux pas… »</span></td>
+            <td><span style="color: var(--ink-3); font-size: 12px;">Événementiel</span></td>
+            <td style="color: var(--gold); white-space: nowrap;">★★★★★</td>
+            <td><span class="badge badge--published">Publié</span></td>
+            <td><label class="switch"><input type="checkbox" checked><span class="switch__slider"></span></label></td>
+            <td><div class="row-actions"><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="3 6 5 6 21 6"/><path d="M19 6 L18 20 a2 2 0 01-2 2 H8 a2 2 0 01-2-2 L5 6"/></svg></button></div></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="tbl__primary">
+                <div class="tbl__avatar">JH</div>
+                <div>
+                  <div class="tbl__name">Julien Hervé</div>
+                  <div class="tbl__meta">Galerie Saint-Honoré</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tbl__excerpt" style="font-style: italic;">« Le site qu'elle nous a livré nous ressemble enfin. Les recommandations juridiques nous ont évité… »</span></td>
+            <td><span style="color: var(--ink-3); font-size: 12px;">Sites web</span></td>
+            <td style="color: var(--gold); white-space: nowrap;">★★★★★</td>
+            <td><span class="badge badge--published">Publié</span></td>
+            <td><label class="switch"><input type="checkbox" checked><span class="switch__slider"></span></label></td>
+            <td><div class="row-actions"><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="3 6 5 6 21 6"/><path d="M19 6 L18 20 a2 2 0 01-2 2 H8 a2 2 0 01-2-2 L5 6"/></svg></button></div></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="tbl__primary">
+                <div class="tbl__avatar">ED</div>
+                <div>
+                  <div class="tbl__name">Émilie Dautheville</div>
+                  <div class="tbl__meta">Conseil RH indépendante</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tbl__excerpt" style="font-style: italic;">« Pas une concierge — une vraie partenaire. Sophie comprend les nuances qu'on ne sait pas formuler. »</span></td>
+            <td><span style="color: var(--ink-3); font-size: 12px;">Juridique</span></td>
+            <td style="color: var(--gold); white-space: nowrap;">★★★★★</td>
+            <td><span class="badge badge--published">Publié</span></td>
+            <td><label class="switch"><input type="checkbox"><span class="switch__slider"></span></label></td>
+            <td><div class="row-actions"><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="3 6 5 6 21 6"/><path d="M19 6 L18 20 a2 2 0 01-2 2 H8 a2 2 0 01-2-2 L5 6"/></svg></button></div></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="tbl__primary">
+                <div class="tbl__avatar">DR</div>
+                <div>
+                  <div class="tbl__name">Denis Rondeau</div>
+                  <div class="tbl__meta">Domaine Saint-Loup</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tbl__excerpt" style="font-style: italic;">« On lui a délégué tout l'administratif. Pour la première fois en 12 ans, je dors sans liste de tâches dans la tête. »</span></td>
+            <td><span style="color: var(--ink-3); font-size: 12px;">Gestion admin</span></td>
+            <td style="color: var(--gold); white-space: nowrap;">★★★★★</td>
+            <td><span class="badge badge--published">Publié</span></td>
+            <td><label class="switch"><input type="checkbox"><span class="switch__slider"></span></label></td>
+            <td><div class="row-actions"><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="3 6 5 6 21 6"/><path d="M19 6 L18 20 a2 2 0 01-2 2 H8 a2 2 0 01-2-2 L5 6"/></svg></button></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card__foot">
+      <span style="font-size: 12px; color: var(--ink-3);">L'interrupteur active l'affichage sur la home (3 max recommandés).</span>
+      <button class="btn-admin btn-admin--ghost" style="padding: 6px 12px; font-size: 12px;">Voir sur le site →</button>
+    </div>
+  </div>`;
+---
+
+<AdminLayout
+  title="Témoignages — Maison Fwurtz Admin" active="temoignages"
+  breadcrumb="Témoignages"
+  screenLabel="Admin · Témoignages"
+>
+  <Fragment set:html={body} />
+</AdminLayout>

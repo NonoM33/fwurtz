@@ -1,0 +1,174 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+
+const body = `
+
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Vos <em>savoir-faire</em></h1>
+      <p class="admin-page-head__sub">6 services publiés · l'ordre d'affichage est éditable par glisser-déposer.</p>
+    </div>
+    <div class="admin-page-head__actions">
+      <button class="btn-admin btn-admin--ghost">Réorganiser</button>
+      <button class="btn-admin btn-admin--primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Ajouter un service</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__head">
+      <div>
+        <h3 class="card__title">Tous les <em>services</em></h3>
+        <div class="card__sub">Ces blocs alimentent la home et la page Services.</div>
+      </div>
+      <div class="tabs">
+        <button class="tabs__tab is-active">Tous</button>
+        <button class="tabs__tab">Publiés <span style="color: #6BCB77; margin-left: 4px;">6</span></button>
+        <button class="tabs__tab">Brouillon</button>
+      </div>
+    </div>
+    <div class="card__body card__body--flush">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th style="width: 32px;"></th>
+            <th>Service</th>
+            <th>Pages détail</th>
+            <th>Vues · 30j</th>
+            <th>Conversion</th>
+            <th>Statut</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="14" height="14" style="color: var(--ink-4); cursor: grab;"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg></td>
+            <td>
+              <div class="tbl__primary">
+                <div style="width: 36px; height: 36px; background: var(--admin-surface-2); border: 1px solid var(--gold-line); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--gold);">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="13" rx="1"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
+                </div>
+                <div>
+                  <div class="tbl__name">Création de sites web</div>
+                  <div class="tbl__meta">Des sites élégants, performants et sur mesure.</div>
+                </div>
+              </div>
+            </td>
+            <td>/services/creation-sites-web.html</td>
+            <td><span style="font-family: ui-monospace, monospace; color: var(--gold);">847</span> <span style="color: var(--ink-4); font-size: 11px;">visites</span></td>
+            <td><span style="color: #6BCB77; font-family: ui-monospace, monospace;">8,2 %</span></td>
+            <td><span class="badge badge--published">Publié</span></td>
+            <td><div class="row-actions"><button class="row-action" title="Modifier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button><button class="row-action" title="Aperçu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12 C5 6 9 4 12 4 C15 4 19 6 22 12 C19 18 15 20 12 20 C9 20 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>
+          </tr>
+          <tr>
+            <td><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="14" height="14" style="color: var(--ink-4); cursor: grab;"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg></td>
+            <td>
+              <div class="tbl__primary">
+                <div style="width: 36px; height: 36px; background: var(--admin-surface-2); border: 1px solid var(--gold-line); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--gold);">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="8" y="3" width="8" height="18" rx="2"/></svg>
+                </div>
+                <div>
+                  <div class="tbl__name">Solutions digitales</div>
+                  <div class="tbl__meta">Automatisation, outils et stratégies digitales sur mesure.</div>
+                </div>
+              </div>
+            </td>
+            <td>/services/creation-sites-web.html</td>
+            <td><span style="font-family: ui-monospace, monospace; color: var(--gold);">412</span> <span style="color: var(--ink-4); font-size: 11px;">visites</span></td>
+            <td><span style="color: #6BCB77; font-family: ui-monospace, monospace;">5,8 %</span></td>
+            <td><span class="badge badge--published">Publié</span></td>
+            <td><div class="row-actions"><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12 C5 6 9 4 12 4 C15 4 19 6 22 12 C19 18 15 20 12 20 C9 20 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>
+          </tr>
+          <tr>
+            <td><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="14" height="14" style="color: var(--ink-4); cursor: grab;"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg></td>
+            <td>
+              <div class="tbl__primary">
+                <div style="width: 36px; height: 36px; background: var(--admin-surface-2); border: 1px solid var(--gold-line); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--gold);">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 7 L10 7 L11 9 L21 9 L21 19 L3 19 Z"/></svg>
+                </div>
+                <div>
+                  <div class="tbl__name">Gestion administrative</div>
+                  <div class="tbl__meta">Organisation, suivi et gestion efficace de vos tâches.</div>
+                </div>
+              </div>
+            </td>
+            <td>/services/gestion-administrative.html</td>
+            <td><span style="font-family: ui-monospace, monospace; color: var(--gold);">523</span> <span style="color: var(--ink-4); font-size: 11px;">visites</span></td>
+            <td><span style="color: #6BCB77; font-family: ui-monospace, monospace;">6,3 %</span></td>
+            <td><span class="badge badge--published">Publié</span></td>
+            <td><div class="row-actions"><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12 C5 6 9 4 12 4 C15 4 19 6 22 12 C19 18 15 20 12 20 C9 20 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>
+          </tr>
+          <tr>
+            <td><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="14" height="14" style="color: var(--ink-4); cursor: grab;"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg></td>
+            <td>
+              <div class="tbl__primary">
+                <div style="width: 36px; height: 36px; background: var(--admin-surface-2); border: 1px solid var(--gold-line); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--gold);">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><line x1="12" y1="3" x2="12" y2="21"/><line x1="7" y1="21" x2="17" y2="21"/><path d="M7 6 L4 13 H10 Z"/><path d="M17 6 L14 13 H20 Z"/></svg>
+                </div>
+                <div>
+                  <div class="tbl__name">Accompagnement juridique</div>
+                  <div class="tbl__meta">Conseils et soutien juridique pour sécuriser vos projets.</div>
+                </div>
+              </div>
+            </td>
+            <td>/services/accompagnement-juridique.html</td>
+            <td><span style="font-family: ui-monospace, monospace; color: var(--gold);">389</span> <span style="color: var(--ink-4); font-size: 11px;">visites</span></td>
+            <td><span style="color: #6BCB77; font-family: ui-monospace, monospace;">9,1 %</span></td>
+            <td><span class="badge badge--published">Publié</span></td>
+            <td><div class="row-actions"><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12 C5 6 9 4 12 4 C15 4 19 6 22 12 C19 18 15 20 12 20 C9 20 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>
+          </tr>
+          <tr>
+            <td><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="14" height="14" style="color: var(--ink-4); cursor: grab;"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg></td>
+            <td>
+              <div class="tbl__primary">
+                <div style="width: 36px; height: 36px; background: var(--admin-surface-2); border: 1px solid var(--gold-line); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--gold);">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <div>
+                  <div class="tbl__name">Événementiel & coordination</div>
+                  <div class="tbl__meta">Organisation d'événements clé en main, de A à Z.</div>
+                </div>
+              </div>
+            </td>
+            <td>/services/evenementiel.html</td>
+            <td><span style="font-family: ui-monospace, monospace; color: var(--gold);">678</span> <span style="color: var(--ink-4); font-size: 11px;">visites</span></td>
+            <td><span style="color: #6BCB77; font-family: ui-monospace, monospace;">7,4 %</span></td>
+            <td><span class="badge badge--published">Publié</span></td>
+            <td><div class="row-actions"><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12 C5 6 9 4 12 4 C15 4 19 6 22 12 C19 18 15 20 12 20 C9 20 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>
+          </tr>
+          <tr>
+            <td><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="14" height="14" style="color: var(--ink-4); cursor: grab;"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg></td>
+            <td>
+              <div class="tbl__primary">
+                <div style="width: 36px; height: 36px; background: var(--admin-surface-2); border: 1px solid var(--gold-line); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--gold);">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 13 L8 9 L11 11 L13 8 L17 11 L21 7"/></svg>
+                </div>
+                <div>
+                  <div class="tbl__name">Apport d'affaires</div>
+                  <div class="tbl__meta">Mise en relation et développement de votre réseau.</div>
+                </div>
+              </div>
+            </td>
+            <td>—</td>
+            <td><span style="font-family: ui-monospace, monospace; color: var(--gold);">198</span> <span style="color: var(--ink-4); font-size: 11px;">visites</span></td>
+            <td><span style="color: var(--gold); font-family: ui-monospace, monospace;">2,1 %</span></td>
+            <td><span class="badge badge--draft">Sans page détail</span></td>
+            <td><div class="row-actions"><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg></button><button class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12 C5 6 9 4 12 4 C15 4 19 6 22 12 C19 18 15 20 12 20 C9 20 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card__foot">
+      <span style="font-size: 12px; color: var(--ink-3);">6 services · 5 avec page détail · classés par ordre d'affichage</span>
+      <span style="font-size: 11px; color: var(--ink-4); font-family: ui-monospace, monospace;">Mis à jour il y a 2 jours</span>
+    </div>
+  </div>`;
+---
+
+<AdminLayout
+  title="Services — Maison Fwurtz Admin" active="services"
+  breadcrumb="Services"
+  screenLabel="Admin · Services"
+>
+  <Fragment set:html={body} />
+</AdminLayout>

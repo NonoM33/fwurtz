@@ -1,0 +1,288 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+
+const body = `
+
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Relances <em>intelligentes</em></h1>
+      <p class="admin-page-head__sub">5 conversations méritent un nouveau contact. Marie a préparé des messages adaptés à chacune.</p>
+    </div>
+    <div class="admin-page-head__actions">
+      <button class="btn-admin btn-admin--ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg> Programmer une cadence</button>
+      <button class="btn-admin btn-admin--primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15 9 22 12 15 15 12 22 9 15 2 12 9 9"/></svg> Relancer en lot (5)</button>
+    </div>
+  </div>
+
+  <!-- KPI row -->
+  <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 16px;">
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">À relancer</span></div>
+      <div class="kpi__value"><em>5</em></div>
+      <div class="kpi__delta" style="color: var(--ink-3);">Détectés par Marie</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">Relances envoyées · 30j</span></div>
+      <div class="kpi__value"><em>23</em></div>
+      <div class="kpi__delta" style="color: var(--ink-3);">19 par e-mail · 4 par SMS</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">Taux de réponse</span></div>
+      <div class="kpi__value"><em>52</em>&nbsp;%</div>
+      <div class="kpi__delta kpi__delta--up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5V19"/><path d="M5 12L12 5L19 12"/></svg> +14 pt vs manuelles</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__head"><span class="kpi__label">CA récupéré</span></div>
+      <div class="kpi__value">12&nbsp;<em>400</em>&nbsp;€</div>
+      <div class="kpi__delta" style="color: var(--gold);">3 dossiers réactivés</div>
+    </div>
+  </div>
+
+  <!-- Filter pills -->
+  <div class="crm-toolbar">
+    <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-4); margin-right: 4px;">Type&nbsp;:</div>
+    <button class="assignee-pill is-active"><span class="assignee-pill__avatar" style="background: var(--admin-surface-3);">⊕</span><span>Tous (5)</span></button>
+    <button class="assignee-pill"><span class="assignee-pill__avatar" style="background: rgba(230, 120, 120, 0.1); color: #E67878;">!</span><span>Urgents (1)</span></button>
+    <button class="assignee-pill"><span class="assignee-pill__avatar">⌁</span><span>Conv. inachevée (2)</span></button>
+    <button class="assignee-pill"><span class="assignee-pill__avatar">✉</span><span>Devis sans réponse (2)</span></button>
+  </div>
+
+  <!-- Two-column: list left, AI compose right -->
+  <div class="relance-grid">
+
+    <!-- LEFT: list of conversations to relaunch -->
+    <div style="display: grid; gap: 10px;">
+
+      <div class="relance-card is-active" onclick="document.querySelectorAll('.relance-card').forEach(c=>c.classList.remove('is-active')); this.classList.add('is-active');">
+        <div class="relance-card__head">
+          <div class="kcard__avatar">M&P</div>
+          <div style="flex: 1; min-width: 0;">
+            <div class="relance-card__urgency relance-card__urgency--high">★★★ Urgent · Devis en attente</div>
+            <div class="kcard__name" style="margin-top: 2px;">Marc & Pauline V.</div>
+          </div>
+        </div>
+        <div class="relance-card__body">Devis mariage envoyé il y a <strong style="color: var(--gold);">4 jours</strong>, ouvert 2 fois mais aucune réponse. Ils ont visité la page Événementiel hier soir.</div>
+        <div class="relance-card__foot">
+          <span style="color: var(--gold); font-family: var(--font-serif); font-style: italic;">11 200 €</span>
+          <span style="color: var(--ink-4);">⌁ Confiance · 82 %</span>
+        </div>
+      </div>
+
+      <div class="relance-card" onclick="document.querySelectorAll('.relance-card').forEach(c=>c.classList.remove('is-active')); this.classList.add('is-active');">
+        <div class="relance-card__head">
+          <div class="kcard__avatar">MT</div>
+          <div style="flex: 1; min-width: 0;">
+            <div class="relance-card__urgency relance-card__urgency--med">★★ Conversation inachevée</div>
+            <div class="kcard__name" style="margin-top: 2px;">Mathilde Devos</div>
+          </div>
+        </div>
+        <div class="relance-card__body">A téléchargé l'e-book « Lancer son activité ». Discussion engagée avec Marie il y a 8 jours, jamais conclue.</div>
+        <div class="relance-card__foot">
+          <span style="color: var(--gold); font-family: var(--font-serif); font-style: italic;">~ 3 500 €</span>
+          <span style="color: var(--ink-4);">⌁ Confiance · 68 %</span>
+        </div>
+      </div>
+
+      <div class="relance-card" onclick="document.querySelectorAll('.relance-card').forEach(c=>c.classList.remove('is-active')); this.classList.add('is-active');">
+        <div class="relance-card__head">
+          <div class="kcard__avatar">RB</div>
+          <div style="flex: 1; min-width: 0;">
+            <div class="relance-card__urgency relance-card__urgency--med">★★ Devis sans réponse</div>
+            <div class="kcard__name" style="margin-top: 2px;">Raphaël Boyer</div>
+          </div>
+        </div>
+        <div class="relance-card__body">Cabinet d'avocats. Devis 9&nbsp;600&nbsp;€ envoyé il y a 8 jours. A demandé un délai d'arbitrage interne.</div>
+        <div class="relance-card__foot">
+          <span style="color: var(--gold); font-family: var(--font-serif); font-style: italic;">9 600 €</span>
+          <span style="color: var(--ink-4);">⌁ Confiance · 64 %</span>
+        </div>
+      </div>
+
+      <div class="relance-card" onclick="document.querySelectorAll('.relance-card').forEach(c=>c.classList.remove('is-active')); this.classList.add('is-active');">
+        <div class="relance-card__head">
+          <div class="kcard__avatar">AS</div>
+          <div style="flex: 1; min-width: 0;">
+            <div class="relance-card__urgency relance-card__urgency--low">★ Conversation inachevée</div>
+            <div class="kcard__name" style="margin-top: 2px;">Anne-Sophie Bernard</div>
+          </div>
+        </div>
+        <div class="relance-card__body">Question sur la gestion administrative, Marie a répondu. Pas de retour depuis 5 jours.</div>
+        <div class="relance-card__foot">
+          <span style="color: var(--gold); font-family: var(--font-serif); font-style: italic;">—</span>
+          <span style="color: var(--ink-4);">⌁ Confiance · 41 %</span>
+        </div>
+      </div>
+
+      <div class="relance-card" onclick="document.querySelectorAll('.relance-card').forEach(c=>c.classList.remove('is-active')); this.classList.add('is-active');">
+        <div class="relance-card__head">
+          <div class="kcard__avatar">NE</div>
+          <div style="flex: 1; min-width: 0;">
+            <div class="relance-card__urgency relance-card__urgency--low">⏱ Réactivation programmée</div>
+            <div class="kcard__name" style="margin-top: 2px;">Nadia El-Hassani</div>
+          </div>
+        </div>
+        <div class="relance-card__body">Avait choisi un concurrent il y a 26 jours. Marie suggère de la recontacter dans 5 mois pour un point.</div>
+        <div class="relance-card__foot">
+          <span style="color: var(--ink-4); font-family: var(--font-serif); font-style: italic;">~ 1 800 €</span>
+          <span style="color: var(--ink-4);">⌁ Confiance · 28 %</span>
+        </div>
+      </div>
+
+      <!-- Insight footer -->
+      <div style="margin-top: 14px; padding: 16px 18px; background: rgba(196, 181, 253, 0.04); border: 1px solid rgba(196, 181, 253, 0.15); border-radius: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span class="ai-card__badge" style="font-size: 9px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="9" height="9"><polygon points="12 2 15 9 22 12 15 15 12 22 9 15 2 12 9 9"/></svg>
+            Marie observe
+          </span>
+        </div>
+        <div style="font-family: var(--font-serif); font-size: 13px; color: var(--ink-2); font-style: italic; line-height: 1.55;">
+          La plupart des relances réussies arrivent <strong style="color: var(--gold); font-style: italic;">entre J+3 et J+7</strong>. Attendre J+14 réduit le taux de réponse de moitié.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: AI-composed message + actions -->
+    <div>
+
+      <!-- Context summary -->
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card__head">
+          <div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div class="tbl__avatar" style="width: 38px; height: 38px; font-size: 13px;">M&P</div>
+              <div>
+                <h3 class="card__title" style="font-size: 18px;">Marc &amp; Pauline V.</h3>
+                <div class="card__sub">Mariage Saint-Cloud · 120 invités · septembre 2026</div>
+              </div>
+            </div>
+          </div>
+          <a href="/admin/clients/sample" class="btn-admin btn-admin--ghost" style="padding: 7px 14px; font-size: 12px;">Voir la fiche →</a>
+        </div>
+        <div class="card__body">
+
+          <!-- Context recap -->
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px;">
+            <div style="padding: 12px 14px; background: var(--admin-surface-2); border: 1px solid var(--admin-line); border-radius: 8px;">
+              <div style="font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 4px;">Dernier contact</div>
+              <div style="font-family: var(--font-serif); font-size: 14px; color: var(--ink);"><em style="color: var(--gold);">il y a 4 jours</em></div>
+              <div style="font-size: 11px; color: var(--ink-3); margin-top: 2px;">Devis envoyé · 11 200 €</div>
+            </div>
+            <div style="padding: 12px 14px; background: var(--admin-surface-2); border: 1px solid var(--admin-line); border-radius: 8px;">
+              <div style="font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 4px;">Signal détecté</div>
+              <div style="font-family: var(--font-serif); font-size: 14px; color: var(--ink);"><em style="color: var(--gold);">Devis ouvert 2 fois</em></div>
+              <div style="font-size: 11px; color: var(--ink-3); margin-top: 2px;">Visite page Événementiel hier 21h</div>
+            </div>
+            <div style="padding: 12px 14px; background: var(--admin-surface-2); border: 1px solid var(--admin-line); border-radius: 8px;">
+              <div style="font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 4px;">Indice de chaleur</div>
+              <div style="font-family: var(--font-serif); font-size: 14px; color: var(--ink);"><em style="color: var(--gold);">Chaud</em> · 82 %</div>
+              <div style="font-size: 11px; color: var(--ink-3); margin-top: 2px;">Hésitation probable, pas désintérêt</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- AI suggested messages -->
+      <div class="ai-suggest">
+        <div class="ai-suggest__head">
+          <div>
+            <div class="ai-suggest__title">Suggestions <em>de Marie</em></div>
+            <div class="card__sub" style="margin-top: 4px;">3 versions adaptées au ton de la conversation</div>
+          </div>
+          <span class="ai-card__badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15 9 22 12 15 15 12 22 9 15 2 12 9 9"/></svg>
+            Générée à l'instant
+          </span>
+        </div>
+
+        <div class="ai-options">
+
+          <div class="ai-option is-selected" onclick="document.querySelectorAll('.ai-option').forEach(o=>o.classList.remove('is-selected')); this.classList.add('is-selected');">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <div class="ai-option__tone">A · Douce relance · sans pression</div>
+              <span style="font-size: 10px; color: var(--ink-4);">~ 38 mots · 2 phrases</span>
+            </div>
+            <div class="ai-option__text">
+              Bonjour Marc et Pauline, je voulais m'assurer que vous aviez bien reçu le devis et qu'il vous parlait. *Je reste à disposition* pour ajuster certains postes ou en parler de vive voix, comme vous préférez.
+            </div>
+          </div>
+
+          <div class="ai-option" onclick="document.querySelectorAll('.ai-option').forEach(o=>o.classList.remove('is-selected')); this.classList.add('is-selected');">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <div class="ai-option__tone">B · Question ouverte · invite à l'échange</div>
+              <span style="font-size: 10px; color: var(--ink-4);">~ 42 mots · 3 phrases</span>
+            </div>
+            <div class="ai-option__text">
+              Bonjour Marc et Pauline, je pense souvent à votre mariage de septembre. *Y a-t-il un point du devis qui mérite d'être éclairci ?* Un appel de 15 minutes serait peut-être le plus simple pour avancer ensemble.
+            </div>
+          </div>
+
+          <div class="ai-option" onclick="document.querySelectorAll('.ai-option').forEach(o=>o.classList.remove('is-selected')); this.classList.add('is-selected');">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <div class="ai-option__tone">C · Valeur ajoutée · partage moodboard</div>
+              <span style="font-size: 10px; color: var(--ink-4);">~ 52 mots · 3 phrases</span>
+            </div>
+            <div class="ai-option__text">
+              Bonjour Marc et Pauline, en pensant à votre mariage, j'ai esquissé quelques ambiances inspirées de Saint-Cloud — *un moodboard léger* que je vous joins ici. Aucune obligation, c'est ma manière de vous montrer ce que je vois. Dites-moi si vous souhaitez en discuter.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Custom tweaks -->
+        <div style="padding-top: 18px; border-top: 1px solid var(--admin-line); margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+            <span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-4); font-weight: 500;">Ton&nbsp;:</span>
+            <div class="tabs" style="background: transparent; border: none; padding: 0; gap: 6px;">
+              <button class="tabs__tab is-active">Posé</button>
+              <button class="tabs__tab">Chaleureux</button>
+              <button class="tabs__tab">Plus direct</button>
+              <button class="tabs__tab">Très court</button>
+            </div>
+            <button class="btn-admin btn-admin--ghost" style="padding: 6px 12px; font-size: 12px; margin-left: auto;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="12" height="12"><path d="M3 12 a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 9 8 9"/></svg>
+              Régénérer
+            </button>
+          </div>
+        </div>
+
+        <!-- Final preview + actions -->
+        <div style="background: var(--admin-surface-2); border: 1px solid var(--admin-line); border-radius: 10px; padding: 18px 22px;">
+          <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; font-weight: 500;">Aperçu de l'e-mail</div>
+          <div style="display: grid; grid-template-columns: 80px 1fr; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--admin-line-soft); font-size: 12.5px; color: var(--ink-3);">
+            <span style="color: var(--ink-4);">De&nbsp;:</span><span>Sophie Fwurtz &lt;sophie@maison-fwurtz.fr&gt;</span>
+            <span style="color: var(--ink-4);">À&nbsp;:</span><span>Marc Dubois &lt;m.dubois@…&gt;, Pauline V.</span>
+            <span style="color: var(--ink-4);">Objet&nbsp;:</span><span style="color: var(--ink);"><em style="font-family: var(--font-serif); color: var(--gold);">Votre mariage</em> — un mot pour vous</span>
+          </div>
+          <div style="padding-top: 14px; font-family: var(--font-serif); font-size: 15px; color: var(--ink-2); line-height: 1.65;">
+            Bonjour Marc et Pauline,<br><br>
+            Je voulais m'assurer que vous aviez bien reçu le devis et qu'il vous parlait. <em style="color: var(--gold);">Je reste à disposition</em> pour ajuster certains postes ou en parler de vive voix, comme vous préférez.<br><br>
+            Bien à vous,<br>
+            Sophie · <em style="color: var(--gold); font-style: italic;">Maison Fwurtz</em>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px; margin-top: 18px; flex-wrap: wrap;">
+          <button class="btn-admin btn-admin--ghost" style="padding: 9px 14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg> Programmer</button>
+          <button class="btn-admin btn-admin--ghost" style="padding: 9px 14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 4 H4 a2 2 0 00-2 2 v14 a2 2 0 002 2 h14 a2 2 0 002-2 v-7"/><path d="M18 2 L22 6 L13 15 L8 16 L9 11 Z"/></svg> Éditer</button>
+          <button class="btn-admin btn-admin--primary" style="margin-left: auto;" data-save>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="20" y2="4"/><polygon points="4 20 10 13 15 18 20 4"/></svg>
+            Envoyer maintenant
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>`;
+---
+
+<AdminLayout
+  title="Relances IA — Maison Fwurtz Admin" active="relances"
+  breadcrumb="Relances IA"
+  screenLabel="Admin · Relances"
+>
+  <Fragment set:html={body} />
+</AdminLayout>

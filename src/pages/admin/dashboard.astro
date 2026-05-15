@@ -1,0 +1,370 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+---
+
+<AdminLayout
+  title="Tableau de bord — Maison Fwurtz Admin"
+  active="dashboard"
+  breadcrumb="Tableau de bord"
+  screenLabel="Admin · Dashboard"
+>
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Bonsoir <em>Sophie</em></h1>
+      <p class="admin-page-head__sub">Voici un aperçu de votre Maison ce mercredi 15 mai.</p>
+    </div>
+    <div class="admin-page-head__actions">
+      <button class="btn-admin btn-admin--ghost">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Exporter
+      </button>
+      <button class="btn-admin btn-admin--primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Créer du contenu
+      </button>
+    </div>
+  </div>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="kpi-grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#D4AF7A" stop-opacity="0.4"></stop>
+        <stop offset="100%" stop-color="#D4AF7A" stop-opacity="0"></stop>
+      </linearGradient>
+      <linearGradient id="chart-grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#D4AF7A" stop-opacity="0.35"></stop>
+        <stop offset="100%" stop-color="#D4AF7A" stop-opacity="0"></stop>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi__head">
+        <span class="kpi__label">Visiteurs · 30j</span>
+        <span class="kpi__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4 21 C4 16 8 14 12 14 C16 14 20 16 20 21"></path>
+          </svg>
+        </span>
+      </div>
+      <div class="kpi__value">2&nbsp;<em>847</em></div>
+      <div class="kpi__delta kpi__delta--up">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5V19"></path><path d="M5 12L12 5L19 12"></path></svg>
+        +18,4 %<span class="kpi__delta-period">vs 30j précédents</span>
+      </div>
+      <svg class="kpi__chart" viewBox="0 0 120 50" preserveAspectRatio="none" aria-hidden="true">
+        <path class="area" d="M0,40 L15,32 L30,36 L45,24 L60,28 L75,18 L90,22 L105,12 L120,15 L120,50 L0,50 Z"></path>
+        <path d="M0,40 L15,32 L30,36 L45,24 L60,28 L75,18 L90,22 L105,12 L120,15"></path>
+      </svg>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi__head">
+        <span class="kpi__label">Conversations · 7j</span>
+        <span class="kpi__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M8 21 L12 17 L17 17 a4 4 0 004-4 V8 a4 4 0 00-4-4 H7 a4 4 0 00-4 4 v5 a4 4 0 004 4 H8 V21Z"></path>
+          </svg>
+        </span>
+      </div>
+      <div class="kpi__value"><em>34</em></div>
+      <div class="kpi__delta kpi__delta--up">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5V19"></path><path d="M5 12L12 5L19 12"></path></svg>
+        +12,3 %<span class="kpi__delta-period">via Marie</span>
+      </div>
+      <svg class="kpi__chart" viewBox="0 0 120 50" preserveAspectRatio="none" aria-hidden="true">
+        <path class="area" d="M0,38 L20,30 L40,32 L60,22 L80,28 L100,18 L120,14 L120,50 L0,50 Z"></path>
+        <path d="M0,38 L20,30 L40,32 L60,22 L80,28 L100,18 L120,14"></path>
+      </svg>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi__head">
+        <span class="kpi__label">Rendez-vous · ce mois</span>
+        <span class="kpi__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </span>
+      </div>
+      <div class="kpi__value"><em>12</em></div>
+      <div class="kpi__delta kpi__delta--up">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5V19"></path><path d="M5 12L12 5L19 12"></path></svg>
+        +4<span class="kpi__delta-period">vs avril</span>
+      </div>
+      <svg class="kpi__chart" viewBox="0 0 120 50" preserveAspectRatio="none" aria-hidden="true">
+        <path class="area" d="M0,35 L20,38 L40,28 L60,30 L80,22 L100,16 L120,10 L120,50 L0,50 Z"></path>
+        <path d="M0,35 L20,38 L40,28 L60,30 L80,22 L100,16 L120,10"></path>
+      </svg>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi__head">
+        <span class="kpi__label">Taux de conversion</span>
+        <span class="kpi__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"></circle>
+            <circle cx="12" cy="12" r="4"></circle>
+          </svg>
+        </span>
+      </div>
+      <div class="kpi__value"><em>4,2</em>&nbsp;%</div>
+      <div class="kpi__delta kpi__delta--down">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5V19"></path><path d="M19 12L12 19L5 12"></path></svg>
+        −0,3 pt<span class="kpi__delta-period">vs 30j précédents</span>
+      </div>
+      <svg class="kpi__chart" viewBox="0 0 120 50" preserveAspectRatio="none" aria-hidden="true">
+        <path class="area" d="M0,18 L20,22 L40,16 L60,20 L80,28 L100,24 L120,30 L120,50 L0,50 Z"></path>
+        <path d="M0,18 L20,22 L40,16 L60,20 L80,28 L100,24 L120,30"></path>
+      </svg>
+    </div>
+  </div>
+
+  <div class="cols-2" style="margin-bottom: 16px;">
+    <div class="card">
+      <div class="card__head">
+        <div>
+          <h3 class="card__title">Fréquentation <em>quotidienne</em></h3>
+          <div class="card__sub">Visiteurs uniques · 30 derniers jours</div>
+        </div>
+        <div class="tabs">
+          <button class="tabs__tab">7j</button>
+          <button class="tabs__tab is-active">30j</button>
+          <button class="tabs__tab">90j</button>
+        </div>
+      </div>
+      <div class="chart-legend">
+        <span class="chart-legend__item"><span class="chart-legend__dot"></span> Visiteurs</span>
+        <span class="chart-legend__item"><span class="chart-legend__dot chart-legend__dot--alt"></span> Conversations conciergerie</span>
+      </div>
+      <div class="chart-wrap">
+        <svg class="chart-svg" viewBox="0 0 600 240" preserveAspectRatio="none" aria-hidden="true">
+          <line class="grid" x1="0" y1="40" x2="600" y2="40"></line>
+          <line class="grid" x1="0" y1="90" x2="600" y2="90"></line>
+          <line class="grid" x1="0" y1="140" x2="600" y2="140"></line>
+          <line class="grid" x1="0" y1="190" x2="600" y2="190"></line>
+          <path class="area" d="M0,180 L40,150 L80,160 L120,120 L160,140 L200,90 L240,110 L280,70 L320,90 L360,50 L400,80 L440,60 L480,40 L520,70 L560,50 L600,30 L600,240 L0,240 Z"></path>
+          <path class="line" d="M0,180 L40,150 L80,160 L120,120 L160,140 L200,90 L240,110 L280,70 L320,90 L360,50 L400,80 L440,60 L480,40 L520,70 L560,50 L600,30"></path>
+          <path class="line" style="stroke:#8AB4E8; opacity:0.6;" d="M0,210 L40,200 L80,205 L120,180 L160,190 L200,170 L240,180 L280,150 L320,160 L360,140 L400,150 L440,135 L480,120 L520,140 L560,125 L600,110"></path>
+          <circle class="dot-ring" cx="600" cy="30" r="6"></circle>
+          <circle class="dot" cx="600" cy="30" r="3"></circle>
+          <text class="axis" x="0" y="220">15 avr</text>
+          <text class="axis" x="180" y="220">25 avr</text>
+          <text class="axis" x="370" y="220">5 mai</text>
+          <text class="axis" x="555" y="220">15 mai</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__head">
+        <div>
+          <h3 class="card__title">Actions <em>rapides</em></h3>
+          <div class="card__sub">Vos raccourcis fréquents</div>
+        </div>
+      </div>
+      <div class="card__body card__body--flush">
+        <div class="quick-grid">
+          <a class="quick" href="/admin/messages">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M8 21 L12 17 L17 17 a4 4 0 004-4 V8 a4 4 0 00-4-4 H7 a4 4 0 00-4 4 v5 a4 4 0 004 4 H8 V21Z"></path>
+            </svg>
+            <span class="quick__title">Répondre aux messages</span>
+            <span class="quick__sub">3 conversations en attente</span>
+          </a>
+          <a class="quick" href="/admin/rendez-vous">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+              <line x1="8" y1="3" x2="8" y2="7"></line>
+            </svg>
+            <span class="quick__title">Confirmer un RDV</span>
+            <span class="quick__sub">2 demandes à valider</span>
+          </a>
+          <a class="quick" href="/admin/medias">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+              <circle cx="9" cy="9" r="2"></circle>
+              <path d="M21 16 L16 11 L5 21"></path>
+            </svg>
+            <span class="quick__title">Gérer les visuels</span>
+            <span class="quick__sub">Médiathèque & emplacements</span>
+          </a>
+          <a class="quick" href="/admin/facturation">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M14 2 H6 a2 2 0 00-2 2 v16 a2 2 0 002 2 h12 a2 2 0 002-2 V8 Z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="8" y1="13" x2="16" y2="13"></line>
+            </svg>
+            <span class="quick__title">Devis & factures</span>
+            <span class="quick__sub">3 documents à traiter</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols-2">
+    <div class="card">
+      <div class="card__head">
+        <div>
+          <h3 class="card__title">Activité <em>récente</em></h3>
+          <div class="card__sub">Ce qui s'est passé sur votre site</div>
+        </div>
+        <a href="/admin/messages" class="btn-admin btn-admin--ghost" style="padding: 7px 12px; font-size: 12px;">Tout voir</a>
+      </div>
+      <div class="card__body card__body--flush">
+        <div class="feed">
+          <div class="feed__item">
+            <div class="feed__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                <path d="M8 21 L12 17 L17 17 a4 4 0 004-4 V8 a4 4 0 00-4-4 H7 a4 4 0 00-4 4 v5 a4 4 0 004 4 H8 V21Z"></path>
+              </svg>
+            </div>
+            <div class="feed__body">
+              <div class="feed__title"><em>Camille Larue</em> a démarré une conversation avec <strong>Marie</strong></div>
+              <div class="feed__meta">« Bonjour, je souhaite refondre le site de mon atelier… » · via la conciergerie</div>
+            </div>
+            <span class="feed__time">il y a 12 min</span>
+          </div>
+
+          <div class="feed__item">
+            <div class="feed__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </div>
+            <div class="feed__body">
+              <div class="feed__title"><strong>Rendez-vous confirmé</strong> avec <em>Julien Hervé</em></div>
+              <div class="feed__meta">Vendredi 17 mai · 10h00 — visioconférence</div>
+            </div>
+            <span class="feed__time">il y a 47 min</span>
+          </div>
+
+          <div class="feed__item">
+            <div class="feed__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                <path d="M3 13 V20 a1 1 0 001 1 h16 a1 1 0 001-1 V13 L17 4 H7 Z"></path>
+                <path d="M3 13 H8 L9 16 H15 L16 13 H21"></path>
+              </svg>
+            </div>
+            <div class="feed__body">
+              <div class="feed__title">Nouveau message via le <strong>formulaire de contact</strong></div>
+              <div class="feed__meta">Marc Dubois · Demande pour un mariage en septembre</div>
+            </div>
+            <span class="feed__time">il y a 2 h</span>
+          </div>
+
+          <div class="feed__item">
+            <div class="feed__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                <polygon points="12 3 14.5 9 21 9.5 16 14 17.5 21 12 17.5 6.5 21 8 14 3 9.5 9.5 9"></polygon>
+              </svg>
+            </div>
+            <div class="feed__body">
+              <div class="feed__title">Témoignage <em>5 étoiles</em> reçu de <strong>Pauline V.</strong></div>
+              <div class="feed__meta">« Discrétion, élégance, efficacité. » · en attente de publication</div>
+            </div>
+            <span class="feed__time">il y a 4 h</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: grid; gap: 16px;">
+      <div class="card">
+        <div class="card__head">
+          <div>
+            <h3 class="card__title">Prochains <em>rendez-vous</em></h3>
+            <div class="card__sub">À venir cette semaine</div>
+          </div>
+        </div>
+        <div class="card__body card__body--flush">
+          <div class="feed">
+            <div class="feed__item">
+              <div class="feed__icon" style="background: rgba(212,175,122,0.1); color: var(--gold);">
+                <span style="font-family: var(--font-serif); font-size: 11px; font-style: italic;">17/05</span>
+              </div>
+              <div class="feed__body">
+                <div class="feed__title"><em>Julien Hervé</em> · Galerie Saint-Honoré</div>
+                <div class="feed__meta">10h00 — Visioconférence · Refonte site</div>
+              </div>
+            </div>
+            <div class="feed__item">
+              <div class="feed__icon" style="background: rgba(212,175,122,0.1); color: var(--gold);">
+                <span style="font-family: var(--font-serif); font-size: 11px; font-style: italic;">19/05</span>
+              </div>
+              <div class="feed__body">
+                <div class="feed__title"><em>Camille Larue</em> · Atelier Bardin</div>
+                <div class="feed__meta">14h30 — Téléphone · Premier échange</div>
+              </div>
+            </div>
+            <div class="feed__item">
+              <div class="feed__icon" style="background: rgba(212,175,122,0.1); color: var(--gold);">
+                <span style="font-family: var(--font-serif); font-size: 11px; font-style: italic;">21/05</span>
+              </div>
+              <div class="feed__body">
+                <div class="feed__title"><em>Marc Dubois</em></div>
+                <div class="feed__meta">11h00 — Rendez-vous à Paris · Mariage</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card__foot">
+          <span style="font-size: 12px; color: var(--ink-3);">3 rendez-vous · 4h30 réservées</span>
+          <a class="btn-admin btn-admin--ghost" href="/admin/rendez-vous" style="padding: 6px 12px; font-size: 12px;">Calendrier</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__head">
+          <div>
+            <h3 class="card__title">Sources de <em>trafic</em></h3>
+            <div class="card__sub">D'où viennent vos visiteurs · 30j</div>
+          </div>
+        </div>
+        <div class="card__body card__body--flush">
+          <div class="bar-list">
+            <div class="bar-row">
+              <span class="bar-label">Recherche organique</span>
+              <div class="bar-track"><div class="bar-fill" style="width: 64%;"></div></div>
+              <span class="bar-value">64 %</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">LinkedIn</span>
+              <div class="bar-track"><div class="bar-fill" style="width: 18%;"></div></div>
+              <span class="bar-value">18 %</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Direct</span>
+              <div class="bar-track"><div class="bar-fill" style="width: 12%;"></div></div>
+              <span class="bar-value">12 %</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Instagram</span>
+              <div class="bar-track"><div class="bar-fill" style="width: 4%;"></div></div>
+              <span class="bar-value">4 %</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Autres</span>
+              <div class="bar-track"><div class="bar-fill" style="width: 2%;"></div></div>
+              <span class="bar-value">2 %</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</AdminLayout>

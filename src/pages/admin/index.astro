@@ -1,0 +1,128 @@
+---
+export const prerender = false;
+
+import "~/styles/styles.css";
+import "~/styles/admin.css";
+import { readSessionCookie } from "@features/admin-auth/infra/cookies.ts";
+import { verifySession } from "@features/admin-auth/infra/sessions.ts";
+
+const token = readSessionCookie(Astro.request.headers.get("cookie"));
+if (verifySession(token)) {
+  return Astro.redirect("/admin/dashboard");
+}
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Connexion — Maison Fwurtz Admin</title>
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="login-bg">
+      <div class="login">
+        <div class="login__brand">
+          <div class="login__brand-mark">
+            <svg viewBox="0 0 50 50" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 36 L6 8 L13 24 L20 8 L20 36"></path>
+              <path d="M28 36 L28 15 C28 11 30 8 34 8"></path>
+              <line x1="25" y1="17" x2="36" y2="17"></line>
+            </svg>
+          </div>
+          <div class="login__brand-name">Maison Fwurtz</div>
+          <div class="login__brand-sub">Espace administratif</div>
+        </div>
+        <div class="login__welcome">
+          <h1>Bienvenue, <em>chère Maison</em>.</h1>
+          <p>Connectez-vous pour accéder à votre tableau de bord.</p>
+        </div>
+        <form id="login-form" novalidate>
+          <div class="login__field">
+            <label for="email">Adresse e-mail</label>
+            <input
+              id="email"
+              name="email"
+              class="input-admin"
+              type="email"
+              placeholder="vous@maison-fwurtz.fr"
+              autocomplete="username"
+              required
+            />
+          </div>
+          <div class="login__field">
+            <label for="password">Mot de passe</label>
+            <input
+              id="password"
+              name="password"
+              class="input-admin"
+              type="password"
+              placeholder="••••••••••"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+          <div class="login__row">
+            <label class="login__remember">
+              <input type="checkbox" class="checkbox-admin" checked />
+              <span>Se souvenir de moi</span>
+            </label>
+            <a href="#">Mot de passe oublié ?</a>
+          </div>
+          <p
+            id="login-error"
+            style="display: none; color: #E67878; font-size: 12.5px; margin-top: 8px;"
+          ></p>
+          <button id="login-submit" type="submit" class="login__submit">
+            Accéder à l'administration
+          </button>
+        </form>
+        <a class="login__back" href="/">← Retour au site</a>
+      </div>
+    </div>
+    <script>
+      const form = document.getElementById("login-form") as HTMLFormElement;
+      const errorEl = document.getElementById("login-error") as HTMLParagraphElement;
+      const btn = document.getElementById("login-submit") as HTMLButtonElement;
+
+      form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errorEl.style.display = "none";
+        btn.disabled = true;
+        const data = new FormData(form);
+        const email = String(data.get("email") ?? "");
+        const password = String(data.get("password") ?? "");
+        try {
+          const r = await fetch("/api/admin/auth/login", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+          if (!r.ok) {
+            const body = (await r.json().catch(() => ({}))) as { error?: string };
+            errorEl.textContent =
+              body.error === "invalid_credentials"
+                ? "Identifiants invalides."
+                : "Connexion impossible.";
+            errorEl.style.display = "block";
+            btn.disabled = false;
+            return;
+          }
+          window.location.href = "/admin/dashboard";
+        } catch {
+          errorEl.textContent = "Réseau injoignable.";
+          errorEl.style.display = "block";
+          btn.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+---
+interface Props {
+  breadcrumb: string;
+}
+const { breadcrumb } = Astro.props;
+const crumbs = breadcrumb
+  .split("/")
+  .map((s) => s.trim())
+  .filter(Boolean);
+---
+
+<header class="admin-topbar">
+  <button class="admin-menu-toggle" id="admin-menu-toggle" aria-label="Menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+      <line x1="3" y1="7" x2="21" y2="7"></line>
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="17" x2="21" y2="17"></line>
+    </svg>
+  </button>
+  <nav class="admin-breadcrumb">
+    <a href="/admin/dashboard">Administration</a>
+    {crumbs.map((c, i) => (
+      <Fragment>
+        <svg class="admin-breadcrumb__sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M9 6l6 6-6 6"></path>
+        </svg>
+        {i === crumbs.length - 1 ? (
+          <span class="admin-breadcrumb__current">{c}</span>
+        ) : (
+          <a href="#">{c}</a>
+        )}
+      </Fragment>
+    ))}
+  </nav>
+  <div class="admin-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="7"></circle>
+      <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+    </svg>
+    <input type="text" placeholder="Rechercher dans l'administration…" />
+    <span class="admin-search__kbd">⌘ K</span>
+  </div>
+  <div class="admin-topbar__actions">
+    <button class="admin-icon-btn" aria-label="Notifications">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 18 a7 7 0 0114 0 Z"></path>
+        <line x1="3" y1="20" x2="21" y2="20"></line>
+        <path d="M10 22 a2 2 0 004 0"></path>
+      </svg>
+      <span class="admin-icon-btn__dot"></span>
+    </button>
+    <a class="admin-icon-btn" href="/" target="_blank" rel="noopener" aria-label="Voir le site">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"></circle>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <path d="M12 3 A14 14 0 0112 21 A14 14 0 0112 3"></path>
+      </svg>
+    </a>
+    <button class="admin-icon-btn" id="admin-logout" aria-label="Déconnexion">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M9 21 H5 a2 2 0 01-2-2 V5 a2 2 0 012-2 H9"></path>
+        <polyline points="16 17 21 12 16 7"></polyline>
+        <line x1="21" y1="12" x2="9" y2="12"></line>
+      </svg>
+    </button>
+  </div>
+</header>
+<div class="admin-aside__backdrop" id="admin-aside-backdrop"></div>

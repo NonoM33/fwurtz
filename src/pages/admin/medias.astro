@@ -1,0 +1,261 @@
+---
+export const prerender = false;
+import AdminLayout from "~/layouts/AdminLayout.astro";
+import { mediaStorage } from "@features/media/infra/storage.ts";
+import { KNOWN_SLOTS } from "@features/media/domain/slots.ts";
+
+const [medias, slots] = await Promise.all([
+  mediaStorage().list(),
+  mediaStorage().listSlots(),
+]);
+
+const totalBytes = medias.reduce((acc, m) => acc + m.size, 0);
+const QUOTA_BYTES = 5 * 1024 * 1024 * 1024;
+
+function fmtSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} o`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} Ko`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} Go`;
+}
+
+const usagePct = Math.min(100, (totalBytes / QUOTA_BYTES) * 100);
+---
+
+<AdminLayout
+  title="Médiathèque — Maison Fwurtz Admin"
+  active="medias"
+  breadcrumb="Médiathèque"
+  screenLabel="Admin · Médias"
+>
+  <div class="admin-page-head">
+    <div>
+      <h1 class="admin-page-head__title">Médiathèque</h1>
+      <p class="admin-page-head__sub">
+        {medias.length} fichiers · {fmtSize(totalBytes)} utilisés sur 5 Go · les visuels du
+        site sont gérés depuis cet écran.
+      </p>
+    </div>
+    <div class="admin-page-head__actions">
+      <button class="btn-admin btn-admin--ghost" id="refresh-btn">Actualiser</button>
+      <label class="btn-admin btn-admin--primary" for="upload-input" style="cursor: pointer;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        Téléverser
+      </label>
+      <input id="upload-input" type="file" accept="image/png,image/jpeg,image/webp,image/avif,image/svg+xml" multiple style="display: none;" />
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 16px;">
+    <div class="card__head">
+      <div>
+        <h3 class="card__title">Médias <em>téléversés</em></h3>
+        <div class="card__sub">Cliquez sur un visuel pour l'assigner à un emplacement du site</div>
+      </div>
+    </div>
+    <div class="card__body">
+      {medias.length === 0 ? (
+        <div class="empty">
+          <div class="empty__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+              <circle cx="9" cy="9" r="2"></circle>
+              <path d="M21 16 L16 11 L5 21"></path>
+            </svg>
+          </div>
+          <div class="empty__title">Aucun média</div>
+          <div class="empty__sub">Téléversez vos premières photos pour habiller le site.</div>
+        </div>
+      ) : (
+        <div class="media-grid" id="media-grid">
+          {medias.map((m) => (
+            <div class="media-cell" data-media-id={m.id} data-filename={m.filename}>
+              <img
+                src={`/api/media/${m.id}`}
+                alt={m.alt || m.filename}
+                style="width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; z-index: 1;"
+                loading="lazy"
+              />
+              <div class="media-cell__meta" style="z-index: 3;">
+                <div class="media-cell__name">{m.filename}</div>
+                <div class="media-cell__size">{fmtSize(m.size)} · {m.collection}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+    <div class="card__foot">
+      <span style="font-size: 12px; color: var(--ink-3);">
+        {medias.length} fichiers · {fmtSize(totalBytes)} / 5 Go
+      </span>
+      <div style="width: 200px; height: 4px; background: var(--admin-surface-3); border-radius: 999px; overflow: hidden;">
+        <div style={`width: ${usagePct.toFixed(1)}%; height: 100%; background: var(--gold);`}></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__head">
+      <div>
+        <h3 class="card__title">Emplacements du <em>site</em></h3>
+        <div class="card__sub">Assignez un média à chaque emplacement repéré dans le thème</div>
+      </div>
+    </div>
+    <div class="card__body card__body--flush">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Emplacement</th>
+            <th>Page</th>
+            <th>Visuel actuel</th>
+            <th>Texte alternatif</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="slots-body">
+          {KNOWN_SLOTS.map((slot) => {
+            const assigned = slots.find((s) => s.slotId === slot.id);
+            const media = assigned ? medias.find((m) => m.id === assigned.mediaId) : null;
+            return (
+              <tr data-slot-id={slot.id}>
+                <td>
+                  <div class="tbl__primary">
+                    <div class="tbl__avatar" style="font-size: 11px; letter-spacing: 0.04em;">
+                      {slot.id.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <div class="tbl__name">{slot.label}</div>
+                      <div class="tbl__meta" style="font-family: ui-monospace, monospace;">{slot.id}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>{slot.page}</td>
+                <td>
+                  {media ? (
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <img
+                        src={`/api/media/${media.id}`}
+                        alt=""
+                        style="width: 56px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid var(--admin-line);"
+                      />
+                      <span style="font-size: 12px; color: var(--ink-3);">{media.filename}</span>
+                    </div>
+                  ) : (
+                    <span class="badge badge--draft">Placeholder</span>
+                  )}
+                </td>
+                <td>
+                  <input
+                    class="input-admin"
+                    type="text"
+                    data-slot-alt={slot.id}
+                    placeholder="Texte alternatif (accessibilité)"
+                    value={assigned?.alt ?? ""}
+                    style="padding: 7px 10px; font-size: 12px;"
+                  />
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="btn-admin btn-admin--ghost" data-assign-slot={slot.id} style="padding: 5px 10px; font-size: 11px;">
+                      Assigner…
+                    </button>
+                    {media && (
+                      <button class="btn-admin btn-admin--danger" data-clear-slot={slot.id} style="padding: 5px 10px; font-size: 11px;">
+                        Retirer
+                      </button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    interface MediaItem {
+      id: string;
+      filename: string;
+    }
+
+    const upload = document.getElementById("upload-input") as HTMLInputElement;
+    upload?.addEventListener("change", async () => {
+      const files = upload.files;
+      if (!files || files.length === 0) return;
+      for (const file of Array.from(files)) {
+        const fd = new FormData();
+        fd.set("file", file);
+        const r = await fetch("/api/admin/medias", { method: "POST", body: fd });
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({}));
+          alert(`Échec téléversement: ${(err as { message?: string }).message ?? r.statusText}`);
+          return;
+        }
+      }
+      window.location.reload();
+    });
+
+    document
+      .getElementById("refresh-btn")
+      ?.addEventListener("click", () => window.location.reload());
+
+    document.querySelectorAll<HTMLButtonElement>("[data-assign-slot]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const slotId = btn.dataset.assignSlot!;
+        const r = await fetch("/api/admin/medias", { method: "GET" });
+        const data = (await r.json()) as { medias: MediaItem[] };
+        if (data.medias.length === 0) {
+          alert("Téléversez d'abord un média.");
+          return;
+        }
+        const choices = data.medias
+          .map((m, i) => `${i + 1}. ${m.filename}`)
+          .join("\n");
+        const pickStr = prompt(
+          `Choisir un média à assigner à « ${slotId} » :\n\n${choices}\n\nIndex (1-${data.medias.length}) :`,
+        );
+        if (!pickStr) return;
+        const idx = Number.parseInt(pickStr, 10) - 1;
+        const chosen = data.medias[idx];
+        if (!chosen) return;
+        const mediaId = chosen.id;
+        const altInput = document.querySelector<HTMLInputElement>(
+          `[data-slot-alt="${slotId}"]`,
+        );
+        const alt = altInput?.value ?? "";
+        const put = await fetch("/api/admin/image-slots", {
+          method: "PUT",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ slotId, mediaId, alt }),
+        });
+        if (!put.ok) {
+          alert("Échec d'assignation.");
+          return;
+        }
+        window.location.reload();
+      });
+    });
+
+    document.querySelectorAll<HTMLButtonElement>("[data-clear-slot]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const slotId = btn.dataset.clearSlot!;
+        if (!confirm(`Retirer le visuel de « ${slotId} » ?`)) return;
+        const r = await fetch(`/api/admin/image-slots/${encodeURIComponent(slotId)}`, {
+          method: "DELETE",
+        });
+        if (!r.ok) {
+          alert("Échec.");
+          return;
+        }
+        window.location.reload();
+      });
+    });
+  </script>
+</AdminLayout>
