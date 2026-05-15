@@ -31,13 +31,21 @@ ENV NODE_ENV=production \
     DB_PATH=/app/data/db.sqlite \
     MEDIA_DIR=/app/data/media
 
-# Native libs needed at runtime by better-sqlite3 prebuild.
-RUN apk add --no-cache libstdc++
+# Build tools to recompile better-sqlite3 against this Node ABI; libstdc++
+# stays installed for runtime. The rest of the toolchain is removed after
+# the rebuild to keep the final image small.
+RUN apk add --no-cache --virtual .build-deps python3 make g++ libc6-compat \
+ && apk add --no-cache libstdc++
 
 # Pull only what is needed to run the built server.
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+
+# better-sqlite3 was compiled against bun headers in the builder stage and
+# crashes on Node with ERR_DLOPEN_FAILED. Recompile it for Node here.
+RUN npm rebuild better-sqlite3 --build-from-source \
+ && apk del .build-deps
 
 # Persistent data (mount /app/data as a Coolify volume in production).
 RUN mkdir -p /app/data/media && \
