@@ -15,6 +15,8 @@ interface ImportMetaEnv {
   readonly PUBLIC_API_URL?: string;
   readonly CORS_ALLOWED_ORIGINS?: string;
   readonly DB_PATH?: string;
+  readonly LLM_BASE_URL?: string;
+  readonly LLM_TITLE?: string;
 }
 
 declare module "*.sql?raw" {

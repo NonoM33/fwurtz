@@ -16,7 +16,13 @@ let cached: {
 export function getConciergeServices(env: Readonly<Record<string, string | undefined>>) {
   if (cached) return cached;
   const config = loadConciergeConfig({ env });
-  const llm = createGroqClient({ apiKey: config.groqApiKey, model: config.groqModel });
+  const llm = createGroqClient({
+    apiKey: config.groqApiKey,
+    model: config.groqModel,
+    ...(config.llmEndpoint ? { endpoint: config.llmEndpoint } : {}),
+    ...(config.llmReferer ? { referer: config.llmReferer } : {}),
+    ...(config.llmTitle ? { title: config.llmTitle } : {}),
+  });
   const rateLimiter = createInMemoryRateLimiter({
     limit: config.rateLimit,
     windowMs: config.rateWindowSeconds * 1_000,

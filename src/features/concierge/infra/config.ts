@@ -5,6 +5,11 @@ export interface ConciergeConfig {
   readonly groqModel: string;
   readonly rateLimit: number;
   readonly rateWindowSeconds: number;
+  /** Override the upstream chat-completions URL. Defaults to Groq.
+   *  Set to https://openrouter.ai/api/v1/chat/completions for OpenRouter. */
+  readonly llmEndpoint: string | undefined;
+  readonly llmReferer: string | undefined;
+  readonly llmTitle: string | undefined;
 }
 
 interface EnvSource {
@@ -26,7 +31,18 @@ export function loadConciergeConfig({ env }: EnvSource): ConciergeConfig {
   const model = env["GROQ_MODEL"]?.trim() || "openai/gpt-oss-120b";
   const rateLimit = positiveInt(env["CONCIERGE_RATE_LIMIT"], 20);
   const rateWindowSeconds = positiveInt(env["CONCIERGE_RATE_WINDOW_SECONDS"], 60);
-  return { groqApiKey: apiKey, groqModel: model, rateLimit, rateWindowSeconds };
+  const llmEndpoint = env["LLM_BASE_URL"]?.trim() || undefined;
+  const llmReferer = env["PUBLIC_SITE_URL"]?.trim() || undefined;
+  const llmTitle = env["LLM_TITLE"]?.trim() || "Maison Fwurtz";
+  return {
+    groqApiKey: apiKey,
+    groqModel: model,
+    rateLimit,
+    rateWindowSeconds,
+    llmEndpoint,
+    llmReferer,
+    llmTitle,
+  };
 }
 
 function positiveInt(raw: string | undefined, fallback: number): number {
