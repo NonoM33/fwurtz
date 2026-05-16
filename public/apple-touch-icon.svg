@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Maison Fwurtz">
+  <rect width="180" height="180" fill="#08111E" rx="36"/>
+  <g fill="none" stroke="#D4AF7A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 36 138 L 36 48 L 60 102 L 90 48 L 90 138"/>
+    <path d="M 110 138 L 110 70 C 110 56 117 48 130 48 L 144 48"/>
+    <line x1="100" y1="70" x2="138" y2="70"/>
+  </g>
+  <text x="90" y="166" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="11" font-style="italic" fill="#D4AF7A" letter-spacing="3">MAISON FWURTZ</text>
+</svg>

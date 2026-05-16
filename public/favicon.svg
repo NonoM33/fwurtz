@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
-  <rect width="40" height="40" fill="#08111E"></rect>
-  <g fill="none" stroke="#D4AF7A" stroke-width="1.6">
-    <path d="M 8 30 L 8 10 L 14 22 L 20 10 L 20 30"></path>
-    <path d="M 24 30 L 24 14 C 24 11 25.5 9 28 9 L 32 9"></path>
-    <line x1="22" y1="14" x2="30" y2="14"></line>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Maison Fwurtz">
+  <rect width="64" height="64" fill="#08111E" rx="10"/>
+  <g fill="none" stroke="#D4AF7A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 12 48 L 12 16 L 22 36 L 32 16 L 32 48"/>
+    <path d="M 40 48 L 40 24 C 40 19 42.5 16 47 16 L 52 16"/>
+    <line x1="36" y1="24" x2="49" y2="24"/>
   </g>
 </svg>
