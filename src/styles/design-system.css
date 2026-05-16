@@ -1,4 +1,4 @@
-/* ========== Design system page ========== */
+/* ========== Design system page additions ========== */
 
 .ds-toc {
   display: grid;
@@ -16,7 +16,6 @@
   flex-direction: column;
   gap: 6px;
   transition: background 240ms var(--ease-out);
-  text-decoration: none;
 }
 .ds-toc__item:hover { background: rgba(212, 175, 122, 0.04); }
 .ds-toc__num {
@@ -114,6 +113,7 @@
   border-top: 1px solid var(--navy-line);
   padding-top: 10px;
 }
+.swatch--mono .swatch__color { aspect-ratio: 1; }
 
 /* Logo lockup grid */
 .lockup-grid {
@@ -145,6 +145,11 @@
 .lockup--light .lockup__caption { color: rgba(8, 17, 30, 0.5); }
 .lockup--gold .lockup__caption { color: rgba(8, 17, 30, 0.65); }
 
+/* Big logo display */
+.brand-mark {
+  display: inline-block;
+}
+
 /* Type specimens */
 .type-specimen {
   background: var(--navy-900);
@@ -162,7 +167,7 @@
   margin-bottom: 24px;
   border-bottom: 1px solid var(--navy-line);
 }
-.type-specimen__row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.type-specimen__row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0;}
 .type-specimen__sample { color: var(--ink); }
 .type-specimen__meta {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
@@ -193,6 +198,7 @@
   color: var(--ink);
   margin-bottom: 32px;
 }
+.font-card__big--italic { font-style: italic; color: var(--gold); }
 .font-card__big--sans { font-family: var(--font-sans); font-size: 96px; }
 .font-card__alphabet {
   font-size: 22px;
@@ -277,6 +283,7 @@
   width: 80px;
   height: 80px;
   background: var(--gold);
+  position: relative;
 }
 .radius-card__token {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
@@ -340,11 +347,8 @@
   gap: 16px;
   align-items: center;
 }
-.shelf__row + .shelf__row {
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid var(--navy-line);
-}
+.shelf__row + .shelf__row { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--navy-line); }
+
 .shelf__cap {
   font-size: 11px;
   color: var(--ink-4);
@@ -394,8 +398,12 @@
   border-radius: var(--r-lg);
   padding: 32px 36px;
 }
-.voice-card--do { border-left: 3px solid var(--gold); }
-.voice-card--dont { border-left: 3px solid rgba(196, 76, 76, 0.6); }
+.voice-card--do {
+  border-left: 3px solid var(--gold);
+}
+.voice-card--dont {
+  border-left: 3px solid rgba(196, 76, 76, 0.6);
+}
 .voice-card__tag {
   font-size: 11px;
   letter-spacing: 0.16em;
@@ -530,7 +538,9 @@
   font-weight: 500;
   background: rgba(212, 175, 122, 0.03);
 }
-.token-table td { color: var(--ink-2); }
+.token-table td {
+  color: var(--ink-2);
+}
 .token-table td:first-child {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 12px;
@@ -538,12 +548,16 @@
 }
 .token-table tbody tr:last-child td { border-bottom: none; }
 
-/* Two col with sticky aside */
+/* Two col with sticky aside (for the DS intro) */
 .ds-intro {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 80px;
   align-items: start;
+}
+.ds-intro__aside {
+  position: sticky;
+  top: 100px;
 }
 
 @media (max-width: 1024px) {
@@ -552,19 +566,14 @@
   .ds-section__num { font-size: 36px; }
   .ds-section__title { font-size: 30px; }
   .ds-section { padding: 64px 0; }
-  .lockup-grid,
-  .shadow-grid,
-  .voice-grid,
-  .photo-direction,
-  .motion-strip { grid-template-columns: 1fr; }
+  .lockup-grid, .shadow-grid, .voice-grid, .photo-direction, .motion-strip { grid-template-columns: 1fr; }
   .radius-grid { grid-template-columns: repeat(3, 1fr); }
   .icon-set { grid-template-columns: repeat(4, 1fr); }
-  .type-specimen,
-  .font-card,
-  .shelf { padding: 28px 24px; }
+  .type-specimen, .font-card, .shelf { padding: 28px 24px; }
   .type-specimen__row { grid-template-columns: 1fr; gap: 16px; }
   .font-card__big { font-size: 64px; }
   .font-card__big--sans { font-size: 56px; }
   .ds-intro { grid-template-columns: 1fr; gap: 32px; }
+  .ds-intro__aside { position: static; }
   .spacing-row { grid-template-columns: 80px 1fr 60px; gap: 14px; }
 }

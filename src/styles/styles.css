@@ -1157,6 +1157,18 @@ p:last-child { margin-bottom: 0; }
 .mb-0 { margin-bottom: 0; }
 .center { text-align: center; }
 
+/* Tablet (1200px) — tighter spacing, container respects gutter */
+@media (max-width: 1200px) {
+  :root { --gutter: clamp(20px, 3.6vw, 48px); --section: clamp(64px, 8vw, 96px); }
+  .nav__menu { gap: 22px; }
+  .nav__link { font-size: 13.5px; }
+  .footer-grid { gap: 36px; }
+  .hero__grid--with-slot { gap: 40px; }
+  .testimonial-grid { gap: 16px; }
+  .testimonial { padding: 28px 26px; }
+  .testimonial__quote { font-size: 17px; }
+}
+
 /* ===== Mobile ===== */
 @media (max-width: 1024px) {
   :root { --t-h1: 40px; --t-display: 44px; }
