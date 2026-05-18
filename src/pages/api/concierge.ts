@@ -1,17 +1,19 @@
-import type { APIRoute } from "astro";
+import { randomUUID } from "node:crypto";
+import {
+  type FetchLike,
+  createMaisonClient,
+  MaisonForbiddenError,
+  MaisonNetworkError,
+  MaisonNotFoundError,
+  MaisonValidationError,
+} from "@maison/sdk";
+import type { APIRoute, AstroCookies } from "astro";
 import { ChatRequestSchema } from "@features/concierge/domain/validation";
-import { ConciergeError } from "@features/concierge/domain/errors";
-import { getConciergeServices } from "@features/concierge/infra/composition";
 
 export const prerender = false;
 
-function clientKey(req: Request, clientAddress: string | undefined): string {
-  // Astro exposes Astro.clientAddress; fall back to forwarded headers for proxies.
-  if (clientAddress) return clientAddress;
-  const fwd = req.headers.get("x-forwarded-for");
-  if (fwd) return fwd.split(",")[0]?.trim() ?? "unknown";
-  return req.headers.get("cf-connecting-ip") ?? "unknown";
-}
+const VISITOR_COOKIE = "maison_visitor_id";
+const VISITOR_COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
 
 function jsonResponse(body: unknown, init?: ResponseInit): Response {
   return new Response(JSON.stringify(body), {
@@ -24,7 +26,30 @@ function jsonResponse(body: unknown, init?: ResponseInit): Response {
   });
 }
 
-export const POST: APIRoute = async ({ request, clientAddress }) => {
+function getOrCreateVisitorId(cookies: AstroCookies): string {
+  const existing = cookies.get(VISITOR_COOKIE)?.value;
+  if (existing && /^[0-9a-f-]{8,64}$/i.test(existing)) {
+    return existing;
+  }
+  const id = randomUUID();
+  cookies.set(VISITOR_COOKIE, id, {
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: VISITOR_COOKIE_MAX_AGE,
+    path: "/",
+    secure: process.env["NODE_ENV"] === "production",
+  });
+  return id;
+}
+
+function readMaisonEnv(env: NodeJS.ProcessEnv): { baseUrl: string; tenantSlug: string } | null {
+  const baseUrl = env["MAISON_API_URL"];
+  const tenantSlug = env["MAISON_TENANT_SLUG"] ?? "fwurtz";
+  if (!baseUrl) return null;
+  return { baseUrl, tenantSlug };
+}
+
+export const POST: APIRoute = async ({ request, cookies }) => {
   let raw: unknown;
   try {
     raw = await request.json();
@@ -40,33 +65,48 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     );
   }
 
-  let services: ReturnType<typeof getConciergeServices>;
-  try {
-    // At runtime under the Node adapter, only `process.env` reflects the
-    // env vars supplied by the orchestrator (Coolify). `import.meta.env`
-    // is frozen at build time and would miss anything injected later.
-    services = getConciergeServices(process.env);
-  } catch (err) {
-    if (err instanceof ConciergeError && err.code === "missing_config") {
-      return jsonResponse({ error: "missing_config" }, { status: 503 });
-    }
-    return jsonResponse({ error: "internal_error" }, { status: 500 });
+  // Widget still sends a full history payload. We extract the latest visitor
+  // message and let maison-core own the conversation state.
+  const latest = parsed.data.history.at(-1);
+  if (!latest || latest.role !== "user") {
+    return jsonResponse(
+      { error: "invalid_input", message: "history must end with a user message" },
+      { status: 400 },
+    );
   }
 
-  const key = clientKey(request, clientAddress);
-  if (!services.rateLimiter.tryAcquire(key)) {
-    return jsonResponse({ error: "rate_limited" }, { status: 429 });
+  const env = readMaisonEnv(process.env);
+  if (!env) {
+    return jsonResponse({ error: "missing_config" }, { status: 503 });
   }
 
+  const client = createMaisonClient({
+    baseUrl: env.baseUrl,
+    tenant: { slug: env.tenantSlug },
+    timeoutMs: 25_000,
+    fetch: fetch as FetchLike,
+  });
+  const visitorId = getOrCreateVisitorId(cookies);
+
   try {
-    const reply = await services.replyToVisitor(parsed.data);
-    return jsonResponse({ text: reply.text });
+    const reply = await client.concierge.chat({
+      visitorId,
+      content: latest.text,
+      page: parsed.data.page,
+    });
+    return jsonResponse({ text: reply.reply, fallback: reply.metadata.fallback === true });
   } catch (err) {
-    if (err instanceof ConciergeError && err.code === "rate_limited") {
-      return jsonResponse({ error: "rate_limited" }, { status: 429 });
+    if (err instanceof MaisonValidationError) {
+      return jsonResponse({ error: "invalid_input", upstream: err.body }, { status: 400 });
     }
-    if (err instanceof ConciergeError && err.code === "upstream_unauthorized") {
-      return jsonResponse({ error: "upstream_unauthorized" }, { status: 502 });
+    if (err instanceof MaisonForbiddenError) {
+      return jsonResponse({ error: "tenant_inactive" }, { status: 503 });
+    }
+    if (err instanceof MaisonNotFoundError) {
+      return jsonResponse({ error: "tenant_not_found" }, { status: 503 });
+    }
+    if (err instanceof MaisonNetworkError) {
+      return jsonResponse({ error: "upstream_unreachable" }, { status: 502 });
     }
     return jsonResponse({ error: "internal_error" }, { status: 500 });
   }

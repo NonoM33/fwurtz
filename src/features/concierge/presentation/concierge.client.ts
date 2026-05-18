@@ -8,9 +8,13 @@
  * API key never reaches the browser.
  */
 
-import { detectPage, greetingFor, CONCIERGE_NAME } from "../domain/prompt";
-import { fallbackReply } from "../domain/fallback";
 import type { Message, PageContext } from "../domain/types";
+import {
+  CONCIERGE_NAME,
+  detectPage,
+  fallbackReply,
+  greetingFor,
+} from "../domain/widget-content";
 
 interface UIMessage extends Message {
   readonly time: string;

@@ -1,5 +1,9 @@
 /**
- * Concierge domain — pure types. No I/O, no framework.
+ * Pure types used by the concierge widget (presentation layer).
+ *
+ * All AI/business logic lives in `maison-core` and is consumed via `@maison/sdk`;
+ * this file only carries the shapes the local widget needs to render and to call
+ * the `/api/concierge` proxy.
  */
 
 export type Role = "user" | "concierge";
@@ -9,7 +13,7 @@ export interface Message {
   readonly text: string;
 }
 
-/** Internal page categories that drive a context-aware greeting. */
+/** Internal page categories that drive a context-aware greeting in the widget. */
 export type PageContext =
   | "accueil"
   | "services"
@@ -21,20 +25,3 @@ export type PageContext =
   | "processus"
   | "contact"
   | "ressources";
-
-export interface ConciergeReplyRequest {
-  readonly history: readonly Message[];
-  readonly page: PageContext;
-}
-
-export interface ConciergeReply {
-  readonly text: string;
-}
-
-/** Side-effect-free contract for any LLM provider. */
-export interface LLMClient {
-  complete(input: {
-    readonly systemPrompt: string;
-    readonly history: readonly Message[];
-  }): Promise<string>;
-}
